@@ -19,11 +19,30 @@ define('YAAMP_FEES_EXCHANGE', 2);
 define('YAAMP_FEES_RENTING', 2);
 define('YAAMP_PAYMENTS_FREQ', 3*60*60);
 
-define('YAAMP_BTCADDRESS', '1Auhps1mHZQpoX4mCcVL8odU81VakZQ6dR');
-define('YAAMP_SITE_URL', 'yiimp.ccminer.org');
-define('YAAMP_ADMIN_EMAIL', 'yiimp@spam.la');
+define('YAAMP_BTCADDRESS', '');
+define('YAAMP_SITE_URL', '');
+define('YAAMP_ADMIN_EMAIL', '');
+
+define('EXCH_CRYPTSY_KEY','');
+define('EXCH_CRYPTSY_SECRET','');
+
+define('EXCH_BITTREX_KEY','');
+define('EXCH_BITTREX_SECRET','');
+
+define('EXCH_BLUETRADE_KEY','');
+define('EXCH_BLUETRADE_SECRET','');
+
+define('EXCH_CCEX_KEY','');
+define('EXCH_CCEX_SECRET','');
+
+define('EXCH_POLONIEX_KEY','');
+define('EXCH_POLONIEX_SECRET','');
+
+define('EXCH_YOBIT_KEY','');
+define('EXCH_YOBIT_SECRET','');
+
 
 $cold_wallet_table = array(
-	'1C23KmLeCaQSLLyKVykHEUse1R7jRDv9j9' => 0.10,
+	'' => 0.10,
 );
 

@@ -2,8 +2,8 @@
 
 function bittrex_api_query($method, $params='')
 {
-	$apikey = ''; // your API-key
-	$apisecret = ''; // your Secret-key
+	$apikey = EXCH_BITTREX_KEY; // your API-key
+	$apisecret = EXCH_BITTREX_SECRET; // your Secret-key
 
 	$nonce = time();
 	$uri = "https://bittrex.com/api/v1.1/$method?apikey=$apikey&nonce=$nonce$params";

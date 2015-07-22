@@ -7,8 +7,8 @@ function cryptsy_api_query($method, array $req = array())
 //	debuglog($req);
 
 	// API settings
-	$key = ''; // your API-key
-	$secret = ''; // your Secret-key
+	$key = EXCH_CRYPTSY_KEY; // your API-key
+	$secret = EXCH_CRYPTSY_SECRET; // your Secret-key
 
 	$req['method'] = $method;
 	$mt = explode(' ', microtime());
