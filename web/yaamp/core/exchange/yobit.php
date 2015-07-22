@@ -29,8 +29,8 @@ function yobit_api_query($method)
 
 function yobit_api_query2($method, $req = array())
 {
-	$api_key    = '';
-	$api_secret = '';
+	$api_key    = EXCH_YOBIT_KEY;
+	$api_secret = EXCH_YOBIT_SECRET;
 
 	$req['method'] = $method;
 	$req['nonce'] = time();

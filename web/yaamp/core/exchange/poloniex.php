@@ -5,8 +5,8 @@
 	//       For instance, instead of XPM_BTC, use BTC_XPM
 
 	class poloniex {
-		protected $api_key = "";
-		protected $api_secret = "";
+		protected $api_key = EXCH_POLONIEX_KEY;
+		protected $api_secret = EXCH_POLONIEX_SECRET;
 		protected $trading_url = "https://poloniex.com/tradingApi";
 		protected $public_url = "https://poloniex.com/public";
 
