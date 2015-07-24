@@ -39,7 +39,9 @@ define('EXCH_YOBIT_KEY', '');
 define('EXCH_CCEX_KEY', '');
 
 // Automatic withdraw to Yaamp btc wallet if btc balance > 0.3
-define('YAMMP_BITTREX_AUTO_WITHDRAW', 0.3);
+define('EXCH_AUTO_WITHDRAW', 0.3);
+
+
 
 $cold_wallet_table = array(
 	'1C23KmLeCaQSLLyKVykHEUse1R7jRDv9j9' => 0.10,

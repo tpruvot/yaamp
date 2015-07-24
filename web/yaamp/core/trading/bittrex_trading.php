@@ -197,7 +197,7 @@ function doBittrexTrading($quick=false)
 		sleep(1);
 	}
 
-	if(floatval(YAMMP_BITTREX_AUTO_WITHDRAW) > 0 && $savebalance->balance >= (YAMMP_BITTREX_AUTO_WITHDRAW + 0.0002))
+	if(floatval(EXCH_AUTO_WITHDRAW) > 0 && $savebalance->balance >= (EXCH_AUTO_WITHDRAW + 0.0002))
 	{
 		$btcaddr = YAAMP_BTCADDRESS;
 		$amount = $savebalance->balance + 0.0002;
