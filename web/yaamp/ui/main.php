@@ -18,9 +18,9 @@ echo <<<END
 <meta name="description" content="yet another anonymous mining pool for bitcoin and altcoin with auto profit switch and auto exchange">
 <meta name="keywords" content="anonymous,mining,pool,maxcoin,bitcoin,altcoin,auto,switch,exchange,profit,scrypt,x11,x13,x14,x15,lyra2,lyra2re,neoscrypt,sha256,quark">
 
-<title>yiimp</title>
-
 END;
+
+echo '<title>'.YAAMP_SITE_NAME.'</title>';
 
 echo CHtml::cssFile("/extensions/jquery/themes/ui-lightness/jquery-ui.css");
 echo CHtml::cssFile('/yaamp/ui/css/main.css');
@@ -73,11 +73,10 @@ function showItemHeader($selected, $url, $name)
 
 function showPageHeader()
 {
-	echo "<div class='tabmenu-out'>";
-	echo "<div class='tabmenu-inner'>";
+	echo '<div class="tabmenu-out">';
+	echo '<div class="tabmenu-inner">';
 
-//	echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Yet Another Anonymous Mining Pool</a>";
-	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	echo '&nbsp;&nbsp;&nbsp;&nbsp;<a href="/">'.YAAMP_SITE_NAME.'</a>';
 
 	$action = controller()->action->id;
 	$wallet = user()->getState('yaamp-wallet');
@@ -97,11 +96,10 @@ function showPageHeader()
 	{
 		if (YAAMP_ADMIN_IP != $_SERVER['REMOTE_ADDR'])
 			debuglog("admin {$_SERVER['REMOTE_ADDR']}");
-//		$algo = user()->getState('yaamp-algo');
 
 		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
-		showItemHeader($action=='common', '/site/common', 'Admin');
-		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'List');
+		showItemHeader($action=='common', '/site/common', 'Dashboard');
+		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'Wallets');
 
 		if (YAAMP_RENTAL)
 			showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
