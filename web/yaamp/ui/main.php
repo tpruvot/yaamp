@@ -90,7 +90,8 @@ function showPageHeader()
 	showItemHeader($action=='miners', '/site/miners', 'Miners');
 	showItemHeader(controller()->id=='explorer', '/explorer', 'Explorers');
 
-//	showItemHeader(controller()->id=='renting', '/renting', 'Rental');
+	if (YAAMP_RENTAL)
+		showItemHeader(controller()->id=='renting', '/renting', 'Rental');
 
 	if(controller()->admin)
 	{
@@ -98,13 +99,18 @@ function showPageHeader()
 			debuglog("admin {$_SERVER['REMOTE_ADDR']}");
 //		$algo = user()->getState('yaamp-algo');
 
-//		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
+		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
 		showItemHeader($action=='common', '/site/common', 'Admin');
 		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'List');
-//		showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
 
-		showItemHeader(controller()->id=='trading', '/trading', 'Trading');
-//		showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
+		if (YAAMP_RENTAL)
+			showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
+
+		if (YAAMP_ALLOW_EXCHANGE)
+			showItemHeader(controller()->id=='trading', '/trading', 'Trading');
+
+		if (YAAMP_USE_NICEHASH_API)
+			showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
 	}
 
 	echo "<span style='float: right;'>";
