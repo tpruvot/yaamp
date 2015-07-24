@@ -1,7 +1,7 @@
 <?php
 
-$apikey = 'c9534a11-0e4e-4d00-be64-a00e34cd927a';
-$apiid = '7215';
+$apikey = NICEHASH_API_KEY;
+$apiid = NICEHASH_API_ID;
 
 $res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 $a = json_decode($res);

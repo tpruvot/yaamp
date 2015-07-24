@@ -86,11 +86,11 @@ function BackendUpdateServices()
 	if(!YAAMP_PRODUCTION) return;
 return;
 
-	$apikey = 'c9534a11-0e4e-4d00-be64-a00e34cd927a';
-	$apiid = '7215';
+	$apikey = NICEHASH_API_KEY;
+	$apiid = NICEHASH_API_ID;
 
-	$deposit = '1C23KmLeCaQSLLyKVykHEUse1R7jRDv9j9';
-	$amount = '0.01';
+	$deposit = NICEHASH_DEPOSIT;
+	$amount = NICEHASH_DEPOSIT_AMOUNT;
 
 	$res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 	debuglog($res);

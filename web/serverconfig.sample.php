@@ -41,6 +41,11 @@ define('EXCH_CCEX_KEY', '');
 // Automatic withdraw to Yaamp btc wallet if btc balance > 0.3
 define('EXCH_AUTO_WITHDRAW', 0.3);
 
+// nicehash keys deposit account & amount to deposit at a time
+define('NICEHASH_API_KEY','521c254d-8cc7-4319-83d2-ac6c604b5b49');
+define('NICEHASH_API_ID','9205');
+define('NICEHASH_DEPOSIT','3J9tapPoFCtouAZH7Th8HAPsD8aoykEHzk');
+define('NICEHASH_DEPOSIT_AMOUNT','0.01');
 
 
 $cold_wallet_table = array(
