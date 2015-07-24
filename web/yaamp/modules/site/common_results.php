@@ -197,7 +197,7 @@ foreach($markets as $market)
 	else if($onsell == 0.0)
 		echo '<td align="right">-</td>';
 	else
-		echo '<td align="right">$onsell</td>';
+		echo '<td align="right">'.$onsell.'</td>';
 
 	$total_onsell += $onsell;
 }
