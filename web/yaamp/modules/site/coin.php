@@ -11,7 +11,8 @@
 
 <?php
 
-$coin = getdbo('db_coins', getiparam('id'));
+$id = getiparam('id');
+$coin = getdbo('db_coins', $id);
 if (!$coin) {
 	$this->goback();
 }

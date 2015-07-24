@@ -199,8 +199,14 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 #ifdef NO_EXCHANGE
 	// when auto exchange is disabled, only authorize good wallet address...
 	if (!client_validate_user_address(client)) {
+
 		clientlog(client, "bad mining address %s", client->username);
 		client_send_result(client, "false");
+
+		CommonLock(&g_db_mutex);
+		db_clear_worker(g_db, client);
+		CommonUnlock(&g_db_mutex);
+
 		return false;
 	}
 #endif

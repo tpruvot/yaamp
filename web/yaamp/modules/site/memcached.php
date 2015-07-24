@@ -12,6 +12,7 @@ function cmp($a, $b)
 	return $a[2] < $b[2];
 }
 
+if (!empty($a))
 foreach($a as $url=>$n)
 {
 	$d = memcache_get($this->memcache->memcache, "$url-time");
@@ -32,6 +33,7 @@ echo "<th align=right>Average</th>";
 echo "</tr>";
 echo "</thead><tbody>";
 
+if (!empty($res))
 foreach($res as $item)
 {
 //	debuglog("$i => $n");
