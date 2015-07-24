@@ -105,10 +105,10 @@ foreach($coins as $coin)
 			$url = "https://yobit.net/en/trade/$coin->symbol/BTC";
 
 		else if($market->name == 'cryptopia')
-			$url = "https://www.cryptopia.co.nz/Exchange?market=${coin->symbol}_BTC";
+			$url = "https://www.cryptopia.co.nz/Exchange?market={$coin->symbol}_BTC";
 
 		else if($market->name == 'alcurex')
-			$url = "https://alcurex.org/index.php/crypto/market?pair=${lowsymbol}_btc";
+			$url = "https://alcurex.org/index.php/crypto/market?pair={$lowsymbol}_btc";
 
 		echo "<a href='$url' target=_blank>$market->name</a> ";
 	}

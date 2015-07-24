@@ -195,6 +195,7 @@ echo "</thead><tbody>";
 $ts = $remote->listtransactions('', 10);
 
 $res_array = array();
+if (!empty($ts))
 foreach($ts as $val)
 {
 	$t = $val['time'];
