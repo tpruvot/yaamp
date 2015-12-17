@@ -22,7 +22,6 @@ echo "<th>Speed</th>";
 echo "<th>Last Dec</th>";
 echo "<th>Workers</th>";
 echo "<th>Accepted</th>";
-echo "<th>Rejected</th>";
 echo "<th></th>";
 echo "</tr>";
 echo "</thead><tbody>";
@@ -56,13 +55,12 @@ foreach($list as $nicehash)
 
 	if(!$nicehash->workers && !$nicehash->accepted && !$nicehash->rejected)
 	{
-		echo "<td colspan=3></td>";
+		echo "<td colspan=2></td>";
 	}
 	else
 	{
 		echo "<td>$nicehash->workers</td>";
 		echo "<td>$nicehash->accepted</td>";
-		echo "<td>$nicehash->rejected</td>";
 	}
 
 	if($nicehash->active)
