@@ -74,7 +74,6 @@ function BackendUpdateServices()
 
 			$renter->custom_balance += $stat->balance;
 			$renter->custom_accept += $stat->accepted_speed*1000000000;
-			$renter->custom_reject += $stat->rejected_speed*1000000000;
 		}
 
 		$renter->save();
@@ -160,7 +159,6 @@ function BackendUpdateServices()
 		$nicehash->price = $order->price;
 		$nicehash->speed = $order->limit_speed;
 		$nicehash->accepted = $order->accepted_speed;
-		$nicehash->rejected = $order->rejected_speed;
 
 		if($order->price > $cancelprice && $order->workers > 0)
 		{
