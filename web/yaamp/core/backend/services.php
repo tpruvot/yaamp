@@ -201,6 +201,14 @@ function BackendUpdateServices()
 			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0");
 			debuglog($res);
 		}
+		
+		else if($order->btc_avail < 0.00075000)
+                {
+                        debuglog("* refilling order $order->id");
+
+                        $res = fetch_url("https://www.nicehash.com/api?method=orders.refill&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&amount=0.01");
+                        debuglog($res);
+                }
 
 		$nicehash->save();
 	}
