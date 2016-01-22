@@ -6,8 +6,9 @@ $apiid = NICEHASH_API_ID;
 $res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 $a = json_decode($res);
 $balance = $a->result->balance_confirmed;
+$balance_pending = $a->result->balance_pending;
 
-echo "balance $balance<br>";
+echo "balance $balance - (pending: $balance_pending)<br>";
 
 echo "<br><table class='dataGrid'>";
 echo "<thead>";
