@@ -2,7 +2,7 @@
 
 if (!$coin) return;
 
-$this->pageTitle = $coin->name." bloc explorer";
+$this->pageTitle = $coin->name." block explorer";
 
 echo <<<ENDJS
 <script type="text/javascript">
