@@ -1,5 +1,19 @@
 <?php
 
+function doBittrexCancelOrder($OrderID=false)
+{
+    if(!$OrderID) return;
+
+    $res = bittrex_api_query('market/cancel', "&uuid={$OrderID}");
+
+    if($res && $res->success) {
+        $db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            ':market'=>'bittrex', ':uuid'=>$OrderID
+        ));
+        if($db_order) $db_order->delete();
+    }
+}
+
 function doBittrexTrading($quick=false)
 {
 	$balances = bittrex_api_query('account/getbalances');
@@ -72,13 +86,14 @@ function doBittrexTrading($quick=false)
 		if($sellprice > $ask*$cancel_ask_pct || $flushall)
 		{
 			debuglog("bittrex: cancel order $order->Exchange $sellprice -> $ask");
-			sleep(1);
-			bittrex_api_query('market/cancel', "&uuid={$order->OrderUuid}");
+            sleep(1);
+            doBittrexCancelOrder($order->OrderUuid);
+            //bittrex_api_query('market/cancel', "&uuid={$order->OrderUuid}");
 
-			$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-				':market'=>'bittrex', ':uuid'=>$order->OrderUuid
-			));
-			if($db_order) $db_order->delete();
+            //$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            //    ':market'=>'bittrex', ':uuid'=>$order->OrderUuid
+            //));
+            //if($db_order) $db_order->delete();
 		}
 
 		// import existing orders

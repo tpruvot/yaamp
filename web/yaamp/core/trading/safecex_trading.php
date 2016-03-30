@@ -1,6 +1,21 @@
 <?php
 
 // note: sleep(1) are added to limit the api calls frequency (interval required of 1 second for safecex)
+function doSafecexCancelOrder($OrderID=false)
+{
+    if(!$OrderID) return;
+
+    sleep(1);
+    $res = safecex_api_user('cancelorder', "&id={$OrderID}");
+
+    if($res && $res->status == 'ok')
+    {
+        $db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+               ':market'=>'safecex', ':uuid'=>$OrderID
+           ));
+        if($db_order) $db_order->delete();
+    }   
+}
 
 function doSafecexTrading($quick=false)
 {
@@ -78,13 +93,14 @@ function doSafecexTrading($quick=false)
 		if($sellprice > $ask*$cancel_ask_pct || $flushall)
 		{
 			debuglog("safecex: cancel order {$order->market} at $sellprice, ask price is now $ask");
-			sleep(1);
-			safecex_api_user('cancelorder', "&id={$order->id}");
+            sleep(1);
+			doSafecexCancelOrder($order->id);
+            //safecex_api_user('cancelorder', "&id={$order->id}");
 
-			$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-				':market'=>'safecex', ':uuid'=>$order->id
-			));
-			if($db_order) $db_order->delete();
+            //$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            //    ':market'=>'safecex', ':uuid'=>$order->id
+            //));
+            //if($db_order) $db_order->delete();
 
 		}
 

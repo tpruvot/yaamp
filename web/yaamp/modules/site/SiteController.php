@@ -763,6 +763,36 @@ class SiteController extends CommonController
 		$this->goback();
 	}
 
+    public function actionCancelorder()
+	{
+		if(!$this->admin) return;
+		$order = getdbo('db_orders', getiparam('id'));
+		
+        switch ($order->market)
+        {
+            case 'yobit':
+                doYobitCancelOrder($order->uuid);
+                break;
+            case 'c-cex':
+                doCCexCancelOrder($order->uuid);
+                break;
+            case 'bittrex':
+                doBittrexCancelOrder($order->uuid);
+                break;
+            case 'bleutrade':
+                doBleutradeCancelOrder($order->uuid);
+                break;
+            case 'safecex':
+                doSafecexCancelOrder($order->uuid);
+                break;
+            case 'cryptopia':
+                doCryptopiaCancelOrder($order->uuid);
+                break;
+        }
+
+        $this->goback();
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	public function actionAlgo()

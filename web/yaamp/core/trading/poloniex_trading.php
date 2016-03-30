@@ -1,5 +1,23 @@
 <?php
 
+function doPoloniexCancelOrder($OrderID=false, $pair=false, $poloniex=false)
+{
+    if(!$OrderID) return;
+    if(!$pair) return;
+
+    if(!$poloniex) $poloniex = new CcexAPI;
+
+    $res = $poloniex->cancel_order($pair,$OrderID);
+
+    if($res && $res['success'])
+	{
+        $db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            ':market'=>'poloniex', ':uuid'=>$OrderID
+        ));
+        if($db_order) $db_order->delete();
+	}  
+}
+
 function doPoloniexTrading()
 {
 //	debuglog('-------------- doPoloniexTrading()');
@@ -74,13 +92,14 @@ function doPoloniexTrading()
 			if($order['rate'] > $tickers[$pair]['lowestAsk']*$cancel_ask_pct || $flushall)
 			{
 //				debuglog("poloniex: cancel order for $pair {$order['orderNumber']}");
-				sleep(1);
-				$poloniex->cancel_order($pair, $order['orderNumber']);
+                sleep(1);
+				doPoloniexCancelOrder($order['orderNumber'], $pair, $poloniex);
+                //$poloniex->cancel_order($pair, $order['orderNumber']);
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'poloniex', ':uuid'=>$order['orderNumber']
-				));
-				if($db_order) $db_order->delete();
+                //$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+                //    ':market'=>'poloniex', ':uuid'=>$order['orderNumber']
+                //));
+                //if($db_order) $db_order->delete();
 			}
 
 			else

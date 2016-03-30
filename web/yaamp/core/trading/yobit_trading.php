@@ -1,10 +1,24 @@
 <?php
 
+function doYobitCancelOrder($OrderID=false)
+{
+    if(!$OrderID) return;
+
+    $res = yobit_api_query2('CancelOrder', array('order_id'=>$OrderID));
+
+    if($res && $res['success']) {
+        $db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            ':market'=>'yobit', ':uuid'=>$OrderID
+        ));
+        if($db_order) $db_order->delete();
+	}
+}
+
 function doYobitTrading($quick=false)
 {
 	$savebalance = getdbosql('db_balances', "name='yobit'");
 	if(!$savebalance) return;
-
+        
 	$savebalance->balance = 0;
 
 	$balances = yobit_api_query2('getInfo');
@@ -18,7 +32,7 @@ function doYobitTrading($quick=false)
 			$savebalance->save();
 			continue;
 		}
-		if (!YAAMP_ALLOW_EXCHANGE) {
+        if (!YAAMP_ALLOW_EXCHANGE) {
 			// store balance in market table (= available + onorders on yobit)
 			$coins = getdbolist('db_coins', "symbol=:symbol OR symbol2=:symbol",
 				array(':symbol'=>strtoupper($symbol))
@@ -61,13 +75,15 @@ function doYobitTrading($quick=false)
 			if($order['rate'] > $cancel_ask_pct*$ticker->$pair->sell || $flushall)
 			{
 //				debuglog("yobit: cancel order for $pair $uuid");
-				sleep(1);
-		 		$res = yobit_api_query2('CancelOrder', array('order_id'=>$uuid));
+                sleep(1);
+                doYobitCancelOrder($uuid);
+                //sleep(1);
+                // $res = yobit_api_query2('CancelOrder', array('order_id'=>$uuid));
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'yobit', ':uuid'=>$uuid
-				));
-				if($db_order) $db_order->delete();
+                //$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+                //    ':market'=>'yobit', ':uuid'=>$uuid
+                //));
+                //if($db_order) $db_order->delete();
 			}
 
 			else
@@ -118,12 +134,12 @@ function doYobitTrading($quick=false)
 
 	foreach($balances['return']['funds'] as $symbol=>$amount)
 	{
-// 		debuglog("$symbol, $amount");
+//      debuglog("$symbol, $amount");
 		$amount -= 0.0001;
 		if($amount<=0) continue;
 		if($symbol == 'btc') continue;
 
-		$coin = getdbosql('db_coins', "symbol=:symbol OR symbol2=:symbol", array(':symbol'=>strtoupper($symbol)));
+        $coin = getdbosql('db_coins', "symbol=:symbol OR symbol2=:symbol", array(':symbol'=>strtoupper($symbol)));
 		if(!$coin || is_array($coin) || $coin->dontsell) continue;
 
 		$market = getdbosql('db_markets', "coinid=$coin->id and name='yobit'");
