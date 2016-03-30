@@ -1,5 +1,20 @@
 <?php
 
+function doCCexCancelOrder($OrderID=false, $ccex=false)
+{
+    if(!$OrderID) return;
+
+    if(!$ccex) $ccex = new CcexAPI;
+
+    $res = $ccex->cancelOrder($OrderID);
+    if($res && !isset($res['error'])) {
+        $db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+            ':market'=>'c-cex', ':uuid'=>$OrderID
+        ));
+        if($db_order) $db_order->delete();
+    }
+}
+
 function doCCexTrading($quick=false)
 {
 //	debuglog("-------------- doCCexTrading() $flushall");
@@ -69,13 +84,14 @@ function doCCexTrading($quick=false)
 			if($order['price'] > $cancel_ask_pct*$ticker['sell'] || $flushall)
 			{
 				// debuglog("c-cex: cancel order for $pair $uuid");
-				sleep(1);
-				$ccex->cancelOrder($uuid);
+                sleep(1);
+                doCCexCancelOrder($uuid, $ccex);
+                //$ccex->cancelOrder($uuid);
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'c-cex', ':uuid'=>$uuid
-				));
-				if($db_order) $db_order->delete();
+                //$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+                //    ':market'=>'c-cex', ':uuid'=>$uuid
+                //));
+                //if($db_order) $db_order->delete();
 			}
 
 			else
@@ -186,7 +202,7 @@ function doCCexTrading($quick=false)
 		$ticker = $ccex->getTickerInfo($pair);
 		if(!$ticker) continue;
 
-		$sellprice = bitcoinvaluetoa($ticker['sell']);
+        $sellprice = bitcoinvaluetoa($ticker['sell']);
 
 //		debuglog("c-cex selling $pair, $amount, $sellprice");
 		sleep(1);

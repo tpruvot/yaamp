@@ -344,8 +344,8 @@ foreach($orders as $order)
 	echo $bidvalue>0.01? '<td style="font-size: .8em;"><b>'.$bidvalue.'</b></td>': '<td style="font-size: .8em;">'.$bidvalue.'</td>';
 
 	echo '<td>';
-	echo '<a href="/site/clearorder?id='.$order->id.'">clear</a> ';
-//	echo '<a href="/site/cancelorder?id='.$order->id.'">cancel</a> ';
+	echo '<a href="/site/cancelorder?id='.$order->id.'" title="Cancel the order on the exchange!">cancel</a> ';
+	echo '<a href="/site/clearorder?id='.$order->id.'" title="Clear the order from the DB, NOT FROM THE EXCHANGE!">clear</a> ';
 //	echo '<a href="/site/sellorder?id='.$order->id.'">sell</a>';
 	echo '</td>';
 	echo '</tr>';
