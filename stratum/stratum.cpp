@@ -201,12 +201,6 @@ int main(int argc, char **argv)
 	if(!g_current_algo) yaamp_error("invalid algo");
 	if(!g_current_algo->hash_function) yaamp_error("no hash function");
 
-	struct rlimit rlim_files = {0x10000, 0x10000};
-	setrlimit(RLIMIT_NOFILE, &rlim_files);
-
-	struct rlimit rlim_threads = {0x8000, 0x8000};
-	setrlimit(RLIMIT_NPROC, &rlim_threads);
-
 	stratumlog("* starting stratumd for %s on %s:%d\n", g_current_algo->name, g_tcp_server, g_tcp_port);
 
 	g_db = db_connect();
