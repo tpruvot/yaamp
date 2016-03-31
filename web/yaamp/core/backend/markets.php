@@ -768,6 +768,7 @@ function updateCryptopiaMarkets()
 				$price2 = ($ticker->BidPrice+$ticker->AskPrice)/2;
 				$market->price2 = AverageIncrement($market->price2, $price2);
 				$market->price = AverageIncrement($market->price, $ticker->BidPrice*0.98);
+				$market->marketid = $ticker->TradePairId;
 				$market->save();
 				if (empty($coin->price)) {
 					$coin->price = $market->price;
