@@ -151,6 +151,8 @@ function doCryptopiaTrading($quick=false)
 
 		// drop obsolete orders
 		$list = getdbolist('db_orders', "coinid={$coin->id} AND market='cryptopia'");
+
+		if(is_object($orders) && $orders->Success)
 		foreach($list as $db_order)
 		{
 			$found = false;
