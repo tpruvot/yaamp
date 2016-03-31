@@ -763,6 +763,16 @@ class SiteController extends CommonController
 		$this->goback();
 	}
 
+    public function actionCancelorder()
+	{
+		if(!$this->admin) return;
+		$order = getdbo('db_orders', getiparam('id'));
+
+		cancelExchangeOrder($order);
+
+		$this->goback();
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	public function actionAlgo()
@@ -830,73 +840,8 @@ class SiteController extends CommonController
 		$id = getiparam('id');
 		$balance = getdbo('db_balances', $id);
 
-		if($balance) switch($balance->name)
-		{
-			case 'alcurex':
-				//doAlcurexTrading(true);
-				updateAlcurexMarkets();
-				break;
-
-			case 'banx':
-				doBanxTrading(true);
-				updateBanxMarkets();
-				break;
-
-			case 'bter':
-				doBterTrading(true);
-				updateBterMarkets();
-				break;
-
-			case 'cryptopia':
-				doCryptopiaTrading(true);
-				updateCryptopiaMarkets();
-				break;
-
-			case 'cryptsy':
-				//doCryptsyTrading(true);
-				updateCryptsyMarkets();
-				break;
-
-			case 'bittrex':
-				doBittrexTrading(true);
-				updateBittrexMarkets();
-				break;
-
-			case 'c-cex':
-				doCCexTrading(true);
-				updateCCexMarkets();
-				break;
-
-			case 'empoex':
-				//doEmpoexTrading(true);
-				//updateEmpoexMarkets();
-				break;
-
-			case 'safecex':
-				doSafecexTrading(true);
-				updateSafecexMarkets();
-				break;
-
-			case 'yobit':
-				doYobitTrading(true);
-				updateYobitMarkets();
-				break;
-
-			case 'bleutrade':
-				doBleutradeTrading(true);
-				updateBleutradeMarkets();
-				break;
-
-			case 'kraken':
-				doKrakenTrading(true);
-				updateKrakenMarkets();
-				break;
-
-			case 'poloniex':
-				doPoloniexTrading(true);
-				updatePoloniexMarkets();
-				break;
-		}
+		if($balance)
+			runExchange($balance->name);
 
 		if ($balance)
 			debuglog("runexchange done ($balance->name)");

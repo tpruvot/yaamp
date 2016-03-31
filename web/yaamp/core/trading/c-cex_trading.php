@@ -1,5 +1,20 @@
 <?php
 
+function doCCexCancelOrder($OrderID=false, $ccex=false)
+{
+	if(!$OrderID) return;
+
+	if(!$ccex) $ccex = new CcexAPI;
+
+	$res = $ccex->cancelOrder($OrderID);
+	if($res && !isset($res['error'])) {
+		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			':market'=>'c-cex', ':uuid'=>$OrderID
+		));
+		if($db_order) $db_order->delete();
+	}
+}
+
 function doCCexTrading($quick=false)
 {
 //	debuglog("-------------- doCCexTrading() $flushall");
@@ -70,12 +85,13 @@ function doCCexTrading($quick=false)
 			{
 				// debuglog("c-cex: cancel order for $pair $uuid");
 				sleep(1);
-				$ccex->cancelOrder($uuid);
+				doCCexCancelOrder($uuid, $ccex);
+				//$ccex->cancelOrder($uuid);
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'c-cex', ':uuid'=>$uuid
-				));
-				if($db_order) $db_order->delete();
+				//$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+				//    ':market'=>'c-cex', ':uuid'=>$uuid
+				//));
+				//if($db_order) $db_order->delete();
 			}
 
 			else

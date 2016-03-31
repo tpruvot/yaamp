@@ -1,5 +1,19 @@
 <?php
 
+function doBleutradeCancelOrder($OrderID=false)
+{
+	if(!$OrderID) return;
+
+	$res = bleutrade_api_query('market/cancel', "&orderid={$OrderID}");
+
+	if($res->success) {
+		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			':market'=>'bleutrade', ':uuid'=>$OrderID
+		));
+		if($db_order) $db_order->delete();
+	}
+}
+
 function doBleutradeTrading($quick=false)
 {
 	$balances = bleutrade_api_query('account/getbalances');
@@ -71,14 +85,15 @@ function doBleutradeTrading($quick=false)
 		// flush orders not on the ask
 		if($sellprice > $ask*$cancel_ask_pct || $flushall)
 		{
- //			debuglog("bleutrade: cancel order $order->Exchange $sellprice -> $ask");
+//			debuglog("bleutrade: cancel order $order->Exchange $sellprice -> $ask");
 			sleep(1);
-			bleutrade_api_query('market/cancel', "&orderid={$order->OrderId}");
+			doBleutradeCancelOrder($order->OrderId);
+			//bleutrade_api_query('market/cancel', "&orderid={$order->OrderId}");
 
-			$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-				':market'=>'bleutrade', ':uuid'=>$order->OrderId
-			));
-			if($db_order) $db_order->delete();
+			//$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			//    ':market'=>'bleutrade', ':uuid'=>$order->OrderId
+			//));
+			//if($db_order) $db_order->delete();
 		}
 
 		// save existing orders
