@@ -1,5 +1,19 @@
 <?php
 
+function doCryptopiaCancelOrder($OrderID=false)
+{
+	if(!$OrderID) return;
+
+	$params = array('CancelType'=>'Trade', 'OrderId'=>$OrderID->OrderId);
+	$res = cryptopia_api_user('CancelTrade', $params);
+	if($res && $res->Success) {
+		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			':market'=>'cryptopia', ':uuid'=>$OrderID
+		));
+		if($db_order) $db_order->delete();
+	}
+}
+
 function doCryptopiaTrading($quick=false)
 {
 	$savebalance = getdbosql('db_balances', "name='cryptopia'");
@@ -104,13 +118,14 @@ function doCryptopiaTrading($quick=false)
 			{
 				debuglog("cryptopia: cancel order $pair at $sellprice, ask price is now $ask");
 				sleep(1);
-				$params = array('CancelType'=>'Trade', 'OrderId'=>$order->OrderId);
-				cryptopia_api_user('CancelTrade', $params);
+				doCryptopiaCancelOrder($order->OrderId);
+				//$params = array('CancelType'=>'Trade', 'OrderId'=>$order->OrderId);
+				//cryptopia_api_user('CancelTrade', $params);
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'cryptopia', ':uuid'=>$order->OrderId
-				));
-				if($db_order) $db_order->delete();
+				//$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+				//    ':market'=>'cryptopia', ':uuid'=>$order->OrderId
+				//));
+				//if($db_order) $db_order->delete();
 			}
 			// store existing orders
 			else

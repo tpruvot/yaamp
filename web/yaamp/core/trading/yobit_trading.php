@@ -1,5 +1,19 @@
 <?php
 
+function doYobitCancelOrder($OrderID=false)
+{
+	if(!$OrderID) return;
+
+	$res = yobit_api_query2('CancelOrder', array('order_id'=>$OrderID));
+
+	if($res && $res['success']) {
+		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			':market'=>'yobit', ':uuid'=>$OrderID
+		));
+		if($db_order) $db_order->delete();
+	}
+}
+
 function doYobitTrading($quick=false)
 {
 	$savebalance = getdbosql('db_balances', "name='yobit'");
@@ -60,14 +74,15 @@ function doYobitTrading($quick=false)
 
 			if($order['rate'] > $cancel_ask_pct*$ticker->$pair->sell || $flushall)
 			{
-//				debuglog("yobit: cancel order for $pair $uuid");
+				debuglog("yobit: cancel order for $pair $uuid");
 				sleep(1);
-		 		$res = yobit_api_query2('CancelOrder', array('order_id'=>$uuid));
+				doYobitCancelOrder($uuid);
+				// $res = yobit_api_query2('CancelOrder', array('order_id'=>$uuid));
 
-				$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-					':market'=>'yobit', ':uuid'=>$uuid
-				));
-				if($db_order) $db_order->delete();
+				//$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+				//    ':market'=>'yobit', ':uuid'=>$uuid
+				//));
+				//if($db_order) $db_order->delete();
 			}
 
 			else
