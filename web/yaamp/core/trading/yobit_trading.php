@@ -215,6 +215,25 @@ function doYobitTrading($quick=false)
 		$db_order->uuid = $res['return']['order_id'];
 		$db_order->created = time();
 		$db_order->save();
+		
+		if(floatval(EXCH_AUTO_WITHDRAW) > 0 && $savebalance->balance >= (EXCH_AUTO_WITHDRAW + 0.0002)) {
+              	    $btcaddr = YAAMP_BTCADDRESS;
+                    $amount = $savebalance->balance + 0.0002;
+                    debuglog("[yobit] - withdraw $amount to $btcaddr");
+                    sleep(1);
+                    $res = yobit_api_query2('WithdrawCoinsToAddress', array('coinName' => 'BTC', 'amount' => $amount, 'address' => $btcaddr));
+                    debuglog("[yobit] - withdraw: ".json_encode($res));
+                    if($res || $res['success'])
+                    {
+                            $withdraw = new db_withdraws;
+                            $withdraw->market = 'yobit';
+                            $withdraw->address = $btcaddr;
+                            $withdraw->amount = $amount;
+                            $withdraw->time = time();
+                            $withdraw->save();
+                      //        $savebalance->balance = 0;
+                    }
+          	}
 	}
 
 }
