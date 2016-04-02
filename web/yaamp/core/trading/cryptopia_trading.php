@@ -4,7 +4,7 @@ function doCryptopiaCancelOrder($OrderID=false)
 {
 	if(!$OrderID) return;
 
-	$params = array('CancelType'=>'Trade', 'OrderId'=>$OrderID->OrderId);
+	$params = array('CancelType'=>'Trade', 'OrderId'=>$OrderID);
 	$res = cryptopia_api_user('CancelTrade', $params);
 	if($res && $res->Success) {
 		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
