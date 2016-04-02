@@ -2,6 +2,22 @@
 
 // note: sleep(1) are added to limit the api calls frequency (interval required of 1 second for safecex)
 
+function doSafecexCancelOrder($OrderID=false)
+{
+	if(!$OrderID) return;
+
+	sleep(1);
+	$res = safecex_api_user('cancelorder', "&id={$OrderID}");
+
+	if($res && $res->status == 'ok')
+	{
+		$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			':market'=>'safecex', ':uuid'=>$OrderID
+		));
+		if($db_order) $db_order->delete();
+	}
+}
+
 function doSafecexTrading($quick=false)
 {
 	// {"symbol":"BTC","balance":0.01056525,"pending":0,"orders":0,"total":0.01056525,"deposit":"15pQYjcBJxo3RQfJe6C5pYxHcxAjzVyTfv","withdraw":"1E1..."}
@@ -79,12 +95,13 @@ function doSafecexTrading($quick=false)
 		{
 			debuglog("safecex: cancel order {$order->market} at $sellprice, ask price is now $ask");
 			sleep(1);
-			safecex_api_user('cancelorder', "&id={$order->id}");
+			doSafecexCancelOrder($order->id);
+			//safecex_api_user('cancelorder', "&id={$order->id}");
 
-			$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
-				':market'=>'safecex', ':uuid'=>$order->id
-			));
-			if($db_order) $db_order->delete();
+			//$db_order = getdbosql('db_orders', "market=:market AND uuid=:uuid", array(
+			//	':market'=>'safecex', ':uuid'=>$order->id
+			//));
+			//if($db_order) $db_order->delete();
 
 		}
 
