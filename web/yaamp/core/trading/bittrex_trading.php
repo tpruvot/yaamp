@@ -237,7 +237,7 @@ function doBittrexTrading($quick=false)
 	if(floatval(EXCH_AUTO_WITHDRAW) > 0 && $savebalance->balance >= (EXCH_AUTO_WITHDRAW + 0.0002))
 	{
 		$btcaddr = YAAMP_BTCADDRESS;
-		$amount = $savebalance->balance + 0.0002;
+		$amount = $savebalance->balance - 0.0002;
 		debuglog("bittrex withdraw $amount to $btcaddr");
 
 		sleep(1);
