@@ -330,14 +330,14 @@ if ($coin->id) {
 	echo "gen=0\n";
 	echo "\n";
 	echo "alertnotify=echo %s | mail -s \"{$coin->name} alert!\" ".YAAMP_ADMIN_EMAIL."\n";
-	echo "blocknotify=blocknotify ".YAAMP_SITE_URL.":$port {$coin->id} %s\n";
+	echo "blocknotify=blocknotify ".YAAMP_STRATUM_URL.":$port {$coin->id} %s\n";
 	echo CHtml::closetag("pre");
 
 	echo CHtml::tag("hr");
 	echo "<b>Miner command line</b>:";
 	echo CHtml::opentag("pre");
 	echo "-a {$coin->algo} ";
-	echo "-o stratum+tcp://".YAAMP_SITE_URL.':'.$port.' ';
+	echo "-o stratum+tcp://".YAAMP_STRATUM_URL.':'.$port.' ';
 	echo "-u {$coin->master_wallet} ";
 	echo "-p c={$coin->symbol} ";
 	echo "\n";
