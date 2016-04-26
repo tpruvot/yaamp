@@ -11,7 +11,7 @@ you have from 5 to 15 submits per minute. It's a good trade off between bandwidt
 if you want to set the difficulty to 64, you would use:</p>
 
 <pre class="main-left-box" style='padding: 3px; font-size: .9em; background-color: #ffffee; font-family: monospace;'>
--o stratum+tcp://<?= YAAMP_SITE_URL ?>:3433 -u wallet_adress -p d=64
+-o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:3433 -u wallet_adress -p d=64
 </pre>
 
 <p style="width: 700px;">Here are the accepted values for the custom diff:</p>
