@@ -74,7 +74,7 @@ foreach($coins as $coin)
 	echo "<td><img src='$coin->image' width=24></td>";
 
 	$algo_color = getAlgoColors($coin->algo);
-	echo '<td style="background-color:$algo_color;"><b>';
+        echo "<td style='background-color:$algo_color;'><b>";
 
 	if($coin->enable)
 	{
