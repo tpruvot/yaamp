@@ -7,10 +7,12 @@ function BackendDoBackup()
 
 	include_once("/etc/yiimp/keys.php");
 
+        $host = YAAMP_DBHOST;
+        $db   = YAAMP_DBNAME;
 	$user = YIIMP_MYSQLDUMP_USER;
 	$pass = YIIMP_MYSQLDUMP_PASS;
 
-	system("mysqldump -h yaampdb -u$user -p$pass --skip-extended-insert yaamp | gzip > $filename");
+	system("mysqldump -h $host -u$user -p$pass --skip-extended-insert $db | gzip > $filename");
 }
 
 function BackendQuickClean()
