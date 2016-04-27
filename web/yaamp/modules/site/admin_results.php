@@ -81,15 +81,17 @@ foreach($coins as $coin)
 		echo '<span title="coin enabled">u</span>';
 		if($coin->auto_ready) echo '<span style="color: green;" title="active on stratum"> a</span>';
 		else echo '<span style="color: red;" title="disconnected from stratum"> d</span>';
-
-		echo '<br>';
-
+		
 		if($coin->visible) echo '<span title="visible to public">v</span>';
 		else echo '&nbsp;';
+
+		echo '<br>';
 
 		if($coin->auxpow) echo '<span title="aux pow enabled"> x</span>';
 
 		if($coin->rpccurl) echo '<span title="rpc curl enabled"> c</span>';
+		
+		if($coin->rpcssl) echo '<span title="rpc ssl enabled"> c</span>';		
 
 		if($coin->block_height < $coin->target_height)
 		{
