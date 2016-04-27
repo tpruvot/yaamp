@@ -91,7 +91,7 @@ foreach($coins as $coin)
 
 		if($coin->rpccurl) echo '<span title="rpc curl enabled"> c</span>';
 		
-		if($coin->rpcssl) echo '<span title="rpc ssl enabled"> c</span>';		
+		if($coin->rpcssl) echo '<span title="rpc ssl enabled"> s</span>';		
 
 		if($coin->block_height < $coin->target_height)
 		{
