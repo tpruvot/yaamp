@@ -89,7 +89,7 @@ foreach($coins as $coin)
 
 		if($coin->auxpow) echo '<span title="aux pow enabled"> x</span>';
 
-		if($coin->rpccurl) echo '<span title="rpc curl enabled"> r</span>';
+		if($coin->rpccurl) echo '<span title="rpc curl enabled"> c</span>';
 
 		if($coin->block_height < $coin->target_height)
 		{
