@@ -80,7 +80,7 @@ foreach($coins as $coin)
 	{
                 echo '<span title="coin enabled">u</span>';
                 if($coin->auto_ready) echo '<span style="color: green;" title="active on stratum"> a</span>';
-                else echo '<span style="color: red;" title="disconencted from stratum"> d</span>';
+                else echo '<span style="color: red;" title="disconnected from stratum"> d</span>';
 
                 echo '<br>';
 
