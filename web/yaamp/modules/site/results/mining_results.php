@@ -141,8 +141,9 @@ foreach($list as $coin)
 	echo "<td width=18><img width=16 src='$coin->image'></td>";
 
 	$owed = dboscalar("select sum(balance) from accounts where coinid=$coin->id");
+	$owed2 = $owed-$coin->balance;
 	if($coin->balance+$coin->mint < $owed*0.9)
-		echo "<td><b><a href='/site/block?id=$coin->id' title='We are short of this currency. Please select another one for payments until we find more blocks.'
+		echo "<td><b><a href='/site/block?id=$coin->id' title='We are short $owed2 of $coin->symbol_show. Please switch to another currency until we find more $coin->symbol_show blocks.'
 			style='color: #c55'>$name</a></b><span style='font-size: .8em;'> ($coin->algo)</span></td>";
 
 	else
