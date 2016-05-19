@@ -67,7 +67,7 @@ function BackendCoinPayments($coin)
 				if(!$tx)
 				{
 					debuglog("error $remote->error, $user->username, $amount");
-					if($remote->error == 'transaction too large' || $remote->error == 'invalid amount')
+					if($remote->error == 'transaction too large' || $remote->error == 'invalid amount' || $remote->error == 'insufficient funds' || $remote->error == 'error: transaction creation failed  ')
 					{
 						$coin->payout_max = min((double) $amount, (double) $coin->payout_max);
 						$coin->save();
