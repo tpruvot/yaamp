@@ -217,7 +217,7 @@ else
 
 echo '<td><b><a href="/site/block?id='.$coin->id.'">'.$coin->name.'</a></b></td>';
 echo '<td width="60"><b>'.$coin->symbol.'</b></td>';
-echo '<td>'.$coin->algo.'</td>';
+echo '<td><a href="/site/gomining?algo='.$coin->algo.'">'.$coin->algo.'</a></td>';
 
 if(!$info)
 {
