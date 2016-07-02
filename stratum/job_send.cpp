@@ -78,6 +78,9 @@ void job_broadcast(YAAMP_JOB *job)
 {
 	int s1 = current_timestamp_dms();
 	int count = 0;
+	struct timeval timeout;
+		timeout.tv_sec = 5;
+		timeout.tv_usec = 0;
 
 	YAAMP_JOB_TEMPLATE *templ = job->templ;
 
@@ -98,6 +101,9 @@ void job_broadcast(YAAMP_JOB *job)
 		client_add_job_history(client, job->id);
 
 		client_adjust_difficulty(client);
+		
+		if (setsockopt (client->sock->sock, SOL_SOCKET, SO_SNDTIMEO, (void *)&timeout, sizeof(timeout)) < 0)
+			debuglog("setsockopt failed\n");
 
 		if (socket_send_raw(client->sock, buffer, strlen(buffer)) == -1) {
 			int err = errno;
