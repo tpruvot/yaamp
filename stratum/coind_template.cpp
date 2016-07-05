@@ -248,9 +248,14 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	json_value *json_result = json_get_object(json, "result");
 	if(!json_result || json_is_null(json_result))
 	{
-		coind_error(coind, "getblocktemplate result");
-		json_value_free(json);
-		return NULL;
+                strcpy(params, "[]");
+                json_value *json = rpc_call(&coind->rpc, "getblocktemplate", params);
+                if(!json || json_is_null(json)) {
+                   coind_error(coind, "getblocktemplate result");
+                   json_value_free(json);
+                   return NULL;
+                }
+
 	}
 
 	json_value *json_tx = json_get_array(json_result, "transactions");
