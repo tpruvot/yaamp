@@ -47,7 +47,7 @@ func main() {
 			var bhead wire.BlockHeader
 			err := bhead.Deserialize(bytes.NewReader(blockHeader))
 			if err == nil {
-				str := bhead.BlockSha().String();
+				str := bhead.BlockHash().String();
 				args := []string{ stratumDest, coinId, str }
 				out, err := exec.Command(processName, args...).Output()
 				if err != nil {
