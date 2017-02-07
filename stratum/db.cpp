@@ -157,7 +157,7 @@ void db_update_coinds(YAAMP_DB *db)
 
 	db_query(db, "SELECT id, name, rpchost, rpcport, rpcuser, rpcpasswd, rpcencoding, master_wallet, reward, price, "
 		"hassubmitblock, txmessage, enable, auto_ready, algo, pool_ttf, charity_address, charity_amount, charity_percent, "
-		"reward_mul, symbol, auxpow, actual_ttf, network_ttf, usememorypool, hasmasternodes, algo, symbol2, "
+		"reward_mul, symbol, auxpow, actual_ttf, network_ttf, usememorypool, hasmasternodes, hasthrones, algo, symbol2, "
 		"rpccurl, rpcssl, rpccert, account, multialgos, max_miners, max_shares "
 		"FROM coins WHERE enable AND auto_ready AND algo='%s' ORDER BY index_avg", g_stratum_algo);
 
@@ -246,18 +246,19 @@ void db_update_coinds(YAAMP_DB *db)
 
 		if(row[24]) coind->usememorypool = atoi(row[24]);
 		if(row[25]) coind->hasmasternodes = atoi(row[25]);
+                if(row[26]) coind->hasthrones = atoi(row[26]);
 
-		if(row[26]) strcpy(coind->algo, row[26]);
-		if(row[27]) strcpy(coind->symbol2, row[27]); // if pool + aux, prevent double submit
+		if(row[27]) strcpy(coind->algo, row[27]);
+		if(row[28]) strcpy(coind->symbol2, row[28]); // if pool + aux, prevent double submit
 
-		if(row[28]) coind->rpc.curl = atoi(row[28]) != 0;
-		if(row[29]) coind->rpc.ssl = atoi(row[29]) != 0;
-		if(row[30]) strcpy(coind->rpc.cert, row[30]);
+		if(row[29]) coind->rpc.curl = atoi(row[29]) != 0;
+		if(row[30]) coind->rpc.ssl = atoi(row[30]) != 0;
+		if(row[31]) strcpy(coind->rpc.cert, row[31]);
 
-		if(row[31]) strcpy(coind->account, row[31]);
-		if(row[32]) coind->multialgos = atoi(row[32]);
-		if(row[33] && atoi(row[33]) > 0) g_stratum_max_cons = atoi(row[33]);
-		if(row[34] && atol(row[34]) > 0) g_max_shares = atol(row[34]);
+		if(row[32]) strcpy(coind->account, row[32]);
+		if(row[33]) coind->multialgos = atoi(row[33]);
+		if(row[34] && atoi(row[34]) > 0) g_stratum_max_cons = atoi(row[34]);
+		if(row[35] && atol(row[35]) > 0) g_max_shares = atol(row[35]);
 
 		// force the right rpcencoding for DCR
 		if(!strcmp(coind->symbol, "DCR") && strcmp(coind->rpcencoding, "DCR"))

@@ -314,7 +314,7 @@ function BackendBlockFind2($coinid = NULL)
 				$db_block->category = 'stake';
 			}
 
-			// masternode earnings...
+			// masternode/throne earnings...
 			if (empty($db_block->userid) && $transaction['amount'] == 0 && $transaction['generated']) {
 				$db_block->algo = 'MN';
 				$tx = $remote->getrawtransaction($transaction['txid'], 1);
