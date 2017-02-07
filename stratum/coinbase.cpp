@@ -185,7 +185,11 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		json_int_t charity_amount = json_get_int(json_result, "payee_amount");
 		bool charity_payments = json_get_bool(json_result, "masternode_payments");
 		bool charity_enforce = json_get_bool(json_result, "enforce_masternode_payments");
-
+		if(strcmp(coind->symbol, "CRW") == 0)
+		{
+			charity_payments = json_get_bool(json_result, "throne_payments");
+			charity_enforce = json_get_bool(json_result, "enforce_throne_payments");
+		}
 		if(charity_payments && charity_enforce)
 		{
 			available -= charity_amount;
