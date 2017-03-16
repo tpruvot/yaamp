@@ -21,7 +21,7 @@ function BackendPricesUpdate()
 	updateBterMarkets();
 	//updateEmpoexMarkets();
 	updateJubiMarkets();
-	updateLivecoinMarkets();
+	updateLiveCoinMarkets();
 	updateNovaMarkets();
 
 	updateShapeShiftMarkets();
@@ -354,10 +354,10 @@ function updateBittrexMarkets($force = false)
 
 	$list = bittrex_api_query('public/getcurrencies');
 	if(!is_object($list)) return;
+
 	foreach($list->result as $currency)
 	{
-		$market = objSafeVal($currency,'Currency','');
-		if(empty($market) || $market == 'BTC') continue;
+		if($currency->Currency == 'BTC') continue;
 
 		$coin = getdbosql('db_coins', "symbol=:sym", array(':sym'=>$currency->Currency));
 		if(!$coin) continue;
@@ -365,42 +365,10 @@ function updateBittrexMarkets($force = false)
 		$market = getdbosql('db_markets', "coinid={$coin->id} AND name='$exchange'");
 		if(!$market) continue;
 
-		$market->txfee = $currency->TxFee; // withdraw cost, not a percent!
+		$market->txfee = $currency->TxFee;
 		$market->message = $currency->Notice;
+
 		if($market->disabled < 9) $market->disabled = !$currency->IsActive;
-
-		$market->save();
-
-		//if($market->disabled || $market->deleted) continue;
-		//$pair = "BTC-{$coin->symbol}";
-		//$ticker = bittrex_api_query('public/getticker', "&market=$pair");
-		//if(!$ticker || !$ticker->success || !$ticker->result) continue;
-		//$price2 = ($ticker->result->Bid+$ticker->result->Ask)/2;
-		//$market->price2 = AverageIncrement($market->price2, $price2);
-		//$market->price = AverageIncrement($market->price, $ticker->result->Bid);
-		//$market->pricetime = time();
-		//$market->save();
-
-	}
-
-	sleep(1);
-
-	$list = bittrex_api_query('public/getmarketsummaries');
-	if(!is_object($list)) return;
-
-	foreach($list->result as $m)
-	{
-		$a = explode('-', $m->MarketName);
-		if(!isset($a[1])) continue;
-		if($a[0] != 'BTC') continue;
-		$symbol = $a[1];
-		if($symbol == 'BTC') continue;
-
-		$coin = getdbosql('db_coins', "symbol=:sym", array(':sym'=>$symbol));
-		if(!$coin) continue;
-
-		$market = getdbosql('db_markets', "coinid={$coin->id} AND name='$exchange'");
-		if(!$market) continue;
 
 		if (market_get($exchange, $coin->symbol, "disabled")) {
 			$market->disabled = 1;
@@ -408,10 +376,19 @@ function updateBittrexMarkets($force = false)
 			$market->message = 'disabled from settings';
 		}
 
-		$price2 = ($m->Bid + $m->Ask)/2;
+		$market->save();
+		if($market->disabled || $market->deleted) continue;
+
+		$pair = "BTC-{$coin->symbol}";
+
+		$ticker = bittrex_api_query('public/getticker', "&market=$pair");
+		if(!$ticker || !$ticker->success || !$ticker->result) continue;
+
+		$price2 = ($ticker->result->Bid+$ticker->result->Ask)/2;
 		$market->price2 = AverageIncrement($market->price2, $price2);
-		$market->price = AverageIncrement($market->price, $m->Bid);
+		$market->price = AverageIncrement($market->price, $ticker->result->Bid);
 		$market->pricetime = time();
+
 		$market->save();
 
 		// deposit address
@@ -1015,12 +992,13 @@ function updateEmpoexMarkets()
 	}
 }
 
-function updateLivecoinMarkets()
+function updateLiveCoinMarkets()
 {
 	$exchange = 'livecoin';
 	if (exchange_get($exchange, 'disabled')) return;
 
-	$markets = livecoin_api_query('exchange/ticker');
+	$livecoin = new LiveCoinApi;
+	$markets = $livecoin->getTickerInfo();
 	if(!is_array($markets)) return;
 
 	$list = getdbolist('db_markets', "name='$exchange'");
@@ -1064,7 +1042,7 @@ function updateLivecoinMarkets()
 				if(empty($market->deposit_address) && !$last_checked)
 				{
 					sleep(1);
-					$data = livecoin_api_user('payment/get/address', array('currency'=>$coin->symbol));
+					$data = $livecoin->getDepositAddress($coin->symbol);
 					if(!empty($data) && objSafeVal($data, 'wallet', '') != '') {
 						$addr = arraySafeVal($data, 'wallet');
 						if (!empty($addr) && $addr != $market->deposit_address) {
