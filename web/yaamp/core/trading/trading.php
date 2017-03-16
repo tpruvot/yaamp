@@ -1,5 +1,4 @@
 <?php
-
 require_once('poloniex_trading.php');
 require_once('bittrex_trading.php');
 require_once('bleutrade_trading.php');
@@ -32,6 +31,10 @@ function cancelExchangeOrder($order=false)
 			case 'cryptopia':
 				doCryptopiaCancelOrder($order->uuid);
 				break;
+			case 'livecoin':
+				doLiveCoinCancelOrder($order->uuid);
+				break;
+
 		}
 }
 
@@ -90,8 +93,8 @@ function runExchange($exchangeName=false)
 				break;
 
 			case 'livecoin':
-				doLivecoinTrading(true);
-				updateLivecoinMarkets();
+				doLiveCoinTrading(true);
+				updateLiveCoinMarkets();
 				break;
 
 			case 'nova':

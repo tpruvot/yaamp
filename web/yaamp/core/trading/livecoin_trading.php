@@ -1,53 +1,296 @@
 <?php
 
-function doLivecoinTrading($quick=false)
+function doLiveCoinCancelOrder($pair = false, $id = false, $live = false)
 {
-	$exchange = 'livecoin';
-	$updatebalances = true;
+    if (!$pair || !$id) {
+        return;
+    }
 
-	if (exchange_get($exchange, 'disabled')) return;
+    if (!$livecoin) {
+        $livecoin = new LiveCoinApi;
+    }
 
-	$flushall = rand(0, 8) == 0;
-	if($quick) $flushall = false;
+    $res = $livecoin->cancelLimitOrder($pair, $id);
 
-	// https://www.livecoin.net/api/userdata#paymentbalances
-	$balances = livecoin_api_user('payment/balances');
+    if ($res->success == 'true') {
+        $db_order = getdbosql(
+            'db_orders',
+            'market=:market AND uuid=:uuid',
+            array(':market'=>'livecoin', ':uuid'=>$id)
+        );
 
-	if(!$balances || !is_array($balances)) return;
+        if ($db_order) {
+            $db_order->delete();
+        }
+    }
+}
 
-	$savebalance = getdbosql('db_balances', "name='$exchange'");
-	if (is_object($savebalance)) {
-		$savebalance->balance = 0;
-		$savebalance->save();
-	}
+function doLiveCoinTrading($quick = false)
+{
+    $exchange = 'livecoin';
+    $updatebalances = true;
 
-	foreach($balances as $balance)
-	{
-		if($balance->currency == 'BTC' && $balance->type == "available") {
-			if (!is_object($savebalance)) continue;
-			$savebalance->balance = $balance->value;
-			$savebalance->save();
-			continue;
-		}
+    if (exchange_get($exchange, 'disabled')) {
+        return;
+    }
 
-		if ($updatebalances) {
-			// store available balance in market table
-			$coins = getdbolist('db_coins', "symbol=:symbol OR symbol2=:symbol",
-				array(':symbol'=>$balance->currency)
-			);
-			if (empty($coins)) continue;
-			foreach ($coins as $coin) {
-				$market = getdbosql('db_markets', "coinid=:coinid AND name='$exchange'", array(':coinid'=>$coin->id));
-				if (!$market) continue;
-				if ($balance->type == "available")
-					$market->balance = $balance->value;
-				elseif ($balance->type == "trade")
-					$market->ontrade = $balance->value;
-				$market->balancetime = time();
-				$market->save();
-			}
-		}
-	}
+    $livecoin = new LiveCoinApi;
 
-	if (!YAAMP_ALLOW_EXCHANGE) return;
+    $savebalance = getdbosql('db_balances', "name='$exchange'");
+    if (is_object($savebalance)) {
+        $savebalance->balance = 0;
+        $savebalance->save();
+    }
+
+    $balances = $livecoin->getBalances();
+    if (!$balances || !is_array($balances)) {
+        return;
+    }
+
+    foreach ($balances as $balance) {
+        if ($balance->currency == 'BTC' && $balance->type == "available") {
+            if (!is_object($savebalance)) {
+                continue;
+            }
+            $savebalance->balance = $balance->value;
+            $savebalance->save();
+            continue;
+        }
+
+        if ($updatebalances) {
+            // store available balance in market table
+            $coins = getdbolist(
+                'db_coins',
+                'symbol=:symbol OR symbol2=:symbol',
+                array(':symbol'=>$balance->currency)
+            );
+
+            if (empty($coins)) {
+                continue;
+            }
+
+            foreach ($coins as $coin) {
+                $market = getdbosql('db_markets', "coinid=:coinid AND name='$exchange'", array(':coinid'=>$coin->id));
+
+                if (!$market) {
+                    continue;
+                }
+
+                $market->balance = arraySafeVal($balance, 'Available', 0.0);
+                $market->ontrade = arraySafeVal($balance, 'Balance') - $market->balance;
+                $market->balancetime = time();
+                $address = arraySafeVal($balance, 'CryptoAddress');
+                if (!empty($address) && $market->deposit_address != $address) {
+                    debuglog("$exchange: {$coin->symbol} deposit address updated");
+                    $market->deposit_address = $address;
+                }
+                $market->save();
+            }
+        }
+    }
+
+    if (!YAAMP_ALLOW_EXCHANGE) {
+        return;
+    }
+
+    $flushall = rand(0, 8) == 0;
+    if ($quick) {
+        $flushall = false;
+    }
+
+    // upgrade orders
+    $coins = getdbolist('db_coins', "enable=1 AND IFNULL(dontsell,0)=0 AND id IN (SELECT DISTINCT coinid FROM markets WHERE name='livecoin')");
+    foreach ($coins as $coin) {
+        if ($coin->dontsell || $coin->symbol == 'BTC') {
+            continue;
+        }
+
+        $pair = $coin->symbol.'/BTC';
+        sleep(1);
+        $orders = $livecoin->getClientOrders($pair, 'OPEN');
+
+        if (isset($orders->success) || !isset($orders->data)) {
+            continue;
+        }
+
+        foreach ($orders->data as $order) {
+            $uuid = $order['id'];
+            $pair = $order['currencyPair'];
+            sleep(1);
+            $ticker = $livecoin->getTickerInfo($pair);
+
+            if (!$ticker) {
+                continue;
+            }
+
+            if ($order['price'] > $cancel_ask_pct*$ticker->best_ask || $flushall) {
+                sleep(1);
+                doLiveCoinCancelOrder($pair, $uuid, $livecoin);
+            } else {
+                $db_order = getdbosql(
+                    'db_orders',
+                    'market=:market AND uuid=:uuid',
+                    array(':market'=>'livecoin', ':uuid'=>$uuid)
+                );
+
+                if ($db_order) {
+                    continue;
+                }
+
+                $db_order = new db_orders;
+                $db_order->market = 'livecoin';
+                $db_order->coinid = $coin->id;
+                $db_order->amount = $order['quantity'];
+                $db_order->price = $order['price'];
+                $db_order->ask = $ticker['best_ask'];
+                $db_order->bid = $ticker['best_sell'];
+                $db_order->uuid = $uuid;
+                $db_order->created = time();
+                $db_order->save();
+            }
+        }
+        $list = getdbolist('db_orders', "coinid=$coin->id and market='livecoin'");
+        foreach ($list as $db_order) {
+            $found = false;
+            foreach ($orders->data as $order) {
+                $uuid = $order['id'];
+                if ($uuid == $db_order->uuid) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                debuglog("LiveCoin: Deleting order $coin->name $db_order->amount");
+                $db_order->delete();
+            }
+        }
+    }
+    sleep(2);
+
+
+    /* Update balances  and sell */
+    $balances = $livecoin->getBalances();
+    if (!$balances) {
+        return;
+    }
+
+    foreach ($balances as $balance) {
+        if ($balance->type != 'total') {
+            continue;
+        }
+
+        $amount = $balance->value;
+        $symbol = $balance->currency;
+        if (!$amount || $symbol == 'BTC') {
+            continue;
+        }
+
+        $coin = getdbosql('db_coins', "symbol=:symbol", array(':symbol'=>$symbol));
+        if (!$coin || $coin->dontsell) {
+            continue;
+        }
+
+        $market2 = getdbosql('db_markets', "coinid={$coin->id} AND (name='bittrex' OR name='poloniex')");
+        if ($market2) {
+            continue;
+        }
+
+        $market = getdbosql('db_markets', "coinid=$coin->id and name='livecoin'");
+        if ($market) {
+            $market->lasttraded = time();
+            $market->save();
+        }
+
+        if ($amount*$coin->price < $min_btc_trade) {
+            continue;
+        }
+
+        $pair = "$symbol/BTC";
+        $maxprice = 0;
+        $maxamount = 0;
+
+        sleep(1);
+        $orders = $livecoin->getOrderBook($pair);
+
+        if (!empty($orders) && !empty($orders->bids)) {
+            foreach ($orders->bids as $order) {
+                if ($order[0] > $maxprice) {
+                    $maxprice = $order[0];
+                    $maxamount = $order[1];
+                }
+            }
+        }
+
+        if ($amount >= $maxamount && $maxamount*$maxprice > $min_btc_trade) {
+            $sellprice = bitcoinvaluetoa($maxprice);
+            debuglog("LiveCoin: Selling market $pair, $maxamount, $sellprice");
+            sleep(1);
+
+            // This needs to be simplified.
+            // Make sure API methods return a value?
+            $res = $livecoin->sellLimit($pair, $sellprice, $maxamount);
+            if (!$res) {
+                debuglog('LiveCoin: Sell failed');
+            } else {
+                $success = 'false';
+                if (isset($res->success)) {
+                    $success = $res->success;
+                }
+                if ($success == 'false') {
+                    debuglog('LiveCoin: Sell failed');
+                } else {
+                    $amount -= $maxamount;
+                }
+            }
+            sleep(1);
+        }
+
+        sleep(1);
+        $ticker = $livecoin->getTickerInfo($pair);
+        if (!$ticker) {
+            continue;
+        }
+
+        $sellprice = bitcoinvaluetoa($ticker->best_ask);
+
+        sleep(1);
+        $res = $livecoin->sellLimit($pair, $sellprice, $amount);
+
+        if (!($res->success == 'true' && $res->added == 'true')) {
+            continue;
+        }
+
+        $db_order = new db_orders;
+        $db_order->market = 'livecoin';
+        $db_order->coinid = $coin->id;
+        $db_order->amount = $amount;
+        $db_order->price = $sellprice;
+        $db_order->ask = $ticker->best_ask;
+        $db_order->bid = $ticker->best_bid;
+        $db_order->uuid = $res->orderId;
+        $db_order->created = time();
+        $db_order->save();
+    }
+
+    /* Withdrawals */
+    $withdraw_min = exchange_get($exchange, 'withdraw_min_btc', EXCH_AUTO_WITHDRAW);
+    $withdraw_fee = exchange_get($exchange, 'withdraw_fee_btc', 0.0002);
+    if (floatval($withdraw_min) > 0 && $savebalance->balance >= ($withdraw_min + $withdraw_fee)) {
+        $amount = $savebalance->balance - $withdraw_fee;
+        debuglog("$exchange: withdraw $amount BTC to $btcaddr");
+        sleep(1);
+        $res = $livecoin->withdrawCoin($amount, 'BTC', $btcaddr);
+        debuglog("$exchange: withdraw ".json_encode($res));
+        if ($res) {
+            $withdraw = new db_withdraws;
+            $withdraw->market = 'livecoin';
+            $withdraw->address = $btcaddr;
+            $withdraw->amount = $amount;
+            $withdraw->time = time();
+            $withdraw->uuid = $res->id;
+            $withdraw->save();
+            $savebalance->balance = 0;
+            $savebalance->save();
+        }
+    }
 }
