@@ -40,6 +40,9 @@ function doLiveCoinTrading($quick = false)
     if (is_object($savebalance)) {
         $savebalance->balance = 0;
         $savebalance->save();
+    } else {
+	dborun("INSERT INTO balances (name,balance) VALUES ('$exchange',0)");
+        return;
     }
 
     $balances = $livecoin->getBalances();
@@ -166,7 +169,6 @@ function doLiveCoinTrading($quick = false)
         }
     }
     sleep(2);
-
 
     /* Update balances  and sell */
     $balances = $livecoin->getBalances();
