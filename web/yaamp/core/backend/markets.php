@@ -1045,7 +1045,7 @@ function updateLiveCoinMarkets()
 			$market->price = AverageIncrement($market->price, $ticker->best_bid);
 			$market->price2 = AverageIncrement($market->price2, $ticker->best_ask);
 			$market->txfee = 0.2;
-			$market->priority = -1; // not ready for trading
+			$market->priority = 0;
 			$market->pricetime = time();
 
 			if (floatval($ticker->volume) > 0.01)
