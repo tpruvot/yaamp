@@ -228,7 +228,7 @@ function doLiveCoinTrading($quick = false)
 			sleep(1);
 
 			$res = $livecoin->sellLimit($pair, $sellprice, $balance);
-			if (!$res->success == 'true' && $res->added == 'true')) {
+			if (!$res->success == 'true' && $res->added == 'true') {
 				debuglog('LiveCoin: Sell failed');
 				continue;
 			}
