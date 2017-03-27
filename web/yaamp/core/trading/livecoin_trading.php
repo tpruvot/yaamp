@@ -185,7 +185,7 @@ function doLiveCoinTrading($quick = false)
 			continue;
 		}
 
-		$balance = $balance->value;
+		$amount = $balance->value;
 		$symbol = $balance->currency;
 		if (!$balance || $symbol == 'BTC') {
 			continue;
@@ -207,7 +207,7 @@ function doLiveCoinTrading($quick = false)
 			$market->save();
 		}
 
-		if ($balance*$coin->price < $min_btc_trade) {
+		if ($amount*$coin->price < $min_btc_trade) {
 			continue;
 		}
 
@@ -227,7 +227,7 @@ function doLiveCoinTrading($quick = false)
 			debuglog("LiveCoin: Selling market $pair, $sellprice, $sellprice");
 			sleep(1);
 
-			$res = $livecoin->sellLimit($pair, $sellprice, $balance);
+			$res = $livecoin->sellLimit($pair, $sellprice, $amount);
 			if (!$res->success == 'true' && $res->added == 'true') {
 				debuglog('LiveCoin: Sell failed');
 				continue;
@@ -237,7 +237,7 @@ function doLiveCoinTrading($quick = false)
 		$db_order = new db_orders;
 		$db_order->market = 'livecoin';
 		$db_order->coinid = $coin->id;
-		$db_order->amount = $balance;
+		$db_order->amount = $amount;
 		$db_order->price = $sellprice;
 		$db_order->ask = $ticker->best_ask;
 		$db_order->bid = $ticker->best_bid;
