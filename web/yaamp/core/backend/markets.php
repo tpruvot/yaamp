@@ -1068,16 +1068,14 @@ function updateLiveCoinMarkets()
 					$data = $livecoin->getDepositAddress($coin->symbol);
 					if(!empty($data) && objSafeVal($data, 'wallet', '') != '') {
 						$addr = arraySafeVal($data, 'wallet');
-						if (!empty($addr) && $addr != $market->deposit_address) {
-							if (strpos($addr, 'Error') !== false)
-								$market->message = $addr;
-							else {
-								$market->deposit_address = $addr;
-								// delimiter "::" for memo / payment id
-								$market->message = null;
-								debuglog("$exchange: deposit address for {$coin->symbol} updated");
-							}
+						if (!empty($addr)) {
+							$market->deposit_address = $addr;
+							// delimiter "::" for memo / payment id
+							$market->message = null;
+							debuglog("$exchange: deposit address for {$coin->symbol} updated");
 							$market->save();
+						} else {
+							$market->message = $addr;
 						}
 					}
 				}

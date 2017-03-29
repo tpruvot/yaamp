@@ -228,7 +228,7 @@ function doLiveCoinTrading($quick = false)
 			sleep(1);
 
 			$res = $livecoin->sellLimit($pair, $sellprice, $amount);
-			if (!$res->success == 'true' && $res->added == 'true') {
+			if (!($res->success === TRUE && $res->added === TRUE)) {
 				debuglog('LiveCoin: Sell failed');
 				continue;
 			}
@@ -247,15 +247,16 @@ function doLiveCoinTrading($quick = false)
 	}
 
 	/* Withdrawals */
+	$btcaddr = YAAMP_BTCADDRESS;
 	$withdraw_min = exchange_get($exchange, 'withdraw_min_btc', EXCH_AUTO_WITHDRAW);
-	$withdraw_fee = exchange_get($exchange, 'withdraw_fee_btc', 0.0002);
+	$withdraw_fee = exchange_get($exchange, 'withdraw_fee_btc', 0.0005);
 	if (floatval($withdraw_min) > 0 && $savebalance->balance >= ($withdraw_min + $withdraw_fee)) {
 		$amount = $savebalance->balance - $withdraw_fee;
 		debuglog("$exchange: withdraw $amount BTC to $btcaddr");
 		sleep(1);
 		$res = $livecoin->withdrawCoin($amount, 'BTC', $btcaddr);
 		debuglog("$exchange: withdraw ".json_encode($res));
-		if ($res) {
+		if (!$res->fault) {
 			$withdraw = new db_withdraws;
 			$withdraw->market = 'livecoin';
 			$withdraw->address = $btcaddr;
@@ -265,6 +266,8 @@ function doLiveCoinTrading($quick = false)
 			$withdraw->save();
 			$savebalance->balance = 0;
 			$savebalance->save();
+		} else {
+			debuglog("$exchange: Withdraw Failed ".json_encode($res));
 		}
 	}
 }
