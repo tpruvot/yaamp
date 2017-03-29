@@ -1075,7 +1075,7 @@ function updateLiveCoinMarkets()
 							debuglog("$exchange: deposit address for {$coin->symbol} updated");
 							$market->save();
 						} else {
-							$market->message = $addr;
+							debuglog("$exchange: Failed to update deposit address, ".json_decode($data);
 						}
 					}
 				}
