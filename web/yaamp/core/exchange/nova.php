@@ -2,11 +2,9 @@
 
 // markets
 
-function nova_api_query($method, $params='')
+function nova_api_query($method)
 {
 	$uri = "https://novaexchange.com/remote/$method/";
-	if (!empty($params))
-		$uri .= "$params";
 
 	$ch = curl_init($uri);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -17,14 +15,14 @@ function nova_api_query($method, $params='')
 	return $obj;
 }
 
-function nova_api_user($method, $params='')
+function nova_api_user($method, $params=array())
 {
 	require_once('/etc/yiimp/keys.php');
 	if (!defined('EXCH_NOVA_SECRET')) define('EXCH_NOVA_SECRET', '');
 
 	if (empty(EXCH_NOVA_KEY) || empty(EXCH_NOVA_SECRET)) return false;
 
-	$uri = "https://novaexchange.com/remote/private/$method/$params";
+	$uri = "https://novaexchange.com/remote/private/$method/";
 
 	$headers = array(
 		'Content-Type: application/x-www-form-urlencoded',
@@ -33,12 +31,11 @@ function nova_api_user($method, $params='')
 	$mt = explode(' ', microtime());
 	$nonce = $mt[1].substr($mt[0], 2, 6);
 
-	$postdata = array(
-		'apikey'=>EXCH_NOVA_KEY,
-		'apisecret'=>EXCH_NOVA_SECRET,
-		'nonce'=>$nonce,
-	);
-	$postdata = http_build_query($postdata, '', '&');
+	$params['apikey'] = EXCH_NOVA_KEY;
+	$params['apisecret'] = EXCH_NOVA_SECRET;
+	$params['nonce'] = $nonce;
+
+	$postdata = http_build_query($params, '', '&');
 
 	$ch = curl_init($uri);
 	//curl_setopt($ch, CURLOPT_POST, 1);
