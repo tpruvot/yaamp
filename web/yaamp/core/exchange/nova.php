@@ -36,6 +36,8 @@ function nova_api_user($method, $params=array())
 	$params['nonce'] = $nonce;
 
 	$postdata = http_build_query($params, '', '&');
+	// Clear the params array so that we don't accidentaly leak our keys
+	$params = array();
 
 	$ch = curl_init($uri);
 	//curl_setopt($ch, CURLOPT_POST, 1);
