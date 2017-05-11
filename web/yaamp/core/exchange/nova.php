@@ -4,7 +4,7 @@
 
 function nova_api_query($method)
 {
-	$uri = "https://novaexchange.com/remote/$method/";
+	$uri = "https://novaexchange.com/remote/v2/$method/";
 
 	$ch = curl_init($uri);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -22,18 +22,14 @@ function nova_api_user($method, $params=array())
 
 	if (empty(EXCH_NOVA_KEY) || empty(EXCH_NOVA_SECRET)) return false;
 
-	$uri = "https://novaexchange.com/remote/private/$method/";
+	$uri = "https://novaexchange.com/remote/v2/private/$method/?nonce=".time();
 
 	$headers = array(
 		'Content-Type: application/x-www-form-urlencoded',
 	);
 
-	$mt = explode(' ', microtime());
-	$nonce = $mt[1].substr($mt[0], 2, 6);
-
 	$params['apikey'] = EXCH_NOVA_KEY;
-	$params['apisecret'] = EXCH_NOVA_SECRET;
-	$params['nonce'] = $nonce;
+	$params['signature'] = base64_encode(hash_hmac('sha512', $uri, EXCH_NOVA_SECRET, true));
 
 	$postdata = http_build_query($params, '', '&');
 	// Clear the params array so that we don't accidentaly leak our keys

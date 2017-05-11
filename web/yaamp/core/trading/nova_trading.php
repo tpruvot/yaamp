@@ -86,7 +86,7 @@ function doNovaTrading($quick=false)
 			continue;
 		}
 
-		$pair = $coin->symbol.'_BTC';
+		$pair = 'BTC_'.$coin->symbol;
 		sleep(1);
 		$orders = nova_api_user("myopenorders_market/{$pair}");
 

@@ -902,7 +902,7 @@ function updateNovaMarkets()
 			$sqlFilter = "AND base_coin='{$market->base_coin}'";
 		}
 
-		if (market_get($exchange, $coin->symbol, "disabled", $base)) {
+		if (market_get($exchange, $coin->symbol, "disabled", null, $base)) {
 			$market->disabled = 1;
 			$market->deleted = 1;
 			$market->message = 'disabled from settings';
