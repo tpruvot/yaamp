@@ -2,23 +2,23 @@
 
 function doNovaCancelOrder($id=false)
 {
-        if (!$id) {
-                return;
-        }
+	if (!$id) {
+		return;
+	}
 
-        $res = nova_api_user("cancelorder/{$id}");
+	$res = nova_api_user("cancelorder/{$id}");
 
-        if ($res->success === TRUE) {
-                $db_order = getdbosql(
-                        'db_orders',
-                        'market=:market AND uuid=:uuid',
-                        array(':market'=>'nova', ':uuid'=>$id)
-                );
+	if ($res->success === TRUE) {
+		$db_order = getdbosql(
+			'db_orders',
+			'market=:market AND uuid=:uuid',
+			array(':market'=>'nova', ':uuid'=>$id)
+		);
 
-                if ($db_order) {
-                        $db_order->delete();
-                }
-        }
+		if ($db_order) {
+			$db_order->delete();
+		}
+	}
 }
 
 function doNovaTrading($quick=false)
@@ -79,75 +79,75 @@ function doNovaTrading($quick=false)
 	$sell_ask_pct = exchange_get($exchange, 'trade_sell_ask_pct', 1.05);
 	$cancel_ask_pct = exchange_get($exchange, 'trade_cancel_ask_pct', 1.20);
 
-	// upgrade orders
-	$coins = getdbolist('db_coins', "enable=1 AND IFNULL(dontsell,0)=0 AND id IN (SELECT DISTINCT coinid FROM markets WHERE name='{$exchange}')");
-	foreach ($coins as $coin) {
-		if ($coin->dontsell || $coin->symbol == 'BTC') {
+
+	$orders = nova_api_user("myopenorders");
+	if(!$orders || $orders->status != 'success') return;
+
+	foreach ($orders->items as $order) {
+		if($order->ordertype != 'SELL') continue;
+		if($order->tocurrency != 'BTC') continue;
+
+		$uuid = $order->orderid;
+		$pair = $order->market;
+		$symbol = $order->fromcurrency;
+
+		$coin = getdbosql('db_coins', "symbol=:symbol OR symbol2=:symbol", array(':symbol'=>$symbol));
+		if(!$coin || is_array($coin) || $coin->dontsell) continue;
+
+		sleep(1);
+		$ticker = nova_api_query("market/info/{$pair}");
+
+		if (!is_object($ticker) || !$order->price) {
 			continue;
 		}
 
-		$pair = 'BTC_'.$coin->symbol;
-		sleep(1);
-		$orders = nova_api_user("myopenorders_market/{$pair}");
-
-		if (isset($orders->items)) {
-			$order_data = $orders->items;
-		} else {
-			$order_data = array();
-		}
-
-		foreach ($order_data as $order) {
-			$uuid = $order->orderid;
-			$pair = $order->market;
+		if ($order->price > $cancel_ask_pct*$ticker->ask || $flushall) {
 			sleep(1);
-			$ticker = nova_api_query("market/info/{$pair}");
+			doNovaCancelOrder($uuid);
+		} else {
+			$db_order = getdbosql(
+				'db_orders',
+				'market=:market AND uuid=:uuid',
+				array(':market'=>$exchange, ':uuid'=>$uuid)
+			);
 
-			if (!is_object($ticker) || !$order->price) {
+			if ($db_order) {
 				continue;
 			}
 
-			if ($order->price > $cancel_ask_pct*$ticker->ask || $flushall) {
-				sleep(1);
-				doNovaCancelOrder($uuid);
-			} else {
-				$db_order = getdbosql(
-					'db_orders',
-					'market=:market AND uuid=:uuid',
-					array(':market'=>$exchange, ':uuid'=>$uuid)
-				);
-
-				if ($db_order) {
-					continue;
-				}
-
-				$db_order = new db_orders;
-				$db_order->market = $exchange;
-				$db_order->coinid = $coin->id;
-				$db_order->amount = $order->fromamount; //
-				$db_order->price = $order->price;     //
-				$db_order->ask = $ticker->ask;   //
-				$db_order->bid = $ticker->bid;  //
-				$db_order->uuid = $uuid;
-				$db_order->created = time();
-				$db_order->save();
-			}
-		}
-		$list = getdbolist('db_orders', "coinid=$coin->id and market='$exchange'");
-		foreach ($list as $db_order) {
-			$found = false;
-			foreach ($order_data as $order) {
-				$uuid = $order->id;
-				if ($uuid == $db_order->uuid) {
-					$found = true;
-					break;
-				}
-			}
-			if (!$found) {
-				debuglog("Nova: Deleting order $coin->name $db_order->amount");
-				$db_order->delete();
-			}
+			$db_order = new db_orders;
+			$db_order->market = $exchange;
+			$db_order->coinid = $coin->id;
+			$db_order->amount = $order->fromamount;
+			$db_order->price = $order->price;
+			$db_order->ask = $ticker->ask;   //
+			$db_order->bid = $ticker->bid;  //
+			$db_order->uuid = $uuid;
+			$db_order->created = time();
+			$db_order->save();
 		}
 	}
+
+	$list = getdbolist('db_orders', "coinid=$coin->id and market='$exchange'");
+	foreach ($list as $db_order) {
+		$coin = getdbo('db_coins', $db_order->coinid);
+		if(!$coin) continue;
+
+		$found = false;
+		foreach ($orders->items as $order) {
+			if($order->ordertype != 'SELL') continue;
+
+			if ($order->id == $db_order->uuid) {
+				$found = true;
+				break;
+			}
+		}
+		if (!$found) {
+			debuglog("Nova: Deleting order $coin->name $db_order->amount");
+			$db_order->delete();
+		}
+	}
+
 	sleep(2);
 
 	/* Update balances  and sell */
