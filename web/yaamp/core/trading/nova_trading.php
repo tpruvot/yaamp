@@ -95,11 +95,10 @@ function doNovaTrading($quick=false)
 		if(!$coin || is_array($coin) || $coin->dontsell) continue;
 
 		sleep(1);
-		$ticker = nova_api_query("market/info/{$pair}");
+		$res = nova_api_query("market/info/{$pair}");
+		$ticket = $res->markets[0];
 
-		if (!is_object($ticker) || !$order->price) {
-			continue;
-		}
+		if(!(isset($ticker->bid) && isset($ticker->ask)) || !$order->price) continue;
 
 		if ($order->price > $cancel_ask_pct*$ticker->ask || $flushall) {
 			sleep(1);
@@ -184,8 +183,10 @@ function doNovaTrading($quick=false)
 
 		sleep(1);
 
-		$pair = "{$symbol}_BTC";
-		$ticker = nova_api_query("market/info/{$pair}");
+		$pair = "BTC_{$symbol}";
+		$info = nova_api_query("market/info/{$pair}");
+		$ticker = $info->markets[0];
+
 		if(!(isset($ticker->bid) && isset($ticker->ask))) continue;
 		if($coin->sellonbid)
 			$sellprice = bitcoinvaluetoa($ticker->bid);
@@ -196,23 +197,23 @@ function doNovaTrading($quick=false)
 			debuglog("Nova: Selling market $pair, $amount, $sellprice");
 			sleep(1);
 
-			$res = nova_api_user("trade/{$pair}", array("tradetype=SELL", "tradeprice={$sellprice}", "tradeamount={$amount}", "tradebase=1"));
-			if (!$res->status == 'success') {
+			$res = nova_api_user("trade/{$pair}", array("tradetype" => "SELL", "tradeprice" => $sellprice, "tradeamount" => $amount, "tradebase" => 0));
+			if (!($res->status == 'success')) {
 				debuglog('Nova: Sell failed');
 				continue;
 			}
-		}
 
-		$db_order = new db_orders;
-		$db_order->market = $exchange;
-		$db_order->coinid = $coin->id;
-		$db_order->amount = $amount;
-		$db_order->price = $sellprice;
-		$db_order->ask = $ticker->ask;
-		$db_order->bid = $ticker->bid;
-		$db_order->uuid = $res->tradeitems[0]->orderid;
-		$db_order->created = time();
-		$db_order->save();
+			$db_order = new db_orders;
+			$db_order->market = $exchange;
+			$db_order->coinid = $coin->id;
+			$db_order->amount = $amount;
+			$db_order->price = $sellprice;
+			$db_order->ask = $ticker->ask;
+			$db_order->bid = $ticker->bid;
+			$db_order->uuid = $res->tradeitems[0]->orderid;
+			$db_order->created = time();
+			$db_order->save();
+		}
 	}
 
 	/* Withdrawals */
@@ -223,7 +224,7 @@ function doNovaTrading($quick=false)
 		$amount = $savebalance->balance - $withdraw_fee;
 		debuglog("$exchange: withdraw $amount BTC to $btcaddr");
 		sleep(1);
-		$res = nova_api_user("withdraw/BTC", array("currency=BTC", "amount={$amount}", "address={$btcaddr}"));
+		$res = nova_api_user("withdraw/BTC", array("currency" => "BTC", "amount" => $amount, "address" => $btcaddr));
 		debuglog("$exchange: withdraw ".json_encode($res));
 		if ($res->status == 'success') {
 			$withdraw = new db_withdraws;
