@@ -96,7 +96,7 @@ function doNovaTrading($quick=false)
 
 		sleep(1);
 		$res = nova_api_query("market/info/{$pair}");
-		if (!is_object($res) || empty($res->market)) continue;
+		if (!is_object($res) || empty($res->markets)) continue;
 		$ticker = $res->markets[0];
 
 		if(!(isset($ticker->bid) && isset($ticker->ask)) || !$order->price) continue;
@@ -137,7 +137,7 @@ function doNovaTrading($quick=false)
 		foreach ($orders->items as $order) {
 			if($order->ordertype != 'SELL') continue;
 
-			if ($order->id == $db_order->uuid) {
+			if ($order->orderid == $db_order->uuid) {
 				$found = true;
 				break;
 			}
@@ -186,7 +186,7 @@ function doNovaTrading($quick=false)
 
 		$pair = "BTC_{$symbol}";
 		$info = nova_api_query("market/info/{$pair}");
-		if (!is_object($res) || empty($res->market)) continue;
+		if (!is_object($info) || empty($info->markets)) continue;
 		$ticker = $info->markets[0];
 
 		if(!(isset($ticker->bid) && isset($ticker->ask))) continue;
