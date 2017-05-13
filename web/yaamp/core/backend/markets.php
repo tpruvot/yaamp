@@ -883,17 +883,20 @@ function updateNovaMarkets()
 		$coin = getdbo('db_coins', $market->coinid);
 		if(!$coin) continue;
 
+		$symbol = $coin->symbol;
+		if (!empty($coin->symbol2)) $symbol = $coin->symbol2;
+
 		$base = 'BTC';
-		$pair = $base.'_'.strtoupper($coin->symbol);
+		$pair = $base.'_'.strtoupper($symbol);
 
 		$sqlFilter = '';
 		if (!empty($market->base_coin)) {
 			$base = $market->base_coin;
-			$pair = strtoupper($market->base_coin.'_'.$coin->symbol);
+			$pair = strtoupper($market->base_coin.'_'.$symbol);
 			$sqlFilter = "AND base_coin='{$market->base_coin}'";
 		}
 
-		if (market_get($exchange, $coin->symbol, "disabled", null, $base)) {
+		if (market_get($exchange, $symbol, "disabled", null, $base)) {
 			$market->disabled = 1;
 			$market->message = 'disabled from settings';
 			$market->save();
@@ -928,24 +931,24 @@ function updateNovaMarkets()
 
 		if(!empty(EXCH_NOVA_KEY))
 		{
-			$last_checked = cache()->get($exchange.'-deposit_address-check-'.$coin->symbol);
+			$last_checked = cache()->get($exchange.'-deposit_address-check-'.$symbol);
 			if(empty($market->deposit_address) && !$last_checked)
 			{
 				sleep(1);
-				$res = nova_api_user('getdepositaddress/'.$coin->symbol);
+				$res = nova_api_user('getdepositaddress/'.$symbol);
 				if($res->status == 'success') {
 					$addr = arraySafeVal($res, 'address');
 					if (!empty($addr)) {
 						$market->deposit_address = $addr;
 						// delimiter "::" for memo / payment id
 						$market->message = null;
-						debuglog("$exchange: deposit address for {$coin->symbol} updated");
+						debuglog("$exchange: deposit address for {$symbol} updated");
 						$market->save();
 					} else {
 						debuglog("$exchange: Failed to update deposit address, ".json_encode($res));
 					}
 				}
-				cache()->set($exchange.'-deposit_address-check-'.$coin->symbol, time(), 24*3600);
+				cache()->set($exchange.'-deposit_address-check-'.$symbol, time(), 24*3600);
 			}
 		}
 	}

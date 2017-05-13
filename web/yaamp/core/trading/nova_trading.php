@@ -96,7 +96,8 @@ function doNovaTrading($quick=false)
 
 		sleep(1);
 		$res = nova_api_query("market/info/{$pair}");
-		$ticket = $res->markets[0];
+		if (!is_object($res) || empty($res->market)) continue;
+		$ticker = $res->markets[0];
 
 		if(!(isset($ticker->bid) && isset($ticker->ask)) || !$order->price) continue;
 
@@ -185,6 +186,7 @@ function doNovaTrading($quick=false)
 
 		$pair = "BTC_{$symbol}";
 		$info = nova_api_query("market/info/{$pair}");
+		if (!is_object($res) || empty($res->market)) continue;
 		$ticker = $info->markets[0];
 
 		if(!(isset($ticker->bid) && isset($ticker->ask))) continue;
