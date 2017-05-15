@@ -128,7 +128,7 @@ function doNovaTrading($quick=false)
 		}
 	}
 
-	$list = getdbolist('db_orders', "coinid=$coin->id and market='$exchange'");
+	$list = getdbolist('db_orders', "market='$exchange'");
 	foreach ($list as $db_order) {
 		$coin = getdbo('db_coins', $db_order->coinid);
 		if(!$coin) continue;
