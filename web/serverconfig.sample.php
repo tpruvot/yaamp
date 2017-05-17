@@ -84,3 +84,7 @@ $configAlgoNormCoef = array(
 //	'x11' => 5.0,
 );
 
+// Per 'user' fee override
+$configUserFees = array(
+//	'127.0.0.1' => 0.1,
+);
