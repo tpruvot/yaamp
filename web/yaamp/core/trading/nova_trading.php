@@ -8,7 +8,7 @@ function doNovaCancelOrder($id=false)
 
 	$res = nova_api_user("cancelorder/{$id}");
 
-	if ($res->success === TRUE) {
+	if ($res->status == 'ok') {
 		$db_order = getdbosql(
 			'db_orders',
 			'market=:market AND uuid=:uuid',
