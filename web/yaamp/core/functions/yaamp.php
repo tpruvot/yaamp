@@ -235,6 +235,8 @@ function getAlgoPort($algo)
 function yaamp_fee($algo, $user=null)
 {
 	$fee = controller()->memcache->get("yaamp_fee-$algo");
+	if ($user)
+		$fee = controller()->memcache->get("yaamp_fee-$user-$algo");
 	if($fee) return $fee;
 
 	$norm = yaamp_get_algo_norm($algo);
@@ -255,6 +257,7 @@ function yaamp_fee($algo, $user=null)
 	global $configUserFees;
 	if (isset($configUserFees[$user])) {
 		$fee = (float) $configUserFees[$user];
+		controller()->memcache->set("yaamp_fee-$user-$algo", $fee);
 	} else {
 		$fee = YAAMP_FEES_MINING;
 
@@ -263,8 +266,8 @@ function yaamp_fee($algo, $user=null)
 		if (isset($configFixedPoolFees[$algo])) {
 			$fee = (float) $configFixedPoolFees[$algo];
 		}
+		controller()->memcache->set("yaamp_fee-$algo", $fee);
 	}
-	controller()->memcache->set("yaamp_fee-$algo", $fee);
 	return $fee;
 }
 
