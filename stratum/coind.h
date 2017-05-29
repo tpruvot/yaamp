@@ -65,6 +65,7 @@ public:
 	bool usegetwork;
 	bool usememorypool;
 	bool hasmasternodes;
+        bool hasthrones;
 	bool noblocknotify;
 	bool multialgos; // pow_hash field (or mined_hash)
 

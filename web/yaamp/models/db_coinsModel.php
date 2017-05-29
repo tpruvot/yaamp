@@ -49,6 +49,7 @@ class db_coins extends CActiveRecord
 			'serveruser'	=> 'Server user',
 			'hassubmitblock'=> 'Has submitblock',
 			'hasmasternodes'=> 'Masternodes',
+                        'hasthrones'    => 'Thrones',
 			'market'	=> 'Preferred market',
 			'rpcencoding'	=> 'RPC Type',
 			'specifications'=> 'Notes'

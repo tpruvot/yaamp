@@ -317,8 +317,30 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		else
 			strcat(templ->coinb2, "01");
 	}
+	else if(coind->hasthrones)
+        {
+                char charity_payee[256] = { 0 };
+                const char *payee = json_get_string(json_result, "payee");
+                if (payee) snprintf(charity_payee, 255, "%s", payee);
 
-	else
+                json_int_t charity_amount = json_get_int(json_result, "payee_amount");
+                bool charity_payments = json_get_bool(json_result, "throne_payments");
+                bool charity_enforce = json_get_bool(json_result, "enforce_throne_payments");
+
+                if(charity_payments && charity_enforce)
+                {
+                        available -= charity_amount;
+
+                        char script_payee[1024];
+                        base58_decode(charity_payee, script_payee);
+
+                        strcat(templ->coinb2, "02");
+                        job_pack_tx(coind, templ->coinb2, charity_amount, script_payee);
+                }
+                else
+                        strcat(templ->coinb2, "01");
+        }
+        else
 		strcat(templ->coinb2, "01");
 
 	job_pack_tx(coind, templ->coinb2, available, NULL);

@@ -219,6 +219,12 @@ echo CUFHtml::activeCheckBox($coin, 'hasmasternodes');
 echo '<p class="formHint2">Require "payee" and "payee_amount" fields in getblocktemplate (DASH)</p>';
 echo CUFHtml::closeCtrlHolder();
 
+echo CUFHtml::openActiveCtrlHolder($coin, 'hasthrones');
+echo CUFHtml::activeLabelEx($coin, 'hasthrones');
+echo CUFHtml::activeCheckBox($coin, 'hasthrones');
+echo '<p class="formHint2">Require "payee" and "payee_amount" fields in getblocktemplate (CRW)</p>';
+echo CUFHtml::closeCtrlHolder();
+
 echo "</div>";
 
 //////////////////////////////////////////////////////////////////////////////////////////
