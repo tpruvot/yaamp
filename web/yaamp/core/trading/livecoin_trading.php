@@ -101,6 +101,7 @@ function doLiveCoinTrading($quick = false)
 	if ($quick) {
 		$flushall = false;
 	}
+        $min_btc_trade = exchange_get($exchange, 'trade_min_btc', 0.0001);
 
 	$min_btc_trade = exchange_get($exchange, 'trade_min_btc', 0.0001);
 	$sell_ask_pct = exchange_get($exchange, 'trade_sell_ask_pct', 1.05);
