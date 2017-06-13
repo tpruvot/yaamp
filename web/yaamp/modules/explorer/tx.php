@@ -42,7 +42,6 @@ $coinUrl = $this->createUrl('/explorer', array('id'=>$coin->id));
 
 echo '<tr class="ssrow">';
 
-$url = ;
 echo '<td><span class="monospace">'.CHtml::link($tx['txid'], $coinUrl.'txid='.$tx['txid']).'</a></span></td>';
 echo '<td>'.$valuetx.'</td>';
 
