@@ -10,11 +10,8 @@ class SiteController extends CommonController
 	{
 		$client_ip = $_SERVER['REMOTE_ADDR'];
 
-		$valid = false;
-		if (strpos(YAAMP_ADMIN_IP, ','))
-			$valid = in_array($client_ip, explode(',',YAAMP_ADMIN_IP), true);
-		else
-			$valid = ($client_ip === YAAMP_ADMIN_IP);
+		$valid = false; // Just in case?
+		$valid = isAdminIP($client_ip);
 
 		if ($valid)
 			debuglog("admin connect from $client_ip");

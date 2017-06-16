@@ -105,7 +105,7 @@ function showPageHeader()
 
 	if(controller()->admin)
 	{
-		if (strpos(YAAMP_ADMIN_IP, $_SERVER['REMOTE_ADDR']) === false)
+		if (isAdminIP($_SERVER['REMOTE_ADDR']) === false)
 			debuglog("admin {$_SERVER['REMOTE_ADDR']}");
 
 		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
