@@ -68,16 +68,15 @@ function ipCIDRCheck ($IP, $CIDR) {
 
 	$ip_ip_net = $ip_ip & $ip_mask;
 
-	return ($ip_ip_net == $ip_net);
+	return ($ip_ip_net === $ip_net);
 }
 
 function isAdminIP ($ip) {
 	foreach(explode(",", YAAMP_ADMIN_IP) as $range) {
 		if(strpos($range, '/')) {
-			if(ipCIDRCheck($ip, $range)) return true;
-		}
-		else {
-			if(strpos($range, $ip)) return true;
+			if(ipCIDRCheck($ip, $range) === true) return true;
+		} else {
+			if ($range === $ip) return true;
 		}
 	}
 	return false;
