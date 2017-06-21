@@ -51,6 +51,7 @@ echo <<<end
 <script type="text/javascript">
 
 var last_graph_update, graph_need_update, graph_timeout = 0;
+var price_graph, balance_graph = '';
 
 function graph_refresh()
 {
@@ -81,8 +82,14 @@ function graph_resized()
 
 function graph_price_data(data)
 {
+	if (price_graph)
+	{
+		$('#graph_history_price *').unbind();
+		price_graph.destroy();
+	}
+
 	var t = $.parseJSON(data);
-	var graph = $.jqplot('graph_history_price', t.data,
+	price_graph = $.jqplot('graph_history_price', t.data,
 	{
 		title: '<b>Price history</b>',
 		animate: false, animateReplot: false,
@@ -138,9 +145,9 @@ function graph_price_data(data)
 		}
 	});
 	// limit visible axis ticks
-	var x2ticks = graph.axes.x2axis._ticks;
-	graph.axes.xaxis.ticks = [];
-	var tickInterval = graph.grid._width > 0 ? Math.round(90*300 / graph.grid._width, 0) : 1;
+	var x2ticks = price_graph.axes.x2axis._ticks;
+	price_graph.axes.xaxis.ticks = [];
+	var tickInterval = price_graph.grid._width > 0 ? Math.round(90*300 / price_graph.grid._width, 0) : 1;
 	var label, day, lastDay;
 	for (var i=0; i < x2ticks.length; i++) {
 		if (i % tickInterval == 0) {
@@ -149,18 +156,24 @@ function graph_price_data(data)
 			if (x2ticks.length > 500 && day == lastDay) label = '';
 			else label = (day == lastDay) ? $.jsDate.strftime(dt, '%H:%M') : day;
 			lastDay = day;
-			graph.axes.xaxis.ticks.push([x2ticks[i].value, label]);
+			price_graph.axes.xaxis.ticks.push([x2ticks[i].value, label]);
 		}
 	}
-	graph.axes.xaxis.ticks.push([x2ticks[x2ticks.length-1].value, '']);
-	graph.replot(false);
-	graph = x2ticks = null;
+	price_graph.axes.xaxis.ticks.push([x2ticks[x2ticks.length-1].value, '']);
+	price_graph.replot(false);
+	x2ticks = null;
 }
 
 function graph_balance_data(data)
 {
+	if (balance_graph)
+	{
+		$('#graph_history_balance *').unbind();
+		balance_graph.destroy();
+	}
+
 	var t = $.parseJSON(data);
-	var graph = $.jqplot('graph_history_balance', t.data,
+	balance_graph = $.jqplot('graph_history_balance', t.data,
 	{
 		title: '<b>Balances</b>',
 		animate: false, animateReplot: false,
@@ -219,9 +232,9 @@ function graph_balance_data(data)
 		}
 	});
 	// limit visible axis ticks
-	var x2ticks = graph.axes.x2axis._ticks;
-	graph.axes.xaxis.ticks = [];
-	var tickInterval = graph.grid._width > 0 ? Math.round(90*300 / graph.grid._width, 0) : 1;
+	var x2ticks = balance_graph.axes.x2axis._ticks;
+	balance_graph.axes.xaxis.ticks = [];
+	var tickInterval = balance_graph.grid._width > 0 ? Math.round(90*300 / balance_graph.grid._width, 0) : 1;
 	var label, day, lastDay;
 	for (var i=0; i < x2ticks.length; i++) {
 		if (i % tickInterval == 0) {
@@ -230,12 +243,12 @@ function graph_balance_data(data)
 			if (x2ticks.length > 500 && day == lastDay) label = '';
 			else label = (day == lastDay) ? $.jsDate.strftime(dt, '%H:%M') : day;
 			lastDay = day;
-			graph.axes.xaxis.ticks.push([x2ticks[i].value, label]);
+			balance_graph.axes.xaxis.ticks.push([x2ticks[i].value, label]);
 		}
 	}
-	graph.axes.xaxis.ticks.push([x2ticks[x2ticks.length-1].value, '']);
-	graph.replot(false);
-	graph = x2ticks = null;
+	balance_graph.axes.xaxis.ticks.push([x2ticks[x2ticks.length-1].value, '']);
+	balance_graph.replot(false);
+	x2ticks = null;
 }
 </script>
 end;
