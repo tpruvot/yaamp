@@ -11,6 +11,24 @@ void db_check_user_input(char* input)
 	}
 }
 
+bool db_check_symbol(YAAMP_DB *db, char *symbol)
+{
+	db_query(db, "SELECT symbol,symbol2 FROM coins WHERE symbol='%s' OR symbol2='%s'", symbol, symbol);
+
+	MYSQL_RES *result = mysql_store_result(&db->mysql);
+	if(!result) return false;
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if(!row) return false;
+
+	if(row[0]) {
+		strncpy(symbol, row[0], sizeof(symbol));
+		return true;
+	}
+
+	return false;
+}
+
 void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 {
 	db_clean_string(db, client->username);
@@ -53,6 +71,11 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 			debuglog("Invalid user address '%s'\n", client->username);
 			return;
 		}
+	}
+
+	if(!db_check_symbol(db, symbol)) {
+		debuglog("Invalid coin symbol '%s' from '%s'\n", symbol, client->username);
+		return;
 	}
 
 	// debuglog("user %s %s gives %d %\n", client->username, symbol, gift);
