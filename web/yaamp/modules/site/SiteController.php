@@ -337,6 +337,8 @@ class SiteController extends CommonController
 		$rule->notifycmd = $_POST['notifycmd'];
 		$rule->description = $_POST['description'];
 		$rule->enabled = 1;
+		$rule->lastchecked = 1;
+		$rule->lasttriggered = 1;
 
 		$words = explode(' ', $rule->conditiontype);
 		if (count($words) < 2) {
