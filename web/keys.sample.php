@@ -8,6 +8,7 @@ define('YIIMP_MYSQLDUMP_PASS', '<my_mysql_password>');
 define('EXCH_BITTREX_SECRET', '<my_bittrex_api_secret_key>');
 define('EXCH_BITSTAMP_SECRET','');
 define('EXCH_BLEUTRADE_SECRET', '');
+define('EXCH_BTER_SECRET', '');
 define('EXCH_CCEX_SECRET', '');
 define('EXCH_COINMARKETS_PASS', '');
 define('EXCH_CRYPTOPIA_SECRET', '');
