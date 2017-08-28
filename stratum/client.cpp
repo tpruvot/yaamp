@@ -126,15 +126,55 @@ bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+bool client_user_address_already_validated(YAAMP_CLIENT *client)
+{
+	for(CLI li = g_list_client.first; li; li = li->next)
+	{
+		YAAMP_CLIENT *existingclient = (YAAMP_CLIENT *)li->data;
+		if (!strcmp(client->username, existingclient->username))
+		{
+			return true;
+		}		
+	}
+	return false;
+}
+
+/*
+ * Check if the clients username is already in the database
+ */
+bool client_validate_user_address_db(YAAMP_CLIENT *client)
+{
+	bool ret_val = false;
+	if (!g_db) return false;
+
+	db_query(g_db, "select exists (select * from accounts where username='%s');", client->username);
+
+	MYSQL_RES *result = mysql_store_result((st_mysql*)&g_db->mysql);
+	if(!result) return false;
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row)
+		ret_val = !strcmp(row[0], "1");
+
+	mysql_free_result(result);
+
+	return ret_val;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 bool client_validate_user_address(YAAMP_CLIENT *client)
 {
+	bool isvalid;
 	if (!client->coinid) {
 		for(CLI li = g_list_coind.first; li; li = li->next) {
 			YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
 			// debuglog("user %s testing on coin %s ...\n", client->username, coind->symbol);
 			if(!coind_can_mine(coind)) continue;
 			if(strlen(g_current_algo->name) && strcmp(g_current_algo->name, coind->algo)) continue;
-			if(coind_validate_user_address(coind, client->username)) {
+			isvalid = client_user_address_already_validated(client);
+			if (!isvalid) isvalid = client_validate_user_address_db(client);
+			if (!isvalid) isvalid = coind_validate_user_address(coind, client->username);
+			if(isvalid) {
 				debuglog("new user %s for coin %s\n", client->username, coind->symbol);
 				client->coinid = coind->id;
 				// update the db now to prevent addresses conflicts
@@ -165,7 +205,9 @@ bool client_validate_user_address(YAAMP_CLIENT *client)
 		}
 	}
 
-	bool isvalid = coind_validate_user_address(coind, client->username);
+	isvalid = client_user_address_already_validated(client);
+	if (!isvalid) isvalid = client_validate_user_address_db(client);
+	if (!isvalid) isvalid = coind_validate_user_address(coind, client->username);
 	if (isvalid) {
 		client->coinid = coind->id;
 	} else {
