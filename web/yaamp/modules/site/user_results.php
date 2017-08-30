@@ -72,9 +72,9 @@ foreach($users as $user)
 	$interval = yaamp_hashrate_step(); // 300 seconds
 	$delay = time()-$interval;
 
-	$user_rate = dboscalar("SELECT (sum(difficulty) * $target / $interval / 1000) FROM shares WHERE valid AND time>$delay AND userid=".$user->id);
+ 	$user_rate = dboscalar("SELECT (sum(difficulty) * $target / $interval / 1000) FROM shares WHERE valid AND time>$delay AND userid=".$user->id);
 	$user_bad = yaamp_user_rate_bad($user->id);// dboscalar("SELECT (count(id) * $target / $interval / 1000) FROM shares WHERE valid=0 AND time>$delay AND userid=".$user->id);
-	$pct_bad = $user_rate? round($user_bad*100/$user_rate, 3): 0;
+	$pct_bad = dboscalar("SELECT IF (count(valid)>0,(1-avg(valid)),0) FROM shares WHERE time>$delay AND userid=".$user->id) * 100;
 
 	$balance = bitcoinvaluetoa($user->balance);
 	$paid = dboscalar("SELECT sum(amount) FROM payouts WHERE account_id=".$user->id);

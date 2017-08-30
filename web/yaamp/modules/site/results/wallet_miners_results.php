@@ -28,11 +28,9 @@ foreach(yaamp_get_algos() as $algo)
 {
 	if (!YAAMP_ALLOW_EXCHANGE && isset($coin) && $coin->algo != $algo) continue;
 
-	$user_rate1 = yaamp_user_rate($userid, $algo);
-	$user_rate1_bad = yaamp_user_rate_bad($userid, $algo);
-
-	$percent_bad = ($user_rate1 + $user_rate1_bad)? $user_rate1_bad * 100 / ($user_rate1 + $user_rate1_bad): 0;
-	$percent_bad = $percent_bad? round($percent_bad, 1).'%': '';
+ 	$user_rate1 = yaamp_user_rate($userid, $algo);
+	$percent_bad = yaamp_user_percentage_bad($userid, $algo)*100;
+	$percent_bad = $percent_bad? round(($percent_bad), 1).'%': '';
 
 	$user_rate1 = $user_rate1? Itoa2($user_rate1).'h/s': '-';
 	$minercount = getdbocount('db_workers', "userid=$userid AND algo=:algo", array(':algo'=>$algo));
@@ -94,10 +92,8 @@ if(count($workers))
 	{
 		$user_rate1 = yaamp_worker_rate($worker->id, $worker->algo);
 		$user_rate1_bad = yaamp_worker_rate_bad($worker->id, $worker->algo);
-		$user_rejects = yaamp_worker_shares_bad($worker->id, $worker->algo);
-		if (!$user_rejects) $user_rejects = '';
-
-		$percent = ($user_rate1 + $user_rate1_bad)? $user_rate1_bad * 100 / ($user_rate1 + $user_rate1_bad): 0;
+ 
+		$percent = yaamp_worker_percentage_bad($worker->id, $worker->algo) * 100;
 		$percent = $percent? round($percent, 2).'%': '';
 
 		$user_rate1 = $user_rate1? Itoa2($user_rate1).'h/s': '';
@@ -115,7 +111,7 @@ if(count($workers))
 		echo '<td align="right">'.$worker->difficulty.'</td>';
 		echo '<td align="right">'.$subscribe.'</td>';
 		echo '<td align="right">'.$user_rate1.'</td>';
-		echo '<td align="center" title="'.$percent.'">'.$user_rejects.'</td>';
+		echo '<td align="center" title="'.$percent.'">'.$percent.'</td>';
 		echo '</tr>';
 	}
 

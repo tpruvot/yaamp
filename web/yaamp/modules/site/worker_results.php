@@ -68,7 +68,7 @@ foreach($workers as $worker)
 	$percent = 0.0;
 	if ($total_rate) $percent = (100.0 * $user_rate) / $total_rate;
 	$user_bad = yaamp_worker_rate_bad($worker->id);
-	$pct_bad = ($user_rate+$user_bad)? round($user_bad*100/($user_rate+$user_bad), 3): 0;
+	$pct_bad = yaamp_worker_percentage_bad($worker->id) * 100;
 	$user_rate_h = $user_rate ? Itoa2($user_rate).'H' : '-';
 
 	$name = $worker->worker;
@@ -107,7 +107,7 @@ foreach($workers as $worker)
 	echo "<td>$shares</td>";
 
 	echo "<td>";
-	if ($user_bad > 0) {
+	if ($pct_bad > 0) {
 		if ($pct_bad > 50)
 			echo "<b> {$pct_bad}%</b>";
 		else

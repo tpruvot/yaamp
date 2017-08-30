@@ -419,6 +419,21 @@ function yaamp_user_rate_bad($userid, $algo=null)
 	return $rate;
 }
 
+function yaamp_user_percentage_bad($userid, $algo=null)
+{
+	if(!$algo) $algo = user()->getState('yaamp-algo');
+
+	$target = yaamp_hashrate_constant($algo);
+	$interval = yaamp_hashrate_step();
+	$delay = time()-$interval;
+
+	$percent = controller()->memcache->get_database_scalar("yaamp_user_percent_bad-$userid-$algo",
+		"SELECT IF(count(valid)>0, (1-avg(valid)), 0) FROM shares WHERE time>$delay AND userid=$userid AND algo=:algo", array(':algo'=>$algo));
+
+	return $percent;
+}
+
+
 function yaamp_worker_rate($workerid, $algo=null)
 {
 	if(!$algo) $algo = user()->getState('yaamp-algo');
@@ -449,6 +464,21 @@ function yaamp_worker_rate_bad($workerid, $algo=null)
 
 	return empty($rate)? 0: $rate;
 }
+
+function yaamp_worker_percentage_bad($workerid, $algo=null)
+{
+	if(!$algo) $algo = user()->getState('yaamp-algo');
+
+	$target = yaamp_hashrate_constant($algo);
+	$interval = yaamp_hashrate_step();
+	$delay = time()-$interval;
+
+	$percent = controller()->memcache->get_database_scalar("yaamp_worker_percent_bad-$workerid-$algo",
+		"SELECT IF(count(valid)>0, (1-avg(valid)), 0) FROM shares WHERE time>$delay AND workerid=".$workerid);
+
+	return $percent;
+}
+
 
 function yaamp_worker_shares_bad($workerid, $algo=null)
 {
