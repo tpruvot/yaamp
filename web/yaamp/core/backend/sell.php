@@ -52,8 +52,14 @@ function sellCoinToExchange($coin)
 	$reserved2 = dboscalar("select sum(amount*price) from earnings
 		where status!=2 and userid in (select id from accounts where coinid=$coin->id)");
 
-	$reserved = ($reserved1 + $reserved2) * 10;
-	$amount = $info['balance'] - $info['paytxfee'] - $reserved;
+        $reserved = ($reserved1 + $reserved2) * 10;
+        $amount = $info['balance'] - $info['paytxfee'];
+
+        if ($reserved>$amount){
+            return false;
+	} else {
+            $amount = $info['balance'] - $info['paytxfee'] - $reserved;
+	}
 
 //	if($reserved>0)
 //	{
