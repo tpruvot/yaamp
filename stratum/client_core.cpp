@@ -68,8 +68,12 @@ int client_send_error(YAAMP_CLIENT *client, int error, const char *string)
 		sprintf(buffer3, "\"%s\"", client->id_str);
 	else
 		sprintf(buffer3, "%d", client->id_int);
-
-	return socket_send(client->sock, "{\"id\":%s,\"result\":false,\"error\":[%d,\"%s\",null]}\n", buffer3, error, string);
+        if (strlen(string) < 900) {
+                return socket_send(client->sock, "{\"id\":%s,\"result\":false,\"error\":[%d,\"%s\",null]}\n", buffer3, error, string);
+        }
+        else
+                return socket_send(client->sock, "{\"id\":%s,\"result\":false,\"error\":[%d,\"%s\",null]}\n", buffer3, error, "no ;)")
+;
 }
 
 int client_send_result(YAAMP_CLIENT *client, const char *format, ...)
