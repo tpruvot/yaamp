@@ -209,7 +209,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 			}
 
 			else
-				debuglog("%s %d REJECTED\n", coind_aux->name, coind_aux->height);
+				debuglog("%s %d REJECTED with %s : %s \n", coind_aux->name, coind_aux->height, coind_aux->aux.hash, block_hex);
 		}
 	}
 
@@ -288,9 +288,9 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 
 		else {
 			debuglog("*** REJECTED :( %s block %d %d txs\n", coind->name, templ->height, templ->txcount);
-			rejectlog("REJECTED %s block %d\n", coind->symbol, templ->height);
+			rejectlog("REJECTED %s block %d  - %s\n", coind->symbol, templ->height, block_hex);
 #ifdef HASH_DEBUGLOG_
-			//debuglog("block %s\n", block_hex);
+			debuglog("block %s\n", block_hex);
 			debuglog("--------------------------------------------------------------\n");
 #endif
 		}
@@ -357,8 +357,15 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	memset(ntime, 0, 32);
 	memset(nonce, 0, 32);
 	memset(vote, 0, 8);
-
+	
+	if (!json_params->u.array.values[1]->u.string.ptr || strlen(json_params->u.array.values[1]->u.string.ptr) > 32) {
+		clientlog(client, "bad json, wrong jobid len");
+		client->submit_bad++;
+		return false;
+	}
+	
 	int jobid = htoi(json_params->u.array.values[1]->u.string.ptr);
+	
 	strncpy(extranonce2, json_params->u.array.values[2]->u.string.ptr, 31);
 	strncpy(ntime, json_params->u.array.values[3]->u.string.ptr, 31);
 	strncpy(nonce, json_params->u.array.values[4]->u.string.ptr, 31);
