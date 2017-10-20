@@ -6,7 +6,12 @@ JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
 JavascriptFile('/yaamp/ui/js/auto_refresh.js');
 
-$recents = isset($_COOKIE['wallets'])? unserialize($_COOKIE['wallets']): array();
+$recents = array();
+$raw_recents = isset($_COOKIE['wallets'])? explode("|", $_COOKIE['wallets']): array();
+// make it unique
+foreach($raw_recents as $addr) {
+	$recents[$addr] = $addr;
+}
 
 $address = getparam('address');
 
@@ -17,7 +22,7 @@ if (!empty($drop_address)) {
 		if ($addr == $drop_address) {
 			unset($recents[$k]);
 			if (controller()->admin)
-				setcookie('wallets', serialize($recents), time()+60*60*24*30, '/');
+				setcookie('wallets', implode("|", $recents), time()+60*60*24*30, '/');
 			break;
 		}
 	}
@@ -48,7 +53,7 @@ END;
 $username = $user? $user->username: '';
 
 if(!controller()->admin)
-	setcookie('wallets', serialize($recents), time()+60*60*24*30, '/');
+	setcookie('wallets', implode("|", $recents), time()+60*60*24*30, '/');
 
 echo <<<END
 <div id='resume_update_button' style='color: #444; background-color: #ffd; border: 1px solid #eea;

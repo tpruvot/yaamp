@@ -4,7 +4,7 @@ function round_difficulty($diff)
 {
 	// only keep 8/9 significant numbers
 	$sigdigits = 8;
-	return round($diff, ceil(0 - log10($diff)) + $sigdigits);
+	return round($diff, (int) ceil(0 - log10($diff)) + $sigdigits);
 }
 
 function target_to_diff($target)

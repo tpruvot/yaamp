@@ -246,7 +246,7 @@ function BackendCoinsUpdate()
 			$coin->last_network_found = time();
 		}
 
-		$coin->version = $info['version'];
+		$coin->version = substr($info['version'], 0, 32);
 		$coin->block_height = $info['blocks'];
 
 		if($coin->powend_height > 0 && $coin->block_height > $coin->powend_height) {
@@ -283,14 +283,13 @@ function BackendCoinsUpdate()
 		}
 
 		if($coin->network_hash) {
-			$coin->network_ttf = $coin->difficulty * 0x100000000 / $coin->network_hash;
-
-			// BTC network_hash unit may be wrong... prevent db int(11) overflow
-			if($coin->network_ttf > 9999999999) $coin->network_ttf = 0;
+			$coin->network_ttf = intval($coin->difficulty * 0x100000000 / $coin->network_hash);
+			if($coin->network_ttf > 2147483647) $coin->network_ttf = 2147483647;
 		}
 
 		if(isset($pool_rate[$coin->algo]))
-			$coin->pool_ttf = $coin->difficulty * 0x100000000 / $pool_rate[$coin->algo];
+			$coin->pool_ttf = intval($coin->difficulty * 0x100000000 / $pool_rate[$coin->algo]);
+		if($coin->pool_ttf > 2147483647) $coin->pool_ttf = 2147483647;
 
 		if(strstr($coin->image, 'http'))
 		{

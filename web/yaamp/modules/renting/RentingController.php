@@ -44,10 +44,6 @@ class RentingController extends CommonController
 			return;
 		}
 
-//		$recents = isset($_COOKIE['deposits'])? unserialize($_COOKIE['deposits']): array();
-//		$recents[$renter->address] = $renter->address;
-//		setcookie('deposits', serialize($recents), time()+60*60*24*30);
-
 		user()->setState('yaamp-deposit', $renter->address);
 		$this->redirect("/renting");
 	}

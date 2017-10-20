@@ -358,7 +358,13 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	memset(nonce, 0, 32);
 	memset(vote, 0, 8);
 
+	if (!json_params->u.array.values[1]->u.string.ptr || strlen(json_params->u.array.values[1]->u.string.ptr) > 32) {
+		clientlog(client, "bad json, wrong jobid len");
+		client->submit_bad++;
+		return false;
+	}
 	int jobid = htoi(json_params->u.array.values[1]->u.string.ptr);
+
 	strncpy(extranonce2, json_params->u.array.values[2]->u.string.ptr, 31);
 	strncpy(ntime, json_params->u.array.values[3]->u.string.ptr, 31);
 	strncpy(nonce, json_params->u.array.values[4]->u.string.ptr, 31);
