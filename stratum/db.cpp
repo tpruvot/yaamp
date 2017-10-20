@@ -12,6 +12,7 @@ void db_reconnect(YAAMP_DB *db)
 	mysql_init(&db->mysql);
 	for(int i=0; i<6; i++)
 	{
+		stratumlog("Reconnect to MySQL...\n");
 		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, 0, 0, 0);
 		if(p) break;
 
@@ -70,8 +71,11 @@ void db_query(YAAMP_DB *db, const char *format, ...)
 		res = mysql_errno(&db->mysql);
 
 		stratumlog("SQL ERROR: %d, %s\n", res, mysql_error(&db->mysql));
-		if(res != CR_SERVER_GONE_ERROR && res != CR_SERVER_LOST) exit(1);
-
+		if(res != CR_SERVER_GONE_ERROR && res != CR_SERVER_LOST) {
+			exit(1);
+		} else {
+			stratumlog("SQL ERROR RESULT IS: %s", mysql_error(&db->mysql));
+		}
 		usleep(100*YAAMP_MS);
 		db_reconnect(db);
 	}

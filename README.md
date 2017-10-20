@@ -1,8 +1,9 @@
-#yiimp - yaamp fork
+
+#miner-control - yaamp fork - because tpruvot is a spasti and dont let users report issues, to help each other
 
 Required:
 
-	linux, mysql, php, memcached, a webserver (lighttpd or nginx recommended)
+	linux, mysql, php, memcached, a Webserver 
 
 
 Config for nginx:

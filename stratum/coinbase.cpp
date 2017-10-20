@@ -28,8 +28,8 @@ static void job_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char 
 	else
 		sprintf(data+strlen(data), "1976a914%s88ac", key? key: coind->script_pubkey);
 
-//	debuglog("pack tx %s\n", data+ol);
-//	debuglog("pack tx %lld\n", amount);
+	debuglog("pack tx %s\n", data+ol);
+	debuglog("pack tx %lld\n", amount);
 }
 
 void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
@@ -59,7 +59,7 @@ void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
 	string_be(hashlist[0].c_str(), merkle_hash);
 
 	sprintf(aux_script+strlen(aux_script), "fabe6d6d%s%02x00000000000000", merkle_hash, templ->auxs_size);
-//	debuglog("aux_script is %s\n", aux_script);
+	debuglog("aux_script is %s\n", aux_script);
 }
 
 void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *json_result)
@@ -196,8 +196,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 				coind->charity_amount = charity_amount;
 				coind->reward = (double)available/100000000*coind->reward_mul;
-				//debuglog("XVC coinbase %ld (+%ld incentive to %s)\n",
-				//	(long) available, (long) charity_amount, charity_payee);
+				debuglog("XVC coinbase %ld (+%ld incentive to %s)\n",
+					(long) available, (long) charity_amount, charity_payee);
 				return;
 			}
 		}
@@ -225,7 +225,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 					available -= amount;
 					base58_decode(payee, script_payee);
 					job_pack_tx(coind, script_dests, amount, script_payee);
-					//debuglog("%s superblock %s %u\n", coind->symbol, payee, amount);
+					debuglog("%s superblock %s %u\n", coind->symbol, payee, amount);
 				}
 			}
 		}
@@ -245,7 +245,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		job_pack_tx(coind, templ->coinb2, available, NULL);
 		strcat(templ->coinb2, "00000000"); // locktime
 		coind->reward = (double)available/100000000*coind->reward_mul;
-		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
+		debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
 	
@@ -288,7 +288,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		job_pack_tx(coind, templ->coinb2, available, NULL);
 		strcat(templ->coinb2, "00000000"); // locktime
 		coind->reward = (double)available/100000000*coind->reward_mul;
-		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
+		debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
 
@@ -330,12 +330,9 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	//	strcat(templ->coinb2, "00");
 
 	coind->reward = (double)available/100000000*coind->reward_mul;
-//	debuglog("coinbase %f\n", coind->reward);
+	debuglog("coinbase %f\n", coind->reward);
 
-//	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
-//	debuglog("coinb1 %s\n", templ->coinb1);
-//	debuglog("coinb2 %s\n", templ->coinb2);
+	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
+	debuglog("coinb1 %s\n", templ->coinb1);
+	debuglog("coinb2 %s\n", templ->coinb2);
 }
-
-
-

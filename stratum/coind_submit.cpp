@@ -41,6 +41,7 @@ bool coind_submitblock(YAAMP_COIND *coind, const char *block)
 	if(!params) return false;
 
 	sprintf(params, "[\"%s\"]", block);
+	debuglog("Block Value : %s \n", params);
 	json_value *json = rpc_call(&coind->rpc, "submitblock", params);
 
 	free(params);
@@ -123,8 +124,13 @@ bool coind_submitgetauxblock(YAAMP_COIND *coind, const char *hash, const char *b
 	sprintf(params, "[\"%s\",\"%s\"]", hash, block);
 	json_value *json = rpc_call(&coind->rpc, "getauxblock", params);
 
-	free(params);
-	if(!json) return false;
+	//free(params);
+	if(!json) 
+	{
+		stratumlog("ERROR REJECT WITH getauxblock %s \n", params);
+		free(params);
+		return false;
+	}
 
 	json_value *json_error = json_get_object(json, "error");
 	if(json_error && json_error->type != json_null)
@@ -134,7 +140,9 @@ bool coind_submitgetauxblock(YAAMP_COIND *coind, const char *hash, const char *b
 
 	//	job_reset();
 		json_value_free(json);
-
+		
+		stratumlog("ERROR REJECT WITH getauxblock %s \n", params);
+		free(params);
 		return false;
 	}
 
@@ -142,6 +150,8 @@ bool coind_submitgetauxblock(YAAMP_COIND *coind, const char *hash, const char *b
 	bool b = json_result && json_result->type == json_boolean && json_result->u.boolean;
 
 	json_value_free(json);
+	if (!b) stratumlog("ERROR REJECT WITH getauxblock %s \n", params);
+	free(params);
 	return b;
 }
 
