@@ -26,7 +26,7 @@ YAAMP_CLIENT *client_find_notify_id(const char *notify_id, bool reconnecting)
 {
 	if (!notify_id || !strlen(notify_id))
 		return NULL;
-
+	
 	g_list_client.Enter();
 	for(CLI li = g_list_client.first; li; li = li->next)
 	{
