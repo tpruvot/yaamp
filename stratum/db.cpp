@@ -74,7 +74,7 @@ void db_query(YAAMP_DB *db, const char *format, ...)
 		if(res != CR_SERVER_GONE_ERROR && res != CR_SERVER_LOST) {
 			exit(1);
 		} else {
-			stratumlog("SQL ERROR RESULT IS: %s", res);
+			stratumlog("SQL ERROR RESULT IS: %s", mysql_error(&db->mysql));
 		}
 		usleep(100*YAAMP_MS);
 		db_reconnect(db);
