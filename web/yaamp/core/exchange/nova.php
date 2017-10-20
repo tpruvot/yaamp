@@ -52,7 +52,7 @@ function nova_api_user($method, $params=array())
 	$data = curl_exec($ch);
 	$res = json_decode($data);
 
-	if(!is_object($res) || $res->status != 'success') {
+	if(!is_object($res) || $res->status == 'error') {
 		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		debuglog("nova: $method failed ($status) ".strip_data($data).' '.curl_error($ch));
 	}

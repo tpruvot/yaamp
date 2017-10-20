@@ -37,6 +37,7 @@ class CoinCommand extends CConsoleCommand
 			echo "       yiimp coin <SYM> diff - to check if wallet diff is standard\n";
 			echo "       yiimp coin <SYM> blocktime - estimate the chain blocktime\n";
 			echo "       yiimp coin <SYM> checkblocks - recheck confirmed blocks\n";
+			echo "       yiimp coin <SYM> generated [height] - search blocks not notified, set height to fix\n";
 			echo "       yiimp coin <SYM> get <key>\n";
 			echo "       yiimp coin <SYM> set <key> <value>\n";
 			echo "       yiimp coin <SYM> unset <key>\n";
@@ -57,6 +58,11 @@ class CoinCommand extends CConsoleCommand
 
 		} else if ($args[1] == 'checkblocks') {
 			return $this->checkConfirmedBlocks($symbol);
+
+		} else if ($args[1] == 'generated') {
+			$start_height = arraySafeVal($args, 2, 0);
+			// if start_height is set, it will create missed block(s)
+			return $this->listGeneratedTxs($symbol, $start_height);
 
 		} else if ($args[1] == 'get') {
 			return $this->getCoinSetting($args);
@@ -261,6 +267,60 @@ class CoinCommand extends CConsoleCommand
 			echo count($data)." confirmed blocks verified\n";
 		}
 		return $nbReset;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+
+	public function listGeneratedTxs($symbol,$start_height=0)
+	{
+		$coin = getdbosql('db_coins', 'symbol=:sym', array(':sym'=>$symbol));
+		if (!$coin) return -1;
+
+		$remote = new WalletRPC($coin);
+		$cur_height = $remote->getblockcount();
+		if (!$cur_height) {
+			echo "unable to query current block height!\n";
+			return 0;
+		}
+
+		// note: rpc not compatible with decred
+		$txs = $remote->listtransactions($coin->account, 900);
+		if(!$txs || !is_array($txs)) {
+			echo "no txs found!\n";
+			return 0;
+		}
+
+		$nbOk = $nbMissed = 0;
+		foreach($txs as $tx) {
+			if ($tx['category'] == 'generate' || $tx['category'] == 'immature') {
+				$height = $cur_height - $tx['confirmations'] + 1;
+				if ($tx['confirmations'] < 3) continue; // let the backend detect them...
+				$block = getdbosql('db_blocks', "coin_id={$coin->id} AND height=$height");
+				if ($block)
+					$nbOk++;
+				else {
+					$time = round($tx['time'] / 900) * 900;
+					if ($time < time() - 2 * 24 * 3600) continue;
+					echo strftime("%Y-%m-%d %H:%M", $tx['time'])." $time missed block $height : ".json_encode($tx)."\n";
+					$data = getdbolist('db_hashuser','algo=:algo AND time='.$time, array(':algo'=>$coin->algo));
+					$b = new db_blocks;
+					$b->coin_id = $coin->id;
+					$b->height = $height;
+					$b->time = $tx['time'];
+					$b->category = 'new';
+					$b->algo = $coin->algo;
+					$b->blockhash = $tx['blockhash'];
+					$b->txhash = $tx['txid'];
+					$b->isNewRecord = true;
+					if ($start_height > 0 && $height >= $start_height) {
+						if ($b->save()) echo "Added new block id {$b->id}\n";
+					}
+					$nbMissed++;
+				}
+			}
+		}
+		echo "$nbOk blocks checked, $nbMissed missed by the backend\n";
+		return 0;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////

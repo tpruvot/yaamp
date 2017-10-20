@@ -48,7 +48,7 @@ function BackendCoinPayments($coin)
 
 	if(date("w", time()) == 0 && date("H", time()) > 18) { // sunday evening, minimum reduced
 		$min_payout = max($min_payout/10, $txfee);
-		if($coin->symbol == 'DCR') $min_payout = 0.025;
+		if($coin->symbol == 'DCR') $min_payout = 0.01005;
 	}
 
 	$users = getdbolist('db_accounts', "balance>$min_payout AND coinid={$coin->id} ORDER BY balance DESC");

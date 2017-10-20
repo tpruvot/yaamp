@@ -31,7 +31,7 @@ $table = array(
 
 $res = false;
 if (isset($table[$algo]))
-	$res = fetch_url("https://www.nicehash.com/api?method=orders.get&algo={$table[$algo]}");
+	$res = fetch_url("https://api.nicehash.com/api?method=orders.get&algo={$table[$algo]}");
 
 if(!$res) return;
 

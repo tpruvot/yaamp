@@ -3,7 +3,7 @@
 $apikey = NICEHASH_API_KEY;
 $apiid = NICEHASH_API_ID;
 
-$res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
+$res = fetch_url("https://api.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 $a = json_decode($res);
 $balance = $a->result->balance_confirmed;
 $balance_pending = $a->result->balance_pending;

@@ -60,8 +60,9 @@ bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 
 	if(json_params->u.array.length>1)
 	{
-		char notify_id[1024];
-		strncpy(notify_id, json_params->u.array.values[1]->u.string.ptr, 1023);
+		char notify_id[1024] = { 0 };
+		if (json_params->u.array.values[1]->u.string.ptr)
+			strncpy(notify_id, json_params->u.array.values[1]->u.string.ptr, 1023);
 
 		YAAMP_CLIENT *client1 = client_find_notify_id(notify_id, true);
 		if(client1)
@@ -166,6 +167,24 @@ bool client_validate_user_address_db(YAAMP_CLIENT *client)
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool client_validate_user_address(YAAMP_CLIENT *client)
 {
+	int client_workers = 0;
+	if (client->userid == 0) {
+		client_workers = client_workers_byaddress(client->username);
+	} else {
+		client_workers = client_workers_count(client);
+	}
+
+	// if already logged in this instance, reuse data from other workers (in memory)
+	if (client_workers > 1) {
+		if (client_workers > 100 && (client_workers%100 == 0)) {
+			clientlog(client, "using %d workers", client_workers);
+		}
+		if (client_auth_by_workers(client)) {
+			// client->coinid filled
+			return true;
+		}
+	}
+	
 	bool isvalid;
 	if (!client->coinid) {
 		for(CLI li = g_list_coind.first; li; li = li->next) {
@@ -226,14 +245,16 @@ bool client_validate_user_address(YAAMP_CLIENT *client)
 	
 	if(isvalid) debuglog("User %s is already known for %s\n", client->username, coind->symbol);
 	
-	if (!isvalid)  {
-		isvalid = client_validate_user_address_db(client);
-		if(isvalid) debuglog("user %s validated from Database with %s \n", client->username, coind->symbol);
-	}
 	if (!isvalid) {
 		isvalid = coind_validate_user_address(coind, client->username);
 		if(isvalid) debuglog("user %s is validated from Wallet for %s\n", client->username, coind->symbol);
 	}
+	
+	if (!isvalid)  {
+		isvalid = client_validate_user_address_db(client);
+		if(isvalid) debuglog("user %s validated from Database with %s \n", client->username, coind->symbol);
+	}
+
 	if (isvalid) {
 		client->coinid = coind->id;
 	} else {
@@ -378,6 +399,70 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+int client_workers_count(YAAMP_CLIENT *client)
+{
+	int count = 0;
+	if (!client || client->userid <= 0)
+		return count;
+
+	g_list_client.Enter();
+	for(CLI li = g_list_client.first; li; li = li->next)
+	{
+		YAAMP_CLIENT *cli = (YAAMP_CLIENT *)li->data;
+		if (cli->deleted) continue;
+		if (cli->userid == client->userid) count++;
+	}
+	g_list_client.Leave();
+
+	return count;
+}
+
+int client_workers_byaddress(const char *username)
+{
+	int count = 0;
+	if (!username || !strlen(username))
+		return count;
+
+	g_list_client.Enter();
+	for(CLI li = g_list_client.first; li; li = li->next)
+	{
+		YAAMP_CLIENT *cli = (YAAMP_CLIENT *)li->data;
+		if (cli->deleted) continue;
+		if (strcmp(cli->username, username) == 0) count++;
+	}
+	g_list_client.Leave();
+
+	return count;
+}
+
+bool client_auth_by_workers(YAAMP_CLIENT *client)
+{
+	if (!client || client->userid < 0)
+		return false;
+
+	g_list_client.Enter();
+	for(CLI li = g_list_client.first; li; li = li->next)
+	{
+		YAAMP_CLIENT *cli = (YAAMP_CLIENT *)li->data;
+		if (cli->deleted) continue;
+		if (client->userid) {
+			if(cli->userid == client->userid) {
+				client->coinid = cli->coinid;
+				break;
+			}
+		} else if (strcmp(cli->username, client->username) == 0) {
+			client->coinid = cli->coinid;
+			client->userid = cli->userid;
+			break;
+		}
+	}
+	g_list_client.Leave();
+
+	return (client->coinid > 0 && client->userid > 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
 bool client_ask_stats(YAAMP_CLIENT *client)
 {
 	int id;
@@ -489,6 +574,11 @@ static bool client_store_stats(YAAMP_CLIENT *client, json_value *result)
 void *client_thread(void *p)
 {
 	YAAMP_CLIENT *client = new YAAMP_CLIENT;
+	if(!client) {
+		stratumlog("client_thread OOM");
+		pthread_exit(NULL);
+		return NULL;
+	}
 	memset(client, 0, sizeof(YAAMP_CLIENT));
 
 	client->reconnectable = true;
@@ -502,6 +592,8 @@ void *client_thread(void *p)
 	client->shares_per_minute = YAAMP_SHAREPERSEC;
 	client->last_submit_time = current_timestamp();
 
+	//	usleep(g_list_client.count * 5000);
+	
 	while(!g_exiting)
 	{
 		if(client->submit_bad > 1024)
@@ -570,6 +662,9 @@ void *client_thread(void *p)
 
 		else if(!strcmp(method, "mining.get_transactions"))
 			b = client_send_result(client, "[]");
+		
+		else if(!strcmp(method, "mining.multi_version"))
+			b = client_send_result(client, "false"); // ASICBOOST
 
 		else if(!strcmp(method, "mining.extranonce.subscribe"))
 		{

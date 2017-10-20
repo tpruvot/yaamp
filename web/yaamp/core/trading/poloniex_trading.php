@@ -155,6 +155,7 @@ function doPoloniexTrading()
 
 	// add orders
 
+	if (is_array($balances))
 	foreach($balances as $symbol=>$balance)
 	{
 		if(!$balance || !arraySafeVal($balance,'available')) continue;
