@@ -41,8 +41,8 @@ class CoindbCommand extends CConsoleCommand
 
 			$nbUpdated  = $this->updateCoinsLabels();
 			$nbUpdated += $this->updateCryptopiaLabels();
+			$nbUpdated += $this->updateLiveCoinLabels();
 			$nbUpdated += $this->updateYiimpLabels("yiimp.ccminer.org");
-			$nbUpdated += $this->updateYiimpLabels("zpool.ca");
 			$nbUpdated += $this->updateFromJson();
 
 			echo "total updated: $nbUpdated\n";
@@ -160,7 +160,7 @@ class CoindbCommand extends CConsoleCommand
 			foreach ($dataset as $coin) {
 				if ($coin->name == 'unknown' && isset($json[$coin->symbol])) {
 					$cc = $json[$coin->symbol];
-					if ($cc->Name != $coin->symbol) {
+					if ($cc->Name != $coin->name) {
 						echo "{$coin->symbol}: {$cc->Name}\n";
 						$coin->name = $cc->Name;
 						if (empty($coin->algo))
@@ -171,6 +171,45 @@ class CoindbCommand extends CConsoleCommand
 			}
 			if ($nbUpdated)
 				echo "$nbUpdated coin labels updated from cryptopia\n";
+		}
+		return $nbUpdated;
+	}
+
+	public function updateLiveCoinLabels()
+	{
+		if (exchange_get('livecoin', 'disabled') == true) return 0;
+
+		$coins = new db_coins;
+		$nbUpdated = 0;
+
+		$dataset = $coins->findAll(array(
+			'condition'=>"name='unknown' AND id IN (SELECT M.coinid FROM markets M WHERE M.name='livecoin')",
+		));
+
+		if (!empty($dataset))
+		{
+			//echo count($dataset)." livecoin currencies without labels\n";
+			$labels = array();
+			$data = livecoin_api_query('info/coinInfo');
+			if(objSafeVal($data,'success') !== true || !is_array($data->info)) return;
+
+			foreach ($data->info as $c) {
+				$symbol = objSafeVal($c,'symbol','');
+				$labels[$symbol] = objSafeVal($c,'name','unknown');
+			}
+
+			foreach ($dataset as $coin) {
+				if ($coin->name == 'unknown' && isset($labels[$coin->symbol])) {
+					$label = $labels[$coin->symbol];
+					if ($label != $coin->name) {
+						echo "{$coin->symbol}: {$label}\n";
+						$coin->name = $label;
+						$nbUpdated += $coin->save();
+					}
+				}
+			}
+			if ($nbUpdated)
+				echo "$nbUpdated coin labels updated from livecoin coininfo\n";
 		}
 		return $nbUpdated;
 	}

@@ -169,11 +169,6 @@ function doNovaTrading($quick=false)
 			continue;
 		}
 
-		$market2 = getdbosql('db_markets', "coinid={$coin->id} AND (name='bittrex' OR name='poloniex')");
-		if ($market2) {
-			continue;
-		}
-
 		$market = getdbosql('db_markets', "coinid=$coin->id and name='{$exchange}'");
 		if ($market) {
 			$market->lasttraded = time();

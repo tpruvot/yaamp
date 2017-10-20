@@ -534,8 +534,10 @@ void db_store_stats(YAAMP_DB *db, YAAMP_CLIENT *client, json_value *stats)
 	realmemf = json_int_safe(stats, "curr_memf");
 	plimit = json_int_safe(stats, "plimit");
 	intensity  = json_double_safe(stats, "intensity");
-	throughput = json_double_safe(stats, "throughput");
 	khashes    = json_double_safe(stats, "khashes");
+	throughput = json_double_safe(stats, "throughput");
+	if (throughput < 0.) throughput = 0.;
+	if (khashes < 0. || intensity < 0.) return;
 
 	db_query(db, "INSERT INTO benchmarks("
 		"time, algo, type, device, arch, vendorid, os, driver,"

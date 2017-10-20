@@ -23,7 +23,8 @@ $algoFilter = $algo != 'all' ? ' AND B.algo='.sqlQuote($algo) : '';
 
 $chips = array();
 $in_db = dbolist("SELECT DISTINCT B.idchip as id, B.type, C.chip as name FROM benchmarks B".
-	" LEFT JOIN bench_chips C ON C.id=B.idchip WHERE B.idchip IS NOT NULL $algoFilter AND $sqlFilter GROUP BY B.idchip ORDER BY type DESC, name ASC");
+	" LEFT JOIN bench_chips C ON C.id=B.idchip WHERE B.idchip IS NOT NULL $algoFilter AND $sqlFilter".
+	" GROUP BY B.idchip, B.type ORDER BY B.type DESC, name ASC");
 foreach ($in_db as $row) {
 	$chips[$row['id']] = $row['name'];
 }

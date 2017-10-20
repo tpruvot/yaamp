@@ -85,6 +85,11 @@ class CcexAPI
 		return isset($json['result']) ? $json['result'] : array();
 	}
 
+	public function getMarketSummaries(){
+		$json = $this->jsonQuery($this->api_url.'api_pub.html?a=getmarketsummaries');
+		return isset($json['result']) ? $json['result'] : array();
+	}
+
 	public function getPairs(){
 		$json = $this->jsonQuery($this->api_url.'pairs.json');
 		return isset($json['pairs'])? $json['pairs']: array();

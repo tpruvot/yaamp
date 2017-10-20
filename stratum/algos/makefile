@@ -10,6 +10,7 @@ LDFLAGS=-O2 -lgmp
 
 SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
 	blake.c scrypt.c c11.c x11.c x13.c sha256.c sha256t.c jha.c keccak.c deep.c tribus.c  \
+	hsr14.c sm3.c \
 	x14.c x15.c x17.c nist5.c fresh.c quark.c neoscrypt.c scryptn.c qubit.c skein.c groestl.c \
 	bitcore.c timetravel.c xevan.c bastion.c hmq17.c \
 	skein2.c zr5.c bmw.c luffa.c pentablake.c whirlpool.c whirlpoolx.c blakecoin.c \
@@ -18,7 +19,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
 	m7m.c magimath.cpp velvet.c \
 	argon2a.c ar2/blake2b.c ar2/argon2.c ar2/ref.c ar2/cores.c ar2/ar2-scrypt-jane.c \
 	hive.c pomelo.c \
-	skunk.c sib.c veltor.c gost.c x11evo.c
+	phi.c skunk.c sib.c veltor.c gost.c x11evo.c
 
 OBJECTS=$(SOURCES:%.c=%.o) $(SOURCES:%.cpp=%.o)
 OUTPUT=libalgos.a

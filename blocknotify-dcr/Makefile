@@ -7,6 +7,7 @@ all:
 	rm -rf vendor
 	glide install
 	ln -s ../vendor vendor/src
+	rm -f vendor/src/github.com/decred/dcrrpcclient/wallet.go
 	GOPATH="$(GOPATH):$(ROOT)/vendor" go build
 
 install: all

@@ -23,14 +23,13 @@ class UserCommand extends CConsoleCommand
 		$commands=$runner->commands;
 
 		if (!isset($args[0]) || $args[0] == 'help') {
-
 			echo "YiiMP user command(s)\n";
 			echo "Usage: yiimp user delete <id|address>\n";
+			echo "       yiimp user swap <address> <symbol> - assign symbol\n";
 			echo "       yiimp user purge [days] (default 180)\n";
 			return 1;
 
 		} else if ($args[0] == 'delete') {
-
 			$id = -1; $addr = '';
 			if (strlen($args[1]) < 26)
 				$id = (int) $args[1];
@@ -47,6 +46,14 @@ class UserCommand extends CConsoleCommand
 			$since->sub($inter);
 			$nb =  $this->purgeInactiveUsers($since->getTimestamp());
 			echo "$nb user(s) deleted\n";
+			return 0;
+
+		} else if ($args[0] == 'swap') {
+			if (!isset($args[2]))
+				die("usage: yiimp user swap <address> <symbol> - assign symbol");
+			$addr = $args[1];
+			$symbol = $args[2];
+			$this->swapUserCoin($addr, $symbol);
 			return 0;
 		}
 	}
@@ -104,11 +111,63 @@ class UserCommand extends CConsoleCommand
 
 		foreach ($rows as $user) {
 			if ($user && $user->id)	{
-				echo "$user->username\n";
-				$nbDeleted += $user->deleteWithDeps();
+				$payouts = dboscalar('SELECT SUM(amount) FROM payouts WHERE account_id='.$user->id);
+				$earnings = dboscalar('SELECT SUM(amount) FROM earnings WHERE userid='.$user->id);
+				$workers = dboscalar('SELECT COUNT(*) FROM workers WHERE userid='.$user->id);
+				if ($payouts == 0 && $earnings == 0 && $workers == 0) {
+					echo "$user->username\n";
+					$nbDeleted += $user->deleteWithDeps();
+				}
 			}
 		}
 
 		return $nbDeleted;
+	}
+
+	/**
+	 * Manually assign the right currency symbol to an user (for yiimp mode without exchange)
+	 */
+	public function swapUserCoin($addr, $symbol, $force=false)
+	{
+		$user = getdbosql('db_accounts', 'username=:addr', array(':addr'=>$addr));
+		if (!$user) die("invalid user address\n");
+
+		$coin = getdbosql('db_coins', 'symbol=:sym AND installed AND enable', array(':sym'=>$symbol));
+		if (!$coin) die("invalid symbol\n");
+
+		$user->coinid = $coin->id;
+		if ($user->balance > 0 && !$force)
+			die("Sorry, user has a pending balance of ".bitcoinvaluetoa($user->balance)."!\n");
+
+		$payouts = dboscalar('SELECT SUM(amount) FROM payouts WHERE account_id='.$user->id);
+		if ($payouts > 0) die("Sorry, user already had payouts!\n");
+
+		$algo = dboscalar('SELECT algo FROM workers WHERE userid='.$user->id);
+		if (!empty($algo) && $coin->algo != $algo) {
+			if (!YAAMP_ALLOW_EXCHANGE) die("User is currently mining on $algo stratum!\n");
+			else echo("note: user is currently mining on $algo stratum...\n");
+		}
+
+		$remote = new WalletRPC($coin);
+		$b = $remote->validateaddress($user->username);
+		if(!arraySafeVal($b,'isvalid')) die("Sorry, bad address for this coin!\n");
+
+		$nbUpd = dborun("UPDATE earnings SET status=0 WHERE status=-1 AND coinid=".$coin->id);
+		$blocks = getdbolist('db_blocks', "coin_id=:coinid AND id IN ".
+			"(SELECT blockid FROM earnings WHERE coinid=:coinid AND userid=:userid)",
+			array(':coinid'=>$coin->id, ':userid'=>$user->id)
+		);
+		$nbConf = 0;
+		foreach ($blocks as $b) {
+			if ($b->category == 'generate') {
+				$nbConf += dborun("UPDATE earnings SET status=1, mature_time=:time".
+					" WHERE blockid=:blockid AND userid=:userid AND status<1",
+					array(':time'=>time(), ':blockid'=>$b->id, ':userid'=>$user->id)
+				);
+			}
+		}
+
+		if ($user->save())
+			echo "user coin $symbol assigned, $nbUpd invalid earnings updated, $nbConf confirmed.\n";
 	}
 }

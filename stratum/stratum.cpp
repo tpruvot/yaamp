@@ -107,7 +107,7 @@ YAAMP_ALGO g_algos[] =
 
 	{"timetravel", timetravel_hash, 0x100, 0, 0},
 	{"bitcore", timetravel10_hash, 0x100, 0, 0},
-
+	{"hsr", hsr_hash, 1, 0, 0},
 	{"hmq1725", hmq17_hash, 0x10000, 0, 0},
 
 	{"jha", jha_hash, 0x10000, 0},
@@ -134,6 +134,7 @@ YAAMP_ALGO g_algos[] =
 	{"skein", skein_hash, 1, 0, 0},
 	{"tribus", tribus_hash, 1, 0, 0},
 	{"keccak", keccak256_hash, 0x80, 0, sha256_hash_hex },
+	{"phi", phi_hash, 1, 0, 0},
 	{"skunk", skunk_hash, 1, 0, 0},
 
 	{"bmw", bmw_hash, 1, 0, 0},

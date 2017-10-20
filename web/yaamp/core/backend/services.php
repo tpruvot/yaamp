@@ -24,7 +24,7 @@ function BackendUpdateServices()
 		12=>'quark',
 	);
 
-	$res = fetch_url('https://www.nicehash.com/api?method=stats.global.current');
+	$res = fetch_url('https://api.nicehash.com/api?method=stats.global.current');
 	if(!$res) return;
 
 	$a = json_decode($res);
@@ -91,7 +91,7 @@ function BackendUpdateServices()
 	$deposit = NICEHASH_DEPOSIT;
 	$amount = NICEHASH_DEPOSIT_AMOUNT;
 
-	$res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
+	$res = fetch_url("https://api.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 	debuglog($res);
 
 	$a = json_decode($res);
@@ -111,7 +111,7 @@ function BackendUpdateServices()
 		{
 			if($nicehash->orderid)
 			{
-				$res = fetch_url("https://www.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$nicehash->orderid");
+				$res = fetch_url("https://api.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$nicehash->orderid");
 				debuglog($res);
 
 				$nicehash->orderid = null;
@@ -132,7 +132,7 @@ function BackendUpdateServices()
 		$maxprice = $price*0.9;
 		$cancelprice = $price*1.1;
 
-		$res = fetch_url("https://www.nicehash.com/api?method=orders.get&my&id=$apiid&key=$apikey&location=0&algo=$i");
+		$res = fetch_url("https://api.nicehash.com/api?method=orders.get&my&id=$apiid&key=$apikey&location=0&algo=$i");
 		if(!$res) break;
 
 		$a = json_decode($res);
@@ -141,7 +141,7 @@ function BackendUpdateServices()
 			if($balance < $amount) continue;
 			$port = getAlgoPort($algo);
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.create&id=$apiid&key=$apikey&location=0&algo=$i&amount=$amount&price=$setprice&limit=0&pool_host=yaamp.com&pool_port=$port&pool_user=$deposit&pool_pass=xx");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.create&id=$apiid&key=$apikey&location=0&algo=$i&amount=$amount&price=$setprice&limit=0&pool_host=yaamp.com&pool_port=$port&pool_user=$deposit&pool_pass=xx");
 			debuglog($res);
 
 			$nicehash->last_decrease = time();
@@ -164,7 +164,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* cancel order $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
 			debuglog($res);
 		}
 
@@ -172,7 +172,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* decrease speed $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0.05");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0.05");
 			debuglog($res);
 		}
 
@@ -180,7 +180,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* decrease price $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.price.decrease&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.price.decrease&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
 			debuglog($res);
 
 			$nicehash->last_decrease = time();
@@ -190,7 +190,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* increase price $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.price&id=$apiid&key=$apikey&algo=$i&location=0&order=$order->id&price=$setprice");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.price&id=$apiid&key=$apikey&algo=$i&location=0&order=$order->id&price=$setprice");
 			debuglog($res);
 		}
 
@@ -198,7 +198,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* increase speed $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0");
 			debuglog($res);
 		}
 
@@ -206,7 +206,7 @@ function BackendUpdateServices()
 		{
 			debuglog("* refilling order $order->id");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.refill&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&amount=0.01");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.refill&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&amount=0.01");
 			debuglog($res);
 		}
 

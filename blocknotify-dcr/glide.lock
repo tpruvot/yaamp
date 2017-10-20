@@ -1,5 +1,5 @@
 hash: 4e74a8534cece2f2c1de27bcab0da6efba0e47d533cf8475f588e87851473e81
-updated: 2017-04-28T23:45:31.334486056+02:00
+updated: 2017-09-12T12:14:36.151798958+02:00
 imports:
 - name: github.com/btcsuite/btclog
   version: 73889fb79bd687870312b6e40effcecffbd57d30
@@ -16,20 +16,20 @@ imports:
 - name: github.com/decred/dcrd
   version: 5bed758f85159b2ee76240207ba775c40000a4c1
   subpackages:
-  - wire
-  - chaincfg/chainhash
-  - dcrjson
   - blockchain/stake
-  - chaincfg
-  - chaincfg/chainec
   - blockchain/stake/internal/dbnamespace
   - blockchain/stake/internal/ticketdb
   - blockchain/stake/internal/tickettreap
+  - chaincfg
+  - chaincfg/chainec
+  - chaincfg/chainhash
   - database
-  - txscript
   - dcrec/edwards
   - dcrec/secp256k1
   - dcrec/secp256k1/schnorr
+  - dcrjson
+  - txscript
+  - wire
 - name: github.com/decred/dcrrpcclient
   version: d6edcb0f8f2d01fbf9169f240f73756b41423189
 - name: github.com/decred/dcrutil
@@ -44,5 +44,3 @@ imports:
   version: c7af5bf2638a1164f2eb5467c39c6cffbd13a02e
   subpackages:
   - ripemd160
-devImports: []
-
