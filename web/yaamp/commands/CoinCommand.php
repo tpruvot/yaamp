@@ -296,9 +296,19 @@ class CoinCommand extends CConsoleCommand
 				$height = $cur_height - $tx['confirmations'] + 1;
 				if ($tx['confirmations'] < 3) continue; // let the backend detect them...
 				$block = getdbosql('db_blocks', "coin_id={$coin->id} AND height=$height");
-				if ($block)
-					$nbOk++;
-				else {
+				if ($block) {
+					if ($block->category == 'orphan') {
+						if ($start_height > 0 && $height >= $start_height) {
+							$block->category = 'new';
+							if ($block->save()) echo "Fixed orphan block id {$block->id}\n";
+							$nbOk++;
+						} else {
+							echo("warning: orphan block {$block->height} with confirmations!\n");
+							$nbMissed++;
+						}
+					} else
+						$nbOk++;
+				} else {
 					$time = round($tx['time'] / 900) * 900;
 					if ($time < time() - 2 * 24 * 3600) continue;
 					echo strftime("%Y-%m-%d %H:%M", $tx['time'])." $time missed block $height : ".json_encode($tx)."\n";
