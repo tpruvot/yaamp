@@ -206,6 +206,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	if(strcmp(coind->symbol, "SIB") == 0 ||
 		strcmp(coind->symbol, "MUE") == 0 || // MUEcore-x11
 		strcmp(coind->symbol, "VIVO") == 0 || // VIVO coin
+	   	strcmp(coind->symbol, "INN") == 0 || // Innova coin
+	   	strcmp(coind->symbol, "DSR") == 0 || // Desire coin
 		strcmp(coind->symbol, "DASH") == 0 || strcmp(coind->symbol, "DASH-TESTNET") == 0) // Dash 12.1
 	{
 		char script_dests[2048] = { 0 };
@@ -291,6 +293,50 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
+	
+	else if(strcmp(coind->symbol, "ENT") == 0)
+	{
+		char script_dests[2048] = { 0 };
+		char script_payee[128] = { 0 };
+		char payees[4];
+		int npayees = 1;
+		bool masternode_enabled = json_get_bool(json_result, "eternitynode_payments_enforced");
+		bool superblocks_enabled = json_get_bool(json_result, "superblocks_enabled");
+		json_value* superblock = json_get_array(json_result, "superblock");
+		json_value* masternode = json_get_object(json_result, "eternitynode");
+		if(superblocks_enabled && superblock) {
+			for(int i = 0; i < superblock->u.array.length; i++) {
+				const char *payee = json_get_string(superblock->u.array.values[i], "payee");
+				json_int_t amount = json_get_int(superblock->u.array.values[i], "amount");
+				if (payee && amount) {
+					npayees++;
+					available -= amount;
+					base58_decode(payee, script_payee);
+					job_pack_tx(coind, script_dests, amount, script_payee);
+					//debuglog("%s superblock %s %u\n", coind->symbol, payee, amount);
+				}
+			}
+		}
+		if (masternode_enabled && masternode) {
+			const char *payee = json_get_string(masternode, "payee");
+			json_int_t amount = json_get_int(masternode, "amount");
+			if (payee && amount) {
+				npayees++;
+				available -= amount;
+				base58_decode(payee, script_payee);
+				job_pack_tx(coind, script_dests, amount, script_payee);
+			}
+		}
+		sprintf(payees, "%02x", npayees);
+		strcat(templ->coinb2, payees);
+		strcat(templ->coinb2, script_dests);
+		job_pack_tx(coind, templ->coinb2, available, NULL);
+		strcat(templ->coinb2, "00000000"); // locktime
+		coind->reward = (double)available/100000000*coind->reward_mul;
+		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
+		return;
+	}
+
 
 	else if(coind->hasmasternodes) /* OLD DASH style */
 	{
