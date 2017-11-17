@@ -28,6 +28,7 @@ function yaamp_get_algos()
 		'neoscrypt',
 		'nist5',
 		'penta',
+		'polytimos'.
 		'quark',
 		'qubit',
 		'c11',
