@@ -349,8 +349,43 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		bool charity_enforce = json_get_bool(json_result, "enforce_masternode_payments");
 		if(strcmp(coind->symbol, "CRW") == 0)
 		{
-			charity_payments = json_get_bool(json_result, "throne_payments");
-			charity_enforce = json_get_bool(json_result, "enforce_throne_payments");
+			char script_dests[2048] = { 0 };
+			char script_payee[128] = { 0 };
+			char payees[4];
+			int npayees = 1;
+			bool masternodes_enabled = json_get_bool(json_result, "enforce_masternode_payments");
+			bool systemnodes_enabled = json_get_bool(json_result, "enforce_systemnode_payments");
+			bool systemnodes = json_get_bool(json_result, "systemnodes");
+			bool masternodes = json_get_bool(json_result, "masternodes");
+			if(systemnodes_enabled && systemnodes) {
+				const char *payeeSN = json_get_string(json_result, "payeeSN");
+				json_int_t payeeSN_amount = json_get_int(json_result, "payeeSN_amount");
+				if (payeeSN && payeeSN_amount) {
+					npayees++;
+					available -= payeeSN_amount;
+					base58_decode(payeeSN, script_payee);
+					job_pack_tx(coind, script_dests, payeeSN_amount, script_payee);
+					//debuglog("%s systemnode %s %u\n", coind->symbol, payeeSN, payeeSN_amount);
+				}
+			}
+			if (masternodes_enabled && masternodes) {
+				const char *payee = json_get_string(json_result, "payee");
+				json_int_t amount = json_get_int(json_result, "amount");
+				if (payee && amount) {
+					npayees++;
+					available -= amount;
+					base58_decode(payee, script_payee);
+					job_pack_tx(coind, script_dests, amount, script_payee);
+				}
+			}
+			sprintf(payees, "%02x", npayees);
+			strcat(templ->coinb2, payees);
+			strcat(templ->coinb2, script_dests);
+			job_pack_tx(coind, templ->coinb2, available, NULL);
+			strcat(templ->coinb2, "00000000"); // locktime
+			coind->reward = (double)available/100000000*coind->reward_mul;
+			//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
+			return;
 		}
 		if(charity_payments && charity_enforce)
 		{
