@@ -79,6 +79,13 @@ function BackendCoinsUpdate()
 
 		$coin->errors = isset($info['errors'])? $info['errors']: '';
 		$coin->txfee = isset($info['paytxfee'])? $info['paytxfee']: '';
+
+		if ($coin->txfee==0)
+		{
+			#Default txfee
+			$coin->txfee = isset($info['relayfee'])? $info['relayfee']: '';
+		}
+
 		$coin->connections = isset($info['connections'])? $info['connections']: '';
 		$coin->multialgos = (int) isset($info['pow_algo_id']);
 		$coin->balance = isset($info['balance'])? $info['balance']: 0;
