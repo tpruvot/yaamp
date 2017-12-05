@@ -90,3 +90,7 @@ $configAlgoNormCoef = array(
 //	'x11' => 5.0,
 );
 
+// Per 'user' fee override
+$configUserFees = array(
+//	'12Nam4bHL6hmce3QYfFH1EnBZWXFqqDo6N' => 0.1,
+);
