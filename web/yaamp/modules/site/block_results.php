@@ -75,7 +75,7 @@ foreach($db_blocks as $db_block)
 
 	echo '<td>';
 	if ($this->admin)
-		echo '<a href="/site/coin?id='.$coin->id.'"><b>'.$coin->name.'</b></a>';
+		echo '<a href="/site/coin?id='.$coin->id.'"><b>'.$coin->name.' '.$flags.'</b></a>';
 	else
 		echo '<b>'.$coin->name.'</b>';
 	echo '&nbsp;('.$coin->symbol.')'.$flags.'</td>';
