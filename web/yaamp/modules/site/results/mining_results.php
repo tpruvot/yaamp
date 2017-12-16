@@ -154,7 +154,7 @@ foreach($list as $coin)
 	} else {
 		echo "<td><b><a href='/site/block?id=$coin->id'>$name</a></b><span style='font-size: .8em'> ($coin->algo)</span></td>";
 	}
-	echo "<td align=right style='font-size: .8em;'><b>$reward $coin->symbol_show</a></td>";
+	echo "<td align=right style='font-size: .8em;'><b>$reward $coin->symbol_show</b></td>";
 
 	$title = "POW $coin->difficulty";
 	if($coin->rpcencoding == 'POS')
