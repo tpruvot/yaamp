@@ -28,7 +28,7 @@ void socket_real_ip(YAAMP_SOCKET *s)
 		s->port = ntohs(hdr.v2.addr.ip4.src_port);
 
 		// we need to consume the appropriate amount of data from the socket
-		// read the buffer without PEEK'ing so that we begin at the data laster
+		// read the buffer without PEEK'ing so that we begin at the real data later in socket_nextjson
 		size = 16 + ntohs(hdr.v2.len);
 		do {
 			ret = recv(s->sock, &hdr, size, 0);
@@ -36,7 +36,6 @@ void socket_real_ip(YAAMP_SOCKET *s)
 		return;
 	}
 	else {
-		stratumlog("Client connecting directly\n");
 		// not received any proxy header
 		struct sockaddr_in name;
 		socklen_t len = sizeof(name);
@@ -103,7 +102,6 @@ json_value *socket_nextjson(YAAMP_SOCKET *s, YAAMP_CLIENT *client)
 
 	//	pthread_mutex_lock(&s->mutex);
 	}
-
 
 	char *b = strchr(s->buffer, '{');
 	if(!b)
