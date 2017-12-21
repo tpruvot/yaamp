@@ -635,6 +635,9 @@ void *client_thread(void *p)
 	else if(client->sock->total_read == 0)
 		clientlog(client, "no data");
 
+	if(client->sock->sock >= 0)
+		shutdown(client->sock->sock, SHUT_RDWR);
+
 	if(g_list_client.Find(client))
 	{
 		if(client->workerid && !client->reconnecting)
@@ -643,12 +646,9 @@ void *client_thread(void *p)
 			db_clear_worker(g_db, client);
 			CommonUnlock(&g_db_mutex);
 		}
-
-		object_delete(client);
 	}
 
-	else
-		client_delete(client);
+	object_delete(client);
 
 	pthread_exit(NULL);
 }
