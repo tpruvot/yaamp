@@ -37,7 +37,9 @@ public:
 inline void share_delete(YAAMP_OBJECT *object)
 {
 	YAAMP_SHARE *share = (YAAMP_SHARE *)object;
+	if (object == NULL) return;
 	delete share;
+	object = NULL;
 }
 
 //YAAMP_WORKER *share_find_worker(int userid, int workerid, int coinid, bool valid);
