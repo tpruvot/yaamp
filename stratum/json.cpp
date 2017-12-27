@@ -118,6 +118,9 @@ static int new_value
       {
          case json_array:
 
+            if (value->u.array.length == 0)
+               break;
+
             if (! (value->u.array.values = (json_value **) json_alloc
                (state, value->u.array.length * sizeof (json_value *), 0)) )
             {
@@ -129,9 +132,13 @@ static int new_value
 
          case json_object:
 
+            if (value->u.object.length == 0)
+               break;
+
             values_size = sizeof (*value->u.object.values) * value->u.object.length;
 
-            if (! ((*(void **) &value->u.object.values) = json_alloc
+            //if (! ((*(void **) &value->u.object.values) = json_alloc
+            if (! (value->u.object.values = (json_object_entry *) json_alloc
                   (state, values_size + ((unsigned long) value->u.object.values), 0)) )
             {
                return 0;
@@ -160,10 +167,14 @@ static int new_value
       return 1;
    }
 
-   value = (json_value *) json_alloc (state, sizeof (json_value), 1);
+   //value = (json_value *) json_alloc (state, sizeof (json_value), 1);
 
-   if (!value)
+   //if (!value)
+   if (! (value = (json_value *) json_alloc
+      (state, sizeof (json_value) + state->settings.value_extra, 1)))
+   {
       return 0;
+   }
 
    if (!*root)
       *root = value;
@@ -503,7 +514,7 @@ json_value * json_parse_ex (json_settings * settings,
 
                case ']':
 
-                  if (top->type == json_array)
+                  if (top && top->type == json_array)
                      flags = (flags & ~ (flag_need_comma | flag_seek_value)) | flag_next;
                   else
                   {  sprintf (error, "%d:%d: Unexpected ]", cur_line, e_off);

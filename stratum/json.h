@@ -68,6 +68,7 @@ typedef struct
 
    void * user_data;  /* will be passed to mem_alloc and mem_free */
 
+   size_t value_extra;  /* how much extra space to allocate for values? */
 } json_settings;
 
 #define json_enable_comments  0x01
@@ -86,6 +87,15 @@ typedef enum
 } json_type;
 
 extern const struct _json_value json_value_none;
+
+typedef struct _json_object_entry
+{
+    json_char * name;
+    unsigned int name_length;
+    
+    struct _json_value * value;
+    
+} json_object_entry;
 
 typedef struct _json_value
 {
@@ -110,14 +120,7 @@ typedef struct _json_value
       {
          unsigned int length;
 
-         struct
-         {
-            json_char * name;
-            unsigned int name_length;
-
-            struct _json_value * value;
-
-         } * values;
+         json_object_entry * values;
 
          #if defined(__cplusplus) && __cplusplus >= 201103L
          decltype(values) begin () const
