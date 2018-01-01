@@ -18,5 +18,6 @@ define('EXCH_KRAKEN_SECRET','');
 define('EXCH_LIVECOIN_SECRET', '');
 define('EXCH_NOVA_SECRET','');
 define('EXCH_POLONIEX_SECRET', '');
+define('EXCH_STOCKSEXCHANGE_SECRET', '');
 define('EXCH_YOBIT_SECRET', '');
 
