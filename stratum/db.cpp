@@ -12,7 +12,7 @@ void db_reconnect(YAAMP_DB *db)
 	mysql_init(&db->mysql);
 	for(int i=0; i<6; i++)
 	{
-		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, 0, 0, 0);
+		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, g_sql_port, 0, 0);
 		if(p) break;
 
 		stratumlog("%d, %s\n", i, mysql_error(&db->mysql));
