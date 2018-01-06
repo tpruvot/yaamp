@@ -74,6 +74,7 @@ extern char g_sql_host[1024];
 extern char g_sql_database[1024];
 extern char g_sql_username[1024];
 extern char g_sql_password[1024];
+extern int g_sql_port;
 
 extern char g_stratum_coin_include[256];
 extern char g_stratum_coin_exclude[256];
