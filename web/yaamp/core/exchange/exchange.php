@@ -18,6 +18,7 @@ require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("ccexapi.php");
 require_once("bleutrade.php");
+require_once("cexio.php");
 require_once("kraken.php");
 require_once("yobit.php");
 require_once("shapeshift.php");
@@ -82,6 +83,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://bleutrade.com/exchange/{$symbol}/{$base}";
 	else if($market == 'bter')
 		$url = "https://bter.com/trade/{$lowsymbol}_{$lowbase}";
+	else if($market == 'cexio')
+		$url = "https://cex.io/trade/{$symbol}-{$base}";
 	else if($market == 'coinexchange')
 		$url = "https://www.coinexchange.io/market/{$symbol}/{$base}";
 	else if($market == 'coinsmarkets')

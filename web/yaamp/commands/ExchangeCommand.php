@@ -127,6 +127,11 @@ class ExchangeCommand extends CConsoleCommand
 			if (!is_array($balance)) echo "bitstamp error ".json_encode($balance)."\n";
 			else echo("bitstamp: ".json_encode($balance)."\n");
 		}
+		if (!empty(EXCH_CEXIO_KEY)) {
+			$balance = cexio_api_user('balance');
+			if (!is_array($balance)) echo "cexio error ".json_encode($balance)."\n";
+			else echo("cexio: ".json_encode(arraySafeVal($balance,"BTC",$balance))."\n");
+		}
 		if (!empty(EXCH_BITTREX_KEY)) {
 			$balance = bittrex_api_query('account/getbalance','&currency=BTC');
 			if (!is_object($balance)) echo "bittrex error\n";

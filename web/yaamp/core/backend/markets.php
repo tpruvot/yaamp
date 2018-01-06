@@ -1271,6 +1271,17 @@ function updateCoinExchangeMarkets()
 			continue;
 		}
 
+		if($currency->Active && $coin->enable) {
+			// check wallet status (deposit/withdrawals)
+			$status = coinexchange_api_query('getcurrency', 'ticker_code='.$symbol);
+			if(is_object($status) && is_object($status->result)) {
+				$res = $status->result;
+				if($market->disabled < 9) $market->disabled = (objSafeVal($res,'WalletStatus') == "offline");
+				$market->message = $market->disabled ? $res->WalletStatus : '';
+				//debuglog("$exchange: $symbol wallet is {$res->WalletStatus}");
+			}
+		}
+
 		$market->save();
 
 		if($market->disabled || $market->deleted) continue;

@@ -10,6 +10,7 @@ define('EXCH_BITSTAMP_SECRET','');
 define('EXCH_BLEUTRADE_SECRET', '');
 define('EXCH_BTER_SECRET', '');
 define('EXCH_CCEX_SECRET', '');
+define('EXCH_CEXIO_SECRET', '');
 define('EXCH_COINMARKETS_PASS', '');
 define('EXCH_CRYPTOPIA_SECRET', '');
 define('EXCH_EMPOEX_SECKEY', '');
@@ -18,5 +19,6 @@ define('EXCH_KRAKEN_SECRET','');
 define('EXCH_LIVECOIN_SECRET', '');
 define('EXCH_NOVA_SECRET','');
 define('EXCH_POLONIEX_SECRET', '');
+define('EXCH_STOCKSEXCHANGE_SECRET', '');
 define('EXCH_YOBIT_SECRET', '');
 
