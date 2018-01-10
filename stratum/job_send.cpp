@@ -107,6 +107,7 @@ void job_broadcast(YAAMP_JOB *job)
 	{
 		YAAMP_CLIENT *client = (YAAMP_CLIENT *)li->data;
 		if(client->deleted) continue;
+		if(!client->sock) continue;
 	//	if(client->reconnecting && client->locked) continue;
 
 		if(client->jobid_next != job->id) continue;

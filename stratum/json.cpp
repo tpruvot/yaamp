@@ -503,7 +503,7 @@ json_value * json_parse_ex (json_settings * settings,
 
                case ']':
 
-                  if (top->type == json_array)
+                  if (top && top->type == json_array)
                      flags = (flags & ~ (flag_need_comma | flag_seek_value)) | flag_next;
                   else
                   {  sprintf (error, "%d:%d: Unexpected ]", cur_line, e_off);

@@ -39,6 +39,7 @@ if (!defined('EXCH_HITBTC_KEY')) define('EXCH_HITBTC_KEY', '');
 if (!defined('EXCH_POLONIEX_KEY')) define('EXCH_POLONIEX_KEY', '');
 if (!defined('EXCH_YOBIT_KEY')) define('EXCH_YOBIT_KEY', '');
 if (!defined('EXCH_KRAKEN_KEY')) define('EXCH_KRAKEN_KEY', '');
+if (!defined('EXCH_KUCOIN_KEY')) define('EXCH_KUCOIN_KEY', '');
 if (!defined('EXCH_LIVECOIN_KEY')) define('EXCH_LIVECOIN_KEY', '');
 if (!defined('EXCH_NOVA_KEY')) define('EXCH_NOVA_KEY', '');
 if (!defined('EXCH_STOCKSEXCHANGE_KEY')) define('EXCH_STOCKSEXCHANGE_KEY', '');

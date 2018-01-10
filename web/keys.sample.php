@@ -16,6 +16,7 @@ define('EXCH_CRYPTOPIA_SECRET', '');
 define('EXCH_EMPOEX_SECKEY', '');
 define('EXCH_HITBTC_SECRET', '');
 define('EXCH_KRAKEN_SECRET','');
+define('EXCH_KUCOIN_SECRET', '');
 define('EXCH_LIVECOIN_SECRET', '');
 define('EXCH_NOVA_SECRET','');
 define('EXCH_POLONIEX_SECRET', '');

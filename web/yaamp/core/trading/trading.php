@@ -10,6 +10,7 @@ require_once('alcurex_trading.php');
 require_once('coinsmarkets_trading.php');
 require_once('cryptopia_trading.php');
 require_once('hitbtc_trading.php');
+require_once('kucoin_trading.php');
 require_once('livecoin_trading.php');
 require_once('nova_trading.php');
 
@@ -36,6 +37,9 @@ function cancelExchangeOrder($order=false)
 				break;
 			case 'hitbtc':
 				doHitBTCCancelOrder($order->uuid);
+				break;
+			case 'kucoin':
+				doKuCoinCancelOrder($order->uuid);
 				break;
 			case 'livecoin':
 				doLiveCoinCancelOrder($order->uuid);
@@ -111,6 +115,11 @@ function runExchange($exchangeName=false)
 			case 'kraken':
 				doKrakenTrading(true);
 				updateKrakenMarkets();
+				break;
+
+			case 'kucoin':
+				doKuCoinTrading(true);
+				updateKucoinMarkets();
 				break;
 
 			case 'livecoin':
