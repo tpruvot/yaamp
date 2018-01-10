@@ -14,6 +14,7 @@ function BackendPricesUpdate()
 	updatePoloniexMarkets();
 	updateBleutradeMarkets();
 	updateKrakenMarkets();
+	updateKuCoinMarkets();
 	updateCCexMarkets();
 	updateCryptopiaMarkets();
 	updateHitBTCMarkets();
@@ -1167,6 +1168,62 @@ function updateEmpoexMarkets()
 	}
 }
 
+function updateKuCoinMarkets()
+{
+	$exchange = 'kucoin';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$markets = kucoin_api_query('open/symbols','market=BTC');
+	if(!is_object($markets) || !isset($markets->data) || empty($markets->data)) return;
+
+	$coininfo = NULL; //kucoin_api_query('market/open/coins');
+	if(!is_object($coininfo) || !isset($coininfo->data) || empty($coininfo->data)) {
+		$coininfo = NULL;
+	}
+
+	$list = getdbolist('db_markets', "name='$exchange'");
+	foreach($list as $market)
+	{
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+
+		$symbol = $coin->getOfficialSymbol();
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+		$pair = strtoupper($symbol).'-BTC';
+
+		foreach ($markets->data as $ticker) {
+			if ($ticker->symbol != $pair) continue;
+
+			$market->price = AverageIncrement($market->price, $ticker->buy);
+			$market->price2 = AverageIncrement($market->price2, $ticker->sell);
+			if (!empty($coininfo)) foreach ($coininfo->data as $info) {
+				if ($info->coin == $symbol) {
+					//todo: $market->withdrawfee = $info->withdrawMinFee;
+					break;
+				}
+			}
+			$market->txfee = $ticker->feeRate * 100; // is 0.1% for trades (0.001)
+			$market->priority = -1;
+			$market->pricetime = time();
+
+			if (floatval($ticker->vol) > 0.01)
+				$market->save();
+
+			if (empty($coin->price2)) {
+				$coin->price = $market->price;
+				$coin->price2 = $market->price2;
+				$coin->save();
+			}
+		}
+	}
+}
+
 function updateLiveCoinMarkets()
 {
 	$exchange = 'livecoin';
@@ -1269,6 +1326,17 @@ function updateCoinExchangeMarkets()
 			$market->message = 'disabled from settings';
 			$market->save();
 			continue;
+		}
+
+		if($currency->Active && $coin->enable) {
+			// check wallet status (deposit/withdrawals)
+			$status = coinexchange_api_query('getcurrency', 'ticker_code='.$symbol);
+			if(is_object($status) && is_object($status->result)) {
+				$res = $status->result;
+				if($market->disabled < 9) $market->disabled = (objSafeVal($res,'WalletStatus') == "offline");
+				$market->message = $market->disabled ? $res->WalletStatus : '';
+				//debuglog("$exchange: $symbol wallet is {$res->WalletStatus}");
+			}
 		}
 
 		$market->save();
@@ -1478,7 +1546,7 @@ function updateShapeShiftMarkets()
 
 			$market->price = AverageIncrement($market->price, $ticker['rate']);
 			$market->price2 = AverageIncrement($market->price2, $ticker['rate']);
-			$market->txfee = $ticker['minerFee'];
+			$market->txfee = $ticker['minerFee'] * 100;
 			$market->pricetime = time();
 			$market->priority = -1; // not ready for trading
 			$market->save();
