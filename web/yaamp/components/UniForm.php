@@ -14,7 +14,7 @@ class UniForm extends CWidget /* or CJuiWidget */
 	{
 		parent::init();
 
-		echo CHtml::cssFile('/yaamp/ui/css/uni-form.css');
+		echo CHtml::cssFile('/yaamp/ui/css/uni-form.min.css');
 	}
 
 	public function run()
