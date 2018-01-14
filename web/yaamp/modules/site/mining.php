@@ -2,10 +2,10 @@
 
 $algo = user()->getState('yaamp-algo');
 
-JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
+JavascriptFile("/extensions/jqplot/jquery.jqplot.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
 JavascriptFile('/yaamp/ui/js/auto_refresh.js');
 
 $height = '240px';

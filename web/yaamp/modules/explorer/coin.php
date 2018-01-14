@@ -2,9 +2,9 @@
 
 if (!$coin) $this->goback();
 
-JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
+JavascriptFile("/extensions/jqplot/jquery.jqplot.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
 
 $this->pageTitle = $coin->name." block explorer";
 
