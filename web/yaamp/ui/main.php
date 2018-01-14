@@ -25,8 +25,8 @@ $pageTitle = empty($this->pageTitle) ? YAAMP_SITE_NAME : YAAMP_SITE_NAME." - ".$
 echo '<title>'.$pageTitle.'</title>';
 
 echo CHtml::cssFile("/extensions/jquery/themes/ui-lightness/jquery-ui.css");
-echo CHtml::cssFile('/yaamp/ui/css/main.css');
-echo CHtml::cssFile('/yaamp/ui/css/table.css');
+echo CHtml::cssFile('/yaamp/ui/css/main.min.css');
+echo CHtml::cssFile('/yaamp/ui/css/table.min.css');
 
 //echo CHtml::scriptFile('/extensions/jquery/js/jquery-1.8.3-dev.js');
 //echo CHtml::scriptFile('/extensions/jquery/js/jquery-ui-1.9.1.custom.min.js');
@@ -35,7 +35,7 @@ $cs = app()->getClientScript();
 $cs->registerCoreScript('jquery.ui');
 //$cs->registerScriptFile('/yaamp/ui/js/jquery.tablesorter.js', CClientScript::POS_END);
 
-echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.js');
+echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.min.js');
 
 // if(!controller()->admin)
 // echo <<<end

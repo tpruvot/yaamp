@@ -1,9 +1,9 @@
 <?php
 
-JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.enhancedLegendRenderer.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
-JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
+JavascriptFile("/extensions/jqplot/jquery.jqplot.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
+JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
 
 $refSymbol = 'BTC';
 if ($coin->symbol == 'BTC') $refSymbol = 'USD';

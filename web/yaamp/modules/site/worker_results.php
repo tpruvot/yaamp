@@ -5,8 +5,8 @@ if (isset($_GET['algo']))
 
 $algo = user()->getState('yaamp-algo');
 
-JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
-JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
+JavascriptFile("/yaamp/ui/js/jquery.metadata.min.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.min.js");
 
 echo <<<end
 <div align="right" style="margin-top: -20px; margin-bottom: 6px;">

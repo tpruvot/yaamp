@@ -63,8 +63,8 @@ foreach ($algos as $algo) {
 	$algos_columns .= '<th>'.$algo.'</th>';
 }
 
-JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
-JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
+JavascriptFile("/yaamp/ui/js/jquery.metadata.min.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.min.js");
 
 showTableSorter('maintable', "{
 	tableClass: 'dataGrid',
