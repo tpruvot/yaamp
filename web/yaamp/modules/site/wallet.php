@@ -4,7 +4,7 @@ JavascriptFile("/extensions/jqplot/jquery.jqplot.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
-JavascriptFile('/yaamp/ui/js/auto_refresh.js');
+JavascriptFile('/yaamp/ui/js/auto_refresh.min.js');
 
 $recents = array();
 $raw_recents = isset($_COOKIE['wallets'])? explode("|", $_COOKIE['wallets']): array();

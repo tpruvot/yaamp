@@ -7,7 +7,7 @@ JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.cursor.min.js");
-JavascriptFile('/yaamp/ui/js/auto_refresh.js');
+JavascriptFile('/yaamp/ui/js/auto_refresh.min.js');
 
 $this->widget('UniForm');
 

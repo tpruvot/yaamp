@@ -1,6 +1,6 @@
 <?php
 
-JavascriptFile('/yaamp/ui/js/auto_refresh.js');
+JavascriptFile('/yaamp/ui/js/auto_refresh.min.js');
 
 echo "<div id='index_results'>";
 echo "<br><br><br><br><br><br><br><br><br><br>";

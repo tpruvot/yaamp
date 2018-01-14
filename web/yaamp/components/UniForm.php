@@ -22,7 +22,7 @@ class UniForm extends CWidget /* or CJuiWidget */
 		$cs = Yii::app()->getClientScript();
 		$cs->registerCoreScript("jquery");
 		$cs->registerCoreScript("jquery.ui");
-		$cs->registerScriptFile('/yaamp/ui/js/uni-form.jquery.js', CClientScript::POS_END);
+		$cs->registerScriptFile('/yaamp/ui/js/uni-form.jquery.min.js', CClientScript::POS_END);
 
 		CHtml::$requiredCss = '';
 		CHtml::$afterRequiredLabel='';

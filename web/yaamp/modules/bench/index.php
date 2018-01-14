@@ -36,8 +36,8 @@ foreach($chips as $id => $name) {
 		$optchips .= '<option value="'.$id.'">'.$name.'</option>';
 }
 
-JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
-JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
+JavascriptFile("/yaamp/ui/js/jquery.metadata.min.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.min.js");
 
 include('functions.php');
 

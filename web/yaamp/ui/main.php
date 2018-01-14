@@ -35,7 +35,7 @@ $cs = app()->getClientScript();
 $cs->registerCoreScript('jquery.ui');
 //$cs->registerScriptFile('/yaamp/ui/js/jquery.tablesorter.js', CClientScript::POS_END);
 
-echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.js');
+echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.min.js');
 
 // if(!controller()->admin)
 // echo <<<end

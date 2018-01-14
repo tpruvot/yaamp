@@ -5,8 +5,8 @@ JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.min.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.min.js");
 
-JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
-JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
+JavascriptFile("/yaamp/ui/js/jquery.metadata.min.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.min.js");
 
 echo getAdminSideBarLinks();
 
