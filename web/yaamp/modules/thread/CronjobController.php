@@ -105,8 +105,6 @@ class CronjobController extends CommonController
 //		debuglog(__METHOD__);
 		set_time_limit(0);
 
-//		BackendRunCoinActions();
-
 		$state = memcache_get($this->memcache->memcache, 'cronjob_main_state');
 		if(!$state) $state = 0;
 
