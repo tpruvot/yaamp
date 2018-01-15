@@ -51,7 +51,7 @@ echo "</thead>";
 
 $remote = new WalletRPC($coin);
 if (!$start || $start > $coin->block_height)
-	$start = $coin->block_height;
+	$start = (int)$coin->block_height;
 for($i = $start; $i > max(1, $start-21); $i--)
 {
 	$hash = $remote->getblockhash($i);
