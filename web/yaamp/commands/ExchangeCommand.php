@@ -122,10 +122,25 @@ class ExchangeCommand extends CConsoleCommand
 
 	public function testApiKeys()
 	{
+		if (!empty(EXCH_BINANCE_KEY)) {
+			$balance = binance_api_user('account');
+			if (!is_object($balance)) echo "binance error ".json_encode($balance)."\n";
+			else {
+				$assets = $balance->balances;
+				foreach ($assets as $asset) {
+					if ($asset->asset == 'BTC') echo("binance: ".json_encode($asset)."\n");
+				}
+			}
+		}
 		if (!empty(EXCH_BITSTAMP_KEY)) {
 			$balance = bitstamp_api_user('balance');
 			if (!is_array($balance)) echo "bitstamp error ".json_encode($balance)."\n";
 			else echo("bitstamp: ".json_encode($balance)."\n");
+		}
+		if (!empty(EXCH_CEXIO_KEY)) {
+			$balance = cexio_api_user('balance');
+			if (!is_array($balance)) echo "cexio error ".json_encode($balance)."\n";
+			else echo("cexio: ".json_encode(arraySafeVal($balance,"BTC",$balance))."\n");
 		}
 		if (!empty(EXCH_BITTREX_KEY)) {
 			$balance = bittrex_api_query('account/getbalance','&currency=BTC');
@@ -175,6 +190,11 @@ class ExchangeCommand extends CConsoleCommand
 		if (!empty(EXCH_KRAKEN_KEY)) {
 			$balance = kraken_api_user('Balance');
 			echo("kraken btc: ".json_encode($balance)."\n");
+		}
+		if (!empty(EXCH_KUCOIN_KEY)) {
+			$balance = kucoin_api_user('account/BTC/balance');
+			if (!is_object($balance) || !isset($balance->data)) echo "kucoin error ".json_encode($balance)."\n";
+			else echo("kucoin: ".json_encode($balance->data)."\n");
 		}
 		if (!empty(EXCH_LIVECOIN_KEY)) {
 			$livecoin = new LiveCoinApi;

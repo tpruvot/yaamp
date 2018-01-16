@@ -1,5 +1,6 @@
 <?php
 require_once('poloniex_trading.php');
+require_once('binance_trading.php');
 require_once('bittrex_trading.php');
 require_once('bleutrade_trading.php');
 require_once('bter_trading.php');
@@ -10,6 +11,7 @@ require_once('alcurex_trading.php');
 require_once('coinsmarkets_trading.php');
 require_once('cryptopia_trading.php');
 require_once('hitbtc_trading.php');
+require_once('kucoin_trading.php');
 require_once('livecoin_trading.php');
 require_once('nova_trading.php');
 
@@ -21,6 +23,9 @@ function cancelExchangeOrder($order=false)
 		{
 			case 'yobit':
 				doYobitCancelOrder($order->uuid);
+				break;
+			case 'binance':
+				doBinanceCancelOrder($order->uuid);
 				break;
 			case 'c-cex':
 				doCCexCancelOrder($order->uuid);
@@ -36,6 +41,9 @@ function cancelExchangeOrder($order=false)
 				break;
 			case 'hitbtc':
 				doHitBTCCancelOrder($order->uuid);
+				break;
+			case 'kucoin':
+				doKuCoinCancelOrder($order->uuid);
 				break;
 			case 'livecoin':
 				doLiveCoinCancelOrder($order->uuid);
@@ -53,6 +61,11 @@ function runExchange($exchangeName=false)
 			case 'alcurex':
 				//doAlcurexTrading(true);
 				updateAlcurexMarkets();
+				break;
+
+			case 'binance':
+				doBinanceTrading(true);
+				updateBinanceMarkets();
 				break;
 
 			case 'bter':
@@ -111,6 +124,11 @@ function runExchange($exchangeName=false)
 			case 'kraken':
 				doKrakenTrading(true);
 				updateKrakenMarkets();
+				break;
+
+			case 'kucoin':
+				doKuCoinTrading(true);
+				updateKucoinMarkets();
 				break;
 
 			case 'livecoin':

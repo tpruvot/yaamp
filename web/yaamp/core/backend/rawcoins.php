@@ -259,6 +259,20 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('kucoin', 'disabled')) {
+		$list = kucoin_api_query('market/open/coins');
+		if(is_object($list) && isset($list->data) && !empty($list->data))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='kucoin'");
+			foreach($list->data as $item) {
+				$symbol = $item->coin;
+				$name = $item->name;
+				if (strpos($item->withdrawRemark,'Ethereum')) continue;
+				updateRawCoin('kucoin', $symbol, $name);
+			}
+		}
+	}
+
 	if (!exchange_get('livecoin', 'disabled')) {
 		$list = livecoin_api_query('exchange/ticker');
 		if(is_array($list))

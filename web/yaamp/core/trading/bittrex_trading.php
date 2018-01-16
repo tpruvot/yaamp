@@ -66,7 +66,7 @@ function doBittrexTrading($quick=false)
 	if($quick) $flushall = false;
 
 	// minimum order allowed by the exchange
-	$min_btc_trade = exchange_get($exchange, 'trade_min_btc', 0.00050000);
+	$min_btc_trade = exchange_get($exchange, 'trade_min_btc', 0.00100000);
 	// sell on ask price + 5%
 	$sell_ask_pct = exchange_get($exchange, 'trade_sell_ask_pct', 1.05);
 	// cancel order if our price is more than ask price + 20%

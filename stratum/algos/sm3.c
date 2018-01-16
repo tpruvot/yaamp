@@ -153,17 +153,17 @@ void sm3_compress(uint32_t digest[8], const unsigned char block[64])
 	uint32_t H = digest[7];
 	uint32_t SS1,SS2,TT1,TT2,T[64];
 
-	for (j = 0; j < 16; j++) {
+	for(j = 0; j < 16; j++) {
 		W[j] = cpu_to_be32(pblock[j]);
 	}
-	for (j = 16; j < 68; j++) {
+	for(j = 16; j < 68; j++) {
 		W[j] = P1( W[j-16] ^ W[j-9] ^ ROTATELEFT(W[j-3],15)) ^ ROTATELEFT(W[j - 13],7 ) ^ W[j-6];;
 	}
-	for( j = 0; j < 64; j++) {
+	for(j = 0; j < 64; j++) {
 		W1[j] = W[j] ^ W[j+4];
 	}
 
-	for(j =0; j < 16; j++) {
+	for(j = 0; j < 16; j++) {
 
 		T[j] = 0x79CC4519;
 		SS1 = ROTATELEFT((ROTATELEFT(A,12) + E + ROTATELEFT(T[j],j)), 7);
@@ -180,10 +180,10 @@ void sm3_compress(uint32_t digest[8], const unsigned char block[64])
 		E = P0(TT2);
 	}
 
-	for(j =16; j < 64; j++) {
+	for(j = 16; j < 64; j++) {
 
 		T[j] = 0x7A879D8A;
-		SS1 = ROTATELEFT((ROTATELEFT(A,12) + E + ROTATELEFT(T[j],j)), 7);
+		SS1 = ROTATELEFT((ROTATELEFT(A,12) + E + ROTATELEFT(T[j],j&31)), 7);
 		SS2 = SS1 ^ ROTATELEFT(A,12);
 		TT1 = FF1(A,B,C) + D + SS2 + W1[j];
 		TT2 = GG1(E,F,G) + H + SS1 + W[j];

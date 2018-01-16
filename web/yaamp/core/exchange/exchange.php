@@ -18,6 +18,7 @@ require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("ccexapi.php");
 require_once("bleutrade.php");
+require_once("cexio.php");
 require_once("kraken.php");
 require_once("yobit.php");
 require_once("shapeshift.php");
@@ -28,6 +29,7 @@ require_once("alcurex.php");
 require_once("binance.php");
 require_once("cryptopia.php");
 require_once("hitbtc.php");
+require_once("kucoin.php");
 require_once("livecoin.php");
 require_once("nova.php");
 require_once("coinexchange.php");
@@ -82,6 +84,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://bleutrade.com/exchange/{$symbol}/{$base}";
 	else if($market == 'bter')
 		$url = "https://bter.com/trade/{$lowsymbol}_{$lowbase}";
+	else if($market == 'cexio')
+		$url = "https://cex.io/trade/{$symbol}-{$base}";
 	else if($market == 'coinexchange')
 		$url = "https://www.coinexchange.io/market/{$symbol}/{$base}";
 	else if($market == 'coinsmarkets')
@@ -98,6 +102,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "http://jubi.com/coin/{$lowsymbol}";
 	else if($market == 'hitbtc')
 		$url = "https://hitbtc.com/exchange/{$symbol}-to-{$base}";
+	else if($market == 'kucoin')
+		$url = "https://www.kucoin.com/#/trade.pro/{$symbol}-{$base}";
 	else if($market == 'livecoin')
 		$url = "https://www.livecoin.net/trade/?currencyPair={$symbol}%2F{$base}";
 	else if($market == 'nova')

@@ -120,10 +120,11 @@ foreach($algos as $item)
 
 	$fees = yaamp_fee($algo);
 
-	$stratum = getdbosql('db_stratums', "algo=:algo", array(':algo'=>$algo));
+	// todo: show per port data ?
+	$stratum = getdbosql('db_stratums', "algo=:algo ORDER BY started DESC", array(':algo'=>$algo));
 	$isup = Booltoa($stratum);
-	$time = $isup ? datetoa2($stratum->time) : '';
-	$ts = $isup ? datetoa2($stratum->time) : '';
+	$time = $isup ? datetoa2($stratum->started) : '';
+	$ts = $isup ? datetoa2($stratum->started) : '';
 
 	echo '<tr class="ssrow">';
 	echo '<td style="background-color: '.$algo_color.'"><b>';

@@ -213,15 +213,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		}
 	}
 
-	if(strcmp(coind->symbol, "SIB") == 0 ||
-		strcmp(coind->symbol, "MUE") == 0 || // MUEcore-x11
-		strcmp(coind->symbol, "VIVO") == 0 || // VIVO coin
-	   	strcmp(coind->symbol, "INN") == 0 || // Innova coin
-	   	strcmp(coind->symbol, "DSR") == 0 || // Desire coin
-	   	strcmp(coind->symbol, "ONEX") == 0 || // ONEX Cash
-	   	strcmp(coind->symbol, "GBX") == 0 || // GoByte
-	   	strcmp(coind->symbol, "KZC") == 0 || // KZ Cash
-		strcmp(coind->symbol, "DASH") == 0 || strcmp(coind->symbol, "DASH-TESTNET") == 0) // Dash 12.1
+	// most recent masternodes rpc (DASH, SIB, MUE, DSR, GBX...)
+	if(coind->hasmasternodes && !coind->oldmasternodes)
 	{
 		char script_dests[2048] = { 0 };
 		char script_payee[128] = { 0 };
@@ -351,7 +344,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	}
 
 
-	else if(coind->hasmasternodes) /* OLD DASH style */
+	else if(coind->hasmasternodes && coind->oldmasternodes) /* OLD DASH style */
 	{
 		char charity_payee[256] = { 0 };
 		const char *payee = json_get_string(json_result, "payee");

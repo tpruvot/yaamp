@@ -12,7 +12,7 @@ void db_reconnect(YAAMP_DB *db)
 	mysql_init(&db->mysql);
 	for(int i=0; i<6; i++)
 	{
-		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, 0, 0, 0);
+		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, g_sql_port, 0, 0);
 		if(p) break;
 
 		stratumlog("%d, %s\n", i, mysql_error(&db->mysql));
@@ -87,12 +87,17 @@ void db_register_stratum(YAAMP_DB *db)
 	int t = time(NULL);
 	if(!db) return;
 
-	db_query(db, "insert into stratums (pid, time, algo) values (%d, %d, '%s') on duplicate key update time=%d",
-		pid, t, g_current_algo->name, t);
+	db_query(db, "INSERT INTO stratums (pid, time, started, algo, port) VALUES (%d, %d, %d, '%s', %d) "
+		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', port=%d",
+		pid, t, t, g_stratum_algo, g_tcp_port,
+		t, g_stratum_algo, g_tcp_port
+	);
 }
 
 void db_update_algos(YAAMP_DB *db)
 {
+	int pid = getpid();
+	//int fds = 0; // todo, sample: ls -l /proc/$PID/fd | grep socket | grep -c .
 	if(!db) return;
 
 	if(g_current_algo->overflow)
@@ -100,8 +105,19 @@ void db_update_algos(YAAMP_DB *db)
 		debuglog("setting overflow\n");
 		g_current_algo->overflow = false;
 
-		db_query(db, "update algos set overflow=true where name='%s'", g_current_algo->name);
+		db_query(db, "UPDATE algos SET overflow=true WHERE name='%s'", g_stratum_algo);
 	}
+
+	char symbol[16] = "NULL\0";
+	if(g_list_coind.count == 1) {
+		if (g_list_coind.first) {
+			CLI li = g_list_coind.first;
+			YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
+			sprintf(symbol,"'%s'", coind->symbol);
+		}
+	}
+
+	db_query(db, "UPDATE stratums SET workers=%d, symbol=%s WHERE pid=%d", g_list_client.count, symbol, pid);
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -265,6 +281,19 @@ void db_update_coinds(YAAMP_DB *db)
 		// force the right rpcencoding for DCR
 		if(!strcmp(coind->symbol, "DCR") && strcmp(coind->rpcencoding, "DCR"))
 			strcpy(coind->rpcencoding, "DCR");
+
+		// old dash masternodes coins..
+		if(coind->hasmasternodes) {
+			if (strcmp(coind->symbol, "BSD") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "CHC") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "CRW") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "VSX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "XLR") == 0) coind->oldmasternodes = true;
+		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 
