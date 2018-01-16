@@ -221,10 +221,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	   	strcmp(coind->symbol, "ONEX") == 0 || // ONEX Cash
 	   	strcmp(coind->symbol, "GBX") == 0 || // GoByte
 	   	strcmp(coind->symbol, "KZC") == 0 || // KZ Cash
-	        strcmp(coind->symbol, "CRC") == 0 || // CrowdCoin
-                strcmp(coind->symbol, "ORE") == 0 || // Galactrum
-                strcmp(coind->symbol, "SPK") == 0 || // Sparks
-	   	strcmp(coind->symbol, "GOA") == 0 || // Sparks
 		strcmp(coind->symbol, "DASH") == 0 || strcmp(coind->symbol, "DASH-TESTNET") == 0) // Dash 12.1
 	{
 		char script_dests[2048] = { 0 };
