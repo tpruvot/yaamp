@@ -284,7 +284,9 @@ void db_update_coinds(YAAMP_DB *db)
 
 		// old dash masternodes coins..
 		if(coind->hasmasternodes) {
+			if (strcmp(coind->symbol, "ALQO") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "BSD") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "BWK") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "CHC") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "CRW") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
