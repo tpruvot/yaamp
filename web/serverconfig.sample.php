@@ -53,6 +53,7 @@ define('EXCH_CEXIO_ID', '');
 define('EXCH_CEXIO_KEY', '');
 define('EXCH_COINMARKETS_USER', '');
 define('EXCH_COINMARKETS_PIN', '');
+define('EXCH_BINANCE_KEY', '');
 define('EXCH_BITSTAMP_ID','');
 define('EXCH_BITSTAMP_KEY','');
 define('EXCH_HITBTC_KEY','');

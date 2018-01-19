@@ -1174,10 +1174,10 @@ function updateKuCoinMarkets()
 	if (exchange_get($exchange, 'disabled')) return;
 
 	$markets = kucoin_api_query('open/symbols','market=BTC');
-	if(!is_object($markets) || !isset($markets->data) || empty($markets->data)) return;
+	if(!kucoin_result_valid($markets) || empty($markets->data)) return;
 
 	$coininfo = NULL; //kucoin_api_query('market/open/coins');
-	if(!is_object($coininfo) || !isset($coininfo->data) || empty($coininfo->data)) {
+	if(!kucoin_result_valid($coininfo) || empty($coininfo->data)) {
 		$coininfo = NULL;
 	}
 
@@ -1199,6 +1199,7 @@ function updateKuCoinMarkets()
 
 		foreach ($markets->data as $ticker) {
 			if ($ticker->symbol != $pair) continue;
+			if (objSafeVal($ticker,'buy',-1) == -1) continue;
 
 			$market->price = AverageIncrement($market->price, $ticker->buy);
 			$market->price2 = AverageIncrement($market->price2, $ticker->sell);

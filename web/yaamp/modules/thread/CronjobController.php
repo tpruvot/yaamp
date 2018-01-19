@@ -143,12 +143,13 @@ class CronjobController extends CommonController
 			case 2:
 				if(!YAAMP_PRODUCTION) break;
 
-				doYobitTrading();
+				doBinanceTrading();
 				doCCexTrading();
 				doBterTrading();
 				doBleutradeTrading();
 				doKuCoinTrading();
 				doNovaTrading();
+				doYobitTrading();
 				doCoinsMarketsTrading();
 				break;
 

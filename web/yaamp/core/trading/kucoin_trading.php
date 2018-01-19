@@ -15,7 +15,7 @@ function doKuCoinTrading($quick=false)
 	if (exchange_get($exchange, 'disabled')) return;
 
 	$data = kucoin_api_user('account/balance');
-	if (!is_object($data) || !isset($data->data)) return;
+	if (!kucoin_result_valid($data)) return;
 
 	$savebalance = getdbosql('db_balances', "name='$exchange'");
 
@@ -46,6 +46,20 @@ function doKuCoinTrading($quick=false)
 				$market->ontrade = $balance->freezeBalance;
 				$market->balancetime = time();
 				$market->save();
+
+				$checked_today = cache()->get($exchange.'-deposit_address-check-'.$coin->symbol);
+				if ($coin->installed && !$checked_today) {
+					sleep(1);
+					$obj = kucoin_api_user("account/{$coin->symbol}/wallet/address");
+					if (!kucoin_result_valid($obj)) continue;
+					$result = $obj->data;
+					$deposit_address = objSafeVal($result,'address');
+					if (!empty($deposit_address) && $deposit_address != $market->deposit_address) {
+						debuglog("$exchange: updated {$coin->symbol} deposit address $deposit_address");
+						$market->save();
+					}
+					cache()->set($exchange.'-deposit_address-check-'.$coin->symbol, time(), 24*3600);
+				}
 			}
 		}
 	}

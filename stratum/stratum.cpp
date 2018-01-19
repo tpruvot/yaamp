@@ -35,7 +35,7 @@ int g_stratum_max_ttf;
 int g_stratum_max_cons = 5000;
 bool g_stratum_reconnect;
 bool g_stratum_renting;
-bool g_stratum_segwit;
+bool g_stratum_segwit = false;
 bool g_autoexchange = true;
 
 uint64_t g_max_shares = 0;

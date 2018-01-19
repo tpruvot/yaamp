@@ -122,6 +122,16 @@ class ExchangeCommand extends CConsoleCommand
 
 	public function testApiKeys()
 	{
+		if (!empty(EXCH_BINANCE_KEY)) {
+			$balance = binance_api_user('account');
+			if (!is_object($balance)) echo "binance error ".json_encode($balance)."\n";
+			else {
+				$assets = $balance->balances;
+				foreach ($assets as $asset) {
+					if ($asset->asset == 'BTC') echo("binance: ".json_encode($asset)."\n");
+				}
+			}
+		}
 		if (!empty(EXCH_BITSTAMP_KEY)) {
 			$balance = bitstamp_api_user('balance');
 			if (!is_array($balance)) echo "bitstamp error ".json_encode($balance)."\n";

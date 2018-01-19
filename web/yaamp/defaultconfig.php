@@ -26,6 +26,7 @@ if (!defined('YAAMP_PAYMENTS_MINI')) define('YAAMP_PAYMENTS_MINI', 0.001);
 if (!defined('YAAMP_ALLOW_EXCHANGE')) define('YAAMP_ALLOW_EXCHANGE', false);
 if (!defined('EXCH_AUTO_WITHDRAW')) define('EXCH_AUTO_WITHDRAW', 9999.9999);
 
+if (!defined('EXCH_BINANCE_KEY')) define('EXCH_BINANCE_KEY', '');
 if (!defined('EXCH_BITTREX_KEY')) define('EXCH_BITTREX_KEY', '');
 if (!defined('EXCH_BITSTAMP_ID')) define('EXCH_BITSTAMP_ID', '');
 if (!defined('EXCH_BITSTAMP_KEY')) define('EXCH_BITSTAMP_KEY','');

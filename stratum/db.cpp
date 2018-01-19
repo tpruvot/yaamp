@@ -288,7 +288,11 @@ void db_update_coinds(YAAMP_DB *db)
 			if (strcmp(coind->symbol, "CHC") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "CRW") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "VSX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "XLR") == 0) coind->oldmasternodes = true;
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////

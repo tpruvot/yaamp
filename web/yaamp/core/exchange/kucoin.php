@@ -1,9 +1,18 @@
 <?php
+
 // see https://kucoinapidocs.docs.apiary.io/
+
+function kucoin_result_valid($obj, $method='')
+{
+	if (!is_object($obj) || !isset($obj->data)) return false;
+	return true;
+}
+
 // https://api.kucoin.com/v1/open/symbols/?market=BTC
 
 function kucoin_api_query($method, $params='', $returnType='object')
 {
+	$exchange = 'kucoin';
 	$url = "https://api.kucoin.com/v1/$method/";
 	if (!empty($params))
 		$url .= "?$params";
@@ -16,12 +25,24 @@ function kucoin_api_query($method, $params='', $returnType='object')
 	curl_setopt($ch, CURLOPT_ENCODING , '');
 	//curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-	$execResult = curl_exec($ch);
-	if ($returnType == 'object')
-		$ret = json_decode($execResult);
-	else
-		$ret = json_decode($execResult,true);
+	$res = curl_exec($ch);
+	if($res === false) {
+		$e = curl_error($ch);
+		debuglog("$exchange: $method $e");
+		curl_close($ch);
+		return false;
+	}
 
+	if ($returnType == 'object')
+		$ret = json_decode($res);
+	else
+		$ret = json_decode($res,true);
+
+	if(!is_object($ret) && !is_array($ret)) {
+		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		debuglog("$exchange: $method failed ($status) ".strip_data($res));
+	}
+	curl_close($ch);
 	return $ret;
 }
 
@@ -29,6 +50,7 @@ function kucoin_api_query($method, $params='', $returnType='object')
 
 function kucoin_api_user($method, $params=NULL, $isPostMethod=false)
 {
+	$exchange = 'kucoin';
 	require_once('/etc/yiimp/keys.php');
 	if (!defined('EXCH_KUCOIN_SECRET')) define('EXCH_KUCOIN_SECRET', '');
 
@@ -75,7 +97,7 @@ function kucoin_api_user($method, $params=NULL, $isPostMethod=false)
 	$res = curl_exec($ch);
 	if($res === false) {
 		$e = curl_error($ch);
-		debuglog("kucoin: $e");
+		debuglog("$exchange: $method $e");
 		curl_close($ch);
 		return false;
 	}
@@ -83,7 +105,7 @@ function kucoin_api_user($method, $params=NULL, $isPostMethod=false)
 	$result = json_decode($res);
 	if(!is_object($result) && !is_array($result)) {
 		$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		debuglog("kucoin: $method failed ($status) ".strip_data($res));
+		debuglog("$exchange: $method failed ($status) ".strip_data($res));
 	}
 
 	curl_close($ch);
@@ -117,8 +139,8 @@ function kucoin_update_market($market)
 
 	$t1 = microtime(true);
 	$query = kucoin_api_query("$pair/open/tick");
-	if(!is_object($query) || !isset($query->data)) return false;
-	$ticker = $ticker->data;
+	if(!kucoin_result_valid($query)) return false;
+	$ticker = $query->data;
 
 	$price2 = ((double) $ticker->buy + (double)$ticker->sell)/2;
 	$market->price2 = AverageIncrement($market->price2, $price2);

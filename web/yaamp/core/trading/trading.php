@@ -1,5 +1,6 @@
 <?php
 require_once('poloniex_trading.php');
+require_once('binance_trading.php');
 require_once('bittrex_trading.php');
 require_once('bleutrade_trading.php');
 require_once('bter_trading.php');
@@ -22,6 +23,9 @@ function cancelExchangeOrder($order=false)
 		{
 			case 'yobit':
 				doYobitCancelOrder($order->uuid);
+				break;
+			case 'binance':
+				doBinanceCancelOrder($order->uuid);
 				break;
 			case 'c-cex':
 				doCCexCancelOrder($order->uuid);
@@ -57,6 +61,11 @@ function runExchange($exchangeName=false)
 			case 'alcurex':
 				//doAlcurexTrading(true);
 				updateAlcurexMarkets();
+				break;
+
+			case 'binance':
+				doBinanceTrading(true);
+				updateBinanceMarkets();
 				break;
 
 			case 'bter':

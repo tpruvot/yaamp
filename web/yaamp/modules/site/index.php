@@ -28,13 +28,13 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600)." hours";
 <!--  -->
 
 <div class="main-left-box">
-<div class="main-left-title">YII MINING POOL</div>
+<div class="main-left-title">YII MINING POOLS</div>
 <div class="main-left-inner">
 
 <ul>
 
-<li>YIIMP is a pool management solution based on the Yii Framework.</li>
-<li>This fork based on the Yaamp published source code will be soon another open source project.</li>
+<li>YiiMP is a pool management solution based on the Yii Framework.</li>
+<li>This fork was based on the yaamp source code and is now an open source project.</li>
 <li>No registration is required, we do payouts in the currency you mine. Use your wallet address as the username.</li>
 <li>&nbsp;</li>
 <li>Payouts are made automatically every <?= $payout_freq ?> for all balances above <b><?= $min_payout ?></b>, or <b><?= $min_sunday ?></b> on Sunday.</li>
