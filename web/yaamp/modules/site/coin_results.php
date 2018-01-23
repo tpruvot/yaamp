@@ -395,7 +395,8 @@ if ($DCR) {
 		if ($lastday == '' && count($txs) == $maxrows)
 			$lastday = strftime('%F', $tx['time']);
 	}
-	ksort($txs_array); // reversed order
+	if ($info['version'] < 1010200)
+		ksort($txs_array); // was in reversed order
 }
 
 $rows = 0;

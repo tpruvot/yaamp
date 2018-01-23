@@ -179,7 +179,8 @@ if (!empty($txs_array)) {
 		if ($lastday == '' && count($txs) == $maxrows)
 			$lastday = strftime('%F', arraySafeVal($tx,'blocktime', $tx['time']));
 	}
-	ksort($txs_array);
+	if ($info['version'] < 1010200)
+		ksort($txs_array);
 }
 
 if (!empty($tickets)) foreach ($tickets['hashes'] as $n => $txid) {
@@ -200,7 +201,8 @@ if (!empty($tickets)) foreach ($tickets['hashes'] as $n => $txid) {
 		$stx['stx'] = $stx;
 		$txs_array[$k] = $stx;
 	}
-	ksort($txs_array);
+	if ($info['version'] < 1010200)
+		ksort($txs_array);
 }
 
 $rows = 0;
