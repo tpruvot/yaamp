@@ -163,8 +163,11 @@ function getChipName($row)
 
 	} else {
 
-		// nNidia
-		$words = explode(' ', $row['device']);
+		// nVidia
+		$device = str_replace(' with Max-Q Design', '', $row['device']);
+		$device = str_replace(' COLLECTORS EDITION', '', $device);
+
+		$words = explode(' ', $device);
 		$chip = array_pop($words);
 		$vendorid = $row['vendorid'];
 		if (!is_numeric($chip)) {
@@ -177,6 +180,7 @@ function getChipName($row)
 			$chip = str_replace('760 Ti OEM','760 Ti', $chip);
 			$chip = str_replace(' (Pascal)',' Pascal', $chip);
 			$chip = str_replace('Tesla P100-SXM2-16GB','Tesla P100', $chip);
+			$chip = str_replace('Tesla P100-PCIE-16GB','Tesla P100', $chip);
 			$chip = str_replace('Tesla V100-SXM2-16GB','Tesla V100', $chip);
 			$chip = preg_replace('/ASUS ([6-9]\d\dM)/','\1', $chip); // ASUS 940M
 			$chip = preg_replace('/MSI ([6-9]\d\dM)/','\1', $chip); // MSI 840M

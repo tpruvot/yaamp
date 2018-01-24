@@ -22,6 +22,11 @@ function BenchUpdateChips()
 	foreach ($benchs as $bench) {
 		if (empty($bench->vendorid) || empty($bench->device)) continue;
 
+		if ($bench->algo == 'x16r') { // not constant, inaccurate
+			$bench->delete();
+			continue;
+		}
+
 		$dups = getdbocount('db_benchmarks', "vendorid=:vid AND client=:client AND os=:os AND driver=:drv AND throughput=:thr AND userid=:uid",
 			array(':vid'=>$bench->vendorid, ':client'=>$bench->client, ':os'=>$bench->os, ':drv'=>$bench->driver,':thr'=>$bench->throughput,':uid'=>$bench->userid)
 		);
@@ -45,6 +50,10 @@ function BenchUpdateChips()
 			} elseif ($cnt > 5 && $bench->khps < $avg / 2) {
 				$user = getdbo('db_accounts', $bench->userid);
 				debuglog("bench: {$bench->device} ignored, bad {$bench->algo} hashrate {$bench->khps} kHs by {$user->username}");
+				$bench->delete();
+				continue;
+			}
+			if ($bench->chip == 'GPU' || $bench->chip == 'Graphics Device') {
 				$bench->delete();
 				continue;
 			}
