@@ -200,7 +200,7 @@ void db_update_coinds(YAAMP_DB *db)
 			coind->newcoind = false;
 
 		strcpy(coind->name, row[1]);
-		strcpy(coind->symbol, row[20];
+		strcpy(coind->symbol, row[20]);
 		// optional coin filters
 		if(coind->newcoind) {
 			bool ignore = false;
