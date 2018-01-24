@@ -72,6 +72,7 @@ function yaamp_algo_mBTC_factor($algo)
 	case 'decred':
 	case 'keccak':
 	case 'keccakc':
+	case 'lbry':
 	case 'vanilla':
 		return 1000;
 	default:

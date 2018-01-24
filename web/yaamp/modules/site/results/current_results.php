@@ -169,11 +169,7 @@ echo "</tr>";
 
 echo "</table>";
 
-echo "<p style='font-size: .8em'>
-		&nbsp;* best normalized multi algo<br>
-		&nbsp;** fees are now fixed manually.<br>
-		&nbsp;*** values in mBTC/Mh/day (mBTC/Gh/day for sha256 and blake algos)<br>
-		</p>";
+echo '<p style="font-size: .8em;">&nbsp;* values in mBTC/MH/day, per GH for sha & blake algos</p>';
 
 echo "</div></div><br>";
 ?>
