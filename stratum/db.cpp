@@ -263,7 +263,6 @@ void db_update_coinds(YAAMP_DB *db)
 		if(row[18]) coind->charity_percent = atof(row[18]);
 		if(row[19]) coind->reward_mul = atof(row[19]);
 
-		strcpy(coind->symbol, row[20]);
 		if(row[21]) coind->isaux = atoi(row[21]);
 
 		if(row[22] && row[23]) coind->actual_ttf = min(atoi(row[22]), atoi(row[23]));
