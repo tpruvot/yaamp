@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tpruvot/yiimp.svg?branch=next)](https://travis-ci.org/tpruvot/yiimp)
+
 #yiimp - yaamp fork
 
 Required:
