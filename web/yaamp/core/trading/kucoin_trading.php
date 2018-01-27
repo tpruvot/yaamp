@@ -25,6 +25,7 @@ function doKuCoinTrading($quick=false)
 		if ($balance->coinType == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->balance;
+				$savebalance->onsell = $balance->freezeBalance;
 				$savebalance->save();
 			}
 			continue;

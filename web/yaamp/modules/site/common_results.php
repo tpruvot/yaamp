@@ -222,34 +222,6 @@ echo '</thead>';
 
 // ----------------------------------------------------------------------------------------------------
 
-if (YAAMP_ALLOW_EXCHANGE) {
-echo '<tr class="ssrow"><td>sell orders</td>';
-foreach($markets as $market)
-{
-	$exchange = $market->name;
-	$onsell = bitcoinvaluetoa(dboscalar("select sum(amount*bid) from orders where market='$exchange'"));
-	$salebalances[$exchange] = $onsell;
-
-	if($onsell > 0.2)
-		echo '<td align="right" style="color: white; background-color: #d9534f">'.$onsell.'</td>';
-	else if($onsell > 0.1)
-		echo '<td align="right" style="color: white; background-color: #f0ad4e">'.$onsell.'</td>';
-	else if($onsell == 0.0)
-		echo '<td align="right">-</td>';
-	else
-		echo '<td align="right">'.$onsell.'</td>';
-
-	$total_onsell += $onsell;
-}
-
-$total_onsell = bitcoinvaluetoa($total_onsell);
-
-echo '<td align="right" style="color: white; background-color: #c5b47f">'.$total_onsell.'</td>';
-echo '</tr>';
-} // YAAMP_ALLOW_EXCHANGE
-
-// ----------------------------------------------------------------------------------------------------
-
 echo '<tr class="ssrow"><td>BTC</td>';
 foreach($markets as $market)
 {
@@ -270,6 +242,45 @@ foreach($markets as $market)
 $total_balance = bitcoinvaluetoa($total_balance);
 
 echo '<td align="right" style="color: white; background-color: #eaa228">'.$total_balance.'</td>';
+echo '</tr>';
+
+// ----------------------------------------------------------------------------------------------------
+
+echo '<tr class="ssrow"><td>orders</td>';
+if (YAAMP_ALLOW_EXCHANGE) {
+	// yaamp mode
+	foreach($markets as $market) {
+		$exchange = $market->name;
+		$onsell = bitcoinvaluetoa(dboscalar("SELECT sum(amount*bid) FROM orders WHERE market='$exchange'"));
+		$salebalances[$exchange] = $onsell;
+
+		if($onsell > 0.2)
+			echo '<td align="right" style="color: white; background-color: #d9534f">'.$onsell.'</td>';
+		else if($onsell > 0.1)
+			echo '<td align="right" style="color: white; background-color: #f0ad4e">'.$onsell.'</td>';
+		else if($onsell == 0.0)
+			echo '<td align="right">-</td>';
+		else
+			echo '<td align="right">'.$onsell.'</td>';
+
+		$total_onsell += $onsell;
+	}
+} else {
+	// yiimp mode
+	$ontrade = dbolist("SELECT name, onsell FROM balances B ORDER by name");
+	foreach($ontrade as $row) {
+		$exchange = $row['name'];
+		$onsell = bitcoinvaluetoa($row['onsell']);
+		$salebalances[$exchange] = $onsell;
+
+		echo '<td align="right">'.($onsell == 0 ? '-' : $onsell).'</td>';
+
+		$total_onsell += (double) $onsell;
+	}
+
+}
+$total_onsell = bitcoinvaluetoa($total_onsell);
+echo '<td align="right">'.$total_onsell.'</td>';
 echo '</tr>';
 
 // ----------------------------------------------------------------------------------------------------

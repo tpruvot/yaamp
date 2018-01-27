@@ -100,7 +100,8 @@ function getCexIoBalances()
 		$balances = cexio_api_user('balance');
 		if (is_array($balances)) {
 			$b = arraySafeVal($balances, 'BTC');
-			$savebalance->balance = arraySafeVal($b, 'available',0.) + arraySafeVal($b, 'orders',0.);
+			$savebalance->balance = arraySafeVal($b, 'available',0.);
+			$savebalance->onsell = arraySafeVal($b, 'orders',0.);
 			$savebalance->save();
 		}
 	}

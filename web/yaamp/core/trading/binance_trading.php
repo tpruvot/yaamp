@@ -25,6 +25,7 @@ function doBinanceTrading($quick=false)
 		if ($balance->asset == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->free;
+				$savebalance->onsell = $balance->locked;
 				$savebalance->save();
 			}
 			continue;

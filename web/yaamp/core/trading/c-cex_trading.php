@@ -39,6 +39,7 @@ function doCCexTrading($quick=false)
 		if ($symbol == 'BTC') {
 			if (!is_object($savebalance)) continue;
 			$savebalance->balance = arraySafeVal($balance,'Available');
+			$savebalance->onsell = arraySafeVal($balance,'Balance',0.) - arraySafeVal($balance,'Available');
 			$savebalance->save();
 			continue;
 		}
