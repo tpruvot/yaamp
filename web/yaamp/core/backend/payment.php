@@ -127,9 +127,10 @@ function BackendCoinPayments($coin)
 		send_email_alert('payouts', "$coin->symbol payout problem detected", $msg);
 
 		$coef = 0.5; // so pay half for now...
-		$total_to_pay = $total_to_pay * $coef;
+		$total_to_pay = 0;
 		foreach ($addresses as $key => $val) {
 			$addresses[$key] = round($val * $coef,8);
+			$total_to_pay += round($val * $coef,8);
 		}
 		// still not possible, skip payment
 		if ($info['balance']-$txfee < $total_to_pay)
