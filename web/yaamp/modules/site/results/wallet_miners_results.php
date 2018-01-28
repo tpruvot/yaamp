@@ -82,6 +82,7 @@ if(count($workers))
 	echo "<th align=left>Details</th>";
 	if ($this->admin) echo "<th>IP</th>";
 	echo "<th align=left>Extra</th>";
+	echo "<th align=left>Woker Name</th>";
 	echo "<th align=left>Algo</th>";
 	echo "<th align=right>Diff</th>";
 	echo "<th align=right title='extranonce.subscribe'>ES**</th>";
@@ -111,6 +112,7 @@ if(count($workers))
 		echo '<td title="'.$worker->version.'">'.$version.'</td>';
 		if ($this->admin) echo "<td>{$worker->ip}</td>";
 		echo '<td title="'.$worker->password.'">'.$password.'</td>';
+		echo '<td>'.$worker->worker.'</td>';
 		echo '<td>'.$worker->algo.'</td>';
 		echo '<td align="right">'.$worker->difficulty.'</td>';
 		echo '<td align="right">'.$subscribe.'</td>';
