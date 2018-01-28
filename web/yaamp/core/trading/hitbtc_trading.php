@@ -25,6 +25,7 @@ function doHitBTCTrading($quick=false)
 		if ($balance->currency_code == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->cash;
+				$savebalance->onsell = $balance->reserved;
 				$savebalance->save();
 			}
 			continue;

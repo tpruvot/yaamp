@@ -200,6 +200,17 @@ void db_update_coinds(YAAMP_DB *db)
 			coind->newcoind = false;
 
 		strcpy(coind->name, row[1]);
+		strcpy(coind->symbol, row[20]);
+		// optional coin filters
+		if(coind->newcoind) {
+			bool ignore = false;
+			if (strlen(g_stratum_coin_include) && !strstr(g_stratum_coin_include, coind->symbol)) ignore = true;
+			if (strlen(g_stratum_coin_exclude) && strstr(g_stratum_coin_exclude, coind->symbol)) ignore = true;
+			if (ignore) {
+				object_delete(coind);
+				continue;
+			}
+		}
 
 		if(row[7]) strcpy(coind->wallet, row[7]);
 		if(row[6]) strcpy(coind->rpcencoding, row[6]);
@@ -252,7 +263,6 @@ void db_update_coinds(YAAMP_DB *db)
 		if(row[18]) coind->charity_percent = atof(row[18]);
 		if(row[19]) coind->reward_mul = atof(row[19]);
 
-		strcpy(coind->symbol, row[20]);
 		if(row[21]) coind->isaux = atoi(row[21]);
 
 		if(row[22] && row[23]) coind->actual_ttf = min(atoi(row[22]), atoi(row[23]));
@@ -292,6 +302,7 @@ void db_update_coinds(YAAMP_DB *db)
 			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "MAG") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "VSX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "XLR") == 0) coind->oldmasternodes = true;
@@ -302,15 +313,6 @@ void db_update_coinds(YAAMP_DB *db)
 		//coind->touch = true;
 		if(coind->newcoind)
 		{
-			// optional coin filter
-			bool ignore = false;
-			if (strlen(g_stratum_coin_include) && !strstr(g_stratum_coin_include, coind->symbol)) ignore = true;
-			if (strlen(g_stratum_coin_exclude) && strstr(g_stratum_coin_exclude, coind->symbol)) ignore = true;
-			if (ignore) {
-				object_delete(coind);
-				continue;
-			}
-
 			debuglog("connecting to coind %s\n", coind->symbol);
 
 			bool b = rpc_connect(&coind->rpc);

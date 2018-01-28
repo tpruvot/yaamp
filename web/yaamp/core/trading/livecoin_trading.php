@@ -52,10 +52,14 @@ function doLiveCoinTrading($quick = false)
 
 	foreach ($balances as $balance) {
 		if ($balance->currency == 'BTC' && $balance->type == "available") {
-			if (!is_object($savebalance)) {
-				continue;
-			}
+			if (!is_object($savebalance)) continue;
 			$savebalance->balance = $balance->value;
+			$savebalance->save();
+			continue;
+		}
+		if ($balance->currency == 'BTC' && $balance->type == "trade") {
+			if (!is_object($savebalance)) continue;
+			$savebalance->onsell = $balance->value;
 			$savebalance->save();
 			continue;
 		}

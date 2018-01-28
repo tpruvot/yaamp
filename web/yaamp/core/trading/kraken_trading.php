@@ -10,12 +10,16 @@ function doKrakenTrading($quick=false)
 	$balances = kraken_api_user('Balance');
 	if(!$balances || !is_array($balances)) return;
 
+	//$total = kraken_api_user('TradeBalance', array('asset'=>'XXBT'));
+	//if(!$total || !is_array($total)) return;
+
 	foreach($balances as $symbol => $balance)
 	{
 		if ($symbol == 'BTC') {
 			$db_balance = getdbosql('db_balances', "name='$exchange'");
 			if ($db_balance) {
 				$db_balance->balance = $balance;
+				//$db_balance->onsell = (double) $total['result']['tb'] - $balance;
 				$db_balance->save();
 			}
 			continue;

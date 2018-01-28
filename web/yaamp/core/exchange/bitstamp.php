@@ -86,7 +86,8 @@ function getBitstampBalances()
 	if (is_object($savebalance)) {
 		$balances = bitstamp_api_user('balance');
 		if (is_array($balances)) {
-			$savebalance->balance = arraySafeVal($balances, 'btc_balance');
+			$savebalance->balance = arraySafeVal($balances, 'btc_balance',0.) - arraySafeVal($balances, 'btc_reserved');
+			$savebalance->onsell = arraySafeVal($balances, 'btc_reserved');
 			$savebalance->save();
 		}
 	}

@@ -37,6 +37,7 @@ function doYobitTrading($quick=false)
 		if ($symbol == 'btc') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $amount;
+				$savebalance->onsell = arraySafeVal($balances['return']['funds_incl_orders'],$symbol,0.) - $amount;
 				$savebalance->save();
 			}
 			continue;
@@ -51,6 +52,7 @@ function doYobitTrading($quick=false)
 				$market = getdbosql('db_markets', "coinid=:coinid AND name='$exchange'", array(':coinid'=>$coin->id));
 				if (!$market) continue;
 				$market->balance = $amount;
+				$market->ontrade = arraySafeVal($balances['return']['funds_incl_orders'],$symbol,0.) - $amount;
 				$market->balancetime = time();
 				$market->save();
 			}

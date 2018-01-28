@@ -33,7 +33,8 @@ function doPoloniexTrading()
 	{
 		if ($symbol == 'BTC') {
 			if (is_object($savebalance)) {
-				$savebalance->balance = $balance['available'];
+				$savebalance->balance = arraySafeVal($balance,'available');
+				$savebalance->onsell = arraySafeVal($balance,'onOrders');
 				$savebalance->save();
 			}
 			continue;

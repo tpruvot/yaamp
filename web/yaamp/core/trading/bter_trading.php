@@ -27,6 +27,7 @@ function doBterTrading($quick=false)
 		if ($symbol == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->available;
+				$savebalance->onsell = arraySafeVal($balances['locked_funds'],$symbol,0);
 				$savebalance->save();
 			}
 			continue;

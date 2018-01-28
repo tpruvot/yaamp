@@ -87,6 +87,10 @@ function runExchange($exchangeName=false)
 				updateBittrexMarkets();
 				break;
 
+			case 'cexio':
+				getCexIoBalances();
+				break;
+
 			case 'c-cex':
 				doCCexTrading(true);
 				updateCCexMarkets();

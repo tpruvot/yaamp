@@ -27,6 +27,7 @@ function doCryptopiaTrading($quick=false)
 	$savebalance = getdbosql('db_balances', "name='$exchange'");
 	if (is_object($savebalance)) {
 		$savebalance->balance = 0;
+		$savebalance->onsell = 0;
 		$savebalance->save();
 	}
 
@@ -36,6 +37,7 @@ function doCryptopiaTrading($quick=false)
 		if ($balance->Symbol == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->Available;
+				$savebalance->onsell = $balance->HeldForTrades;
 				$savebalance->save();
 			}
 			continue;

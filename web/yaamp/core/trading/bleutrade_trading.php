@@ -28,6 +28,7 @@ function doBleutradeTrading($quick=false)
 	$savebalance = getdbosql('db_balances', "name='$exchange'");
 	if (is_object($savebalance)) {
 		$savebalance->balance = 0;
+		$savebalance->onsell = 0;
 		$savebalance->save();
 	}
 
@@ -36,6 +37,7 @@ function doBleutradeTrading($quick=false)
 		if ($balance->Currency == 'BTC') {
 			if (is_object($savebalance)) {
 				$savebalance->balance = $balance->Available;
+				$savebalance->onsell = (double) $balance->Balance - (double) $balance->Available;
 				$savebalance->save();
 			}
 			continue;
