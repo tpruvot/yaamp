@@ -129,7 +129,7 @@ function BackendCoinPayments($coin)
 		$coef = 0.5; // so pay half for now...
 		$total_to_pay = $total_to_pay * $coef;
 		foreach ($addresses as $key => $val) {
-			$addresses[$key] = $val * $coef;
+			$addresses[$key] = round($val * $coef,8);
 		}
 		// still not possible, skip payment
 		if ($info['balance']-$txfee < $total_to_pay)
