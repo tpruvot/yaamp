@@ -12,6 +12,10 @@ $height = '240px';
 $wallet = user()->getState('yaamp-wallet');
 $user = getuserparam($wallet);
 
+$algo_unit = 'Mh';
+$algo_factor = yaamp_algo_mBTC_factor($algo);
+if ($algo_factor == 1000) $algo_unit = 'Gh';
+
 echo <<<end
 
 <table cellspacing=20 width=100%>
@@ -170,7 +174,7 @@ function graph_init_price(data)
 	var t = $.parseJSON(data);
 	var plot1 = $.jqplot('graph_results_price', t,
 	{
-		title: '<b>Estimate (mBTC/Mh/day)</b>',
+		title: '<b>Estimate (mBTC/{$algo_unit}/day)</b>',
 		axes: {
 			xaxis: {
 				tickInterval: 7200,

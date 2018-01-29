@@ -38,6 +38,12 @@ table.dataGrid tr.bold
 	font-weight: bold;
 }
 
+table.dataGrid th.tablesorter-headerAsc,
+table.dataGrid th.tablesorter-headerDesc {
+	color: blue;
+	/* background-color: #D2E3FB; */
+}
+
 /**********************************************/
 
 table.dataGrid2
@@ -80,16 +86,18 @@ table.dataGrid2 thead tr .header {
 }
 
 table.dataGrid2 thead tr .headerSortUp {
-	background-image: url(../images/asc.gif);
+	background-image: url(/images/ui/asc.gif);
 }
 
 table.dataGrid2 thead tr .headerSortDown {
-	background-image: url(../images/desc.gif);
+	background-image: url(/images/ui/desc.gif);
 }
 
-/*table.dataGrid thead tr .headerSortDown, table.dataGrid thead tr .headerSortUp {
-	background-color: #D2E3FB;
-}*/
+table.dataGrid2 th.tablesorter-headerAsc,
+table.dataGrid2 th.tablesorter-headerDesc {
+	color: #306495;
+	/* background-color: #D2E3FB; */
+}
 
 /**********************************************/
 table.reportgrid1
@@ -113,7 +121,7 @@ table.reportgrid1 th
 
 table.reportgrid1 tr.odd
 {
-	background: #F5F5F5;
+	background: #f5f5f5;
 }
 
 table.reportgrid1 tr.bold
@@ -121,4 +129,15 @@ table.reportgrid1 tr.bold
 	font-weight: bold;
 }
 
+/**********************************************/
+
+.ssrow:hover
+{
+	background-color: #e3f0f8;
+}
+
+.ssselected
+{
+	background-color: #d3e0e8;
+}
 

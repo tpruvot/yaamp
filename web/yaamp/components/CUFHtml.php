@@ -17,7 +17,7 @@ class CUFHtml extends CHtml
      return parent::beginForm($action, $method, $htmlOptions);
    }
 
-  public static function errorSummary($model,$header=null,$footer=null)
+  public static function errorSummary($model,$header=null,$footer=null,$opt=array())
   {
     $content='';
     if(!is_array($model))
@@ -60,7 +60,7 @@ class CUFHtml extends CHtml
   {
     $realAttribute=$attribute;
     self::resolveName($model,$attribute); // strip off square brackets if any
-    $htmlOptions['required']=$model->isAttributeRequired($attribute,self::$scenario);
+    $htmlOptions['required']=$model->isAttributeRequired($attribute);
     return self::activeLabel($model,$realAttribute,$htmlOptions);
   }
 

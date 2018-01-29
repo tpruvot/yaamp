@@ -21,6 +21,7 @@ class db_payouts extends CActiveRecord
 	public function relations()
 	{
 		return array(
+			'account' => array(self::BELONGS_TO, 'db_accounts', 'account_id', 'alias'=>'account'),
 		);
 	}
 

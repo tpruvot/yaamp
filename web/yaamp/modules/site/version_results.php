@@ -1,5 +1,8 @@
 <?php
 
+if (isset($_GET['algo']))
+	user()->setState('yaamp-algo', $_GET['algo']);
+
 $algo = user()->getState('yaamp-algo');
 $target = yaamp_hashrate_constant($algo);
 $interval = yaamp_hashrate_step();

@@ -24,6 +24,9 @@ void get_random_key(char *key)
 
 YAAMP_CLIENT *client_find_notify_id(const char *notify_id, bool reconnecting)
 {
+	if (!notify_id || !strlen(notify_id))
+		return NULL;
+
 	g_list_client.Enter();
 	for(CLI li = g_list_client.first; li; li = li->next)
 	{
@@ -100,14 +103,47 @@ int client_call(YAAMP_CLIENT *client, const char *method, const char *format, ..
 	return socket_send(client->sock, "{\"id\":null,\"method\":\"%s\",\"params\":%s}\n", method, buffer);
 }
 
+int client_ask(YAAMP_CLIENT *client, const char *method, const char *format, ...)
+{
+	char buffer[YAAMP_SMALLBUFSIZE];
+	va_list args;
+	int64_t id = client->shares;
+
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+
+	int ret = socket_send(client->sock, "{\"id\":%d,\"method\":\"%s\",\"params\":%s}\n", id, method, buffer);
+	if (ret == -1) {
+		debuglog("unable to ask %s\n", method);
+		return 0; // -errno
+	}
+	client->reqid = id;
+	return id;
+}
+
 void client_block_ip(YAAMP_CLIENT *client, const char *reason)
 {
 	char buffer[1024];
+	sprintf(buffer, "iptables -A INPUT -s %s -p tcp --dport %d -j REJECT", client->sock->ip, g_tcp_port);
+	if(strcmp("0.0.0.0", client->sock->ip) == 0) return;
+	if(strstr(client->sock->ip, "192.168.")) return;
+	if(strstr(client->sock->ip, "127.0.0.")) return;
 
-	sprintf(buffer, "iptables -A INPUT -s %s -j DROP", client->sock->ip);
 	int s = system(buffer);
+	stratumlog("%s: %s blocked (%s)\n", g_stratum_algo, client->sock->ip, reason);
+}
 
-	stratumlog("%s %s blocked (%s)\n", client->sock->ip, client->username, reason);
+void client_block_ipset(YAAMP_CLIENT *client, const char *ipset_name)
+{
+	char buffer[1024];
+	sprintf(buffer, "ipset -q -A %s %s", ipset_name, client->sock->ip);
+	if(strcmp("0.0.0.0", client->sock->ip) == 0) return;
+	if(strstr(client->sock->ip, "192.168.")) return;
+	if(strstr(client->sock->ip, "127.0.0.")) return;
+
+	int s = system(buffer);
+	stratumlog("%s: %s blocked via ipset %s %s\n", g_stratum_algo, client->sock->ip, ipset_name, client->username);
 }
 
 bool client_reset_multialgo(YAAMP_CLIENT *client, bool first)
@@ -147,11 +183,11 @@ bool client_reset_multialgo(YAAMP_CLIENT *client, bool first)
 		int e = time(NULL) - client->last_best;
 		double d = best->algo->profit*best->factor - current->algo->profit*current->factor;
 		double p = d/best->algo->profit/best->factor;
-
-//		debuglog("current %s %f\n", current->algo->name, current->algo->profit*current->factor);
-//		debuglog("best    %s %f\n", best->algo->name, best->algo->profit*best->factor);
-//		debuglog(" %d * %f = %f --- percent %f %f\n", e, d, e*d, p, e*p);
-
+#ifdef DEBUG_BEST_MULTI
+		debuglog("current %s %f\n", current->algo->name, current->algo->profit*current->factor);
+		debuglog("best    %s %f\n", best->algo->name, best->algo->profit*best->factor);
+		debuglog(" %d * %f = %f --- percent %f %f\n", e, d, e*d, p, e*p);
+#endif
 		if(p < 0.02) return false;
 		if(e*p < 100) return false;
 	}

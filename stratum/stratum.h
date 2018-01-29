@@ -32,6 +32,7 @@ using namespace std;
 
 #define YAAMP_RESTARTDELAY		(24*60*60)
 #define YAAMP_MAXJOBDELAY		(2*60)
+#define CURL_RPC_TIMEOUT		(30)
 
 #define YAAMP_MS				1000
 #define YAAMP_SEC				1000000
@@ -73,14 +74,24 @@ extern char g_sql_host[1024];
 extern char g_sql_database[1024];
 extern char g_sql_username[1024];
 extern char g_sql_password[1024];
+extern int g_sql_port;
 
-extern char g_stratum_algo[1024];
+extern char g_stratum_coin_include[256];
+extern char g_stratum_coin_exclude[256];
+
+extern char g_stratum_algo[256];
 extern double g_stratum_difficulty;
 
+extern int g_stratum_max_cons;
 extern int g_stratum_max_ttf;
 extern bool g_stratum_reconnect;
 extern bool g_stratum_renting;
+extern bool g_stratum_segwit;
 
+extern uint64_t g_max_shares;
+extern uint64_t g_shares_counter;
+
+extern bool g_allow_rolltime;
 extern time_t g_last_broadcasted;
 
 extern struct ifaddrs *g_ifaddr;
@@ -88,6 +99,8 @@ extern struct ifaddrs *g_ifaddr;
 extern pthread_mutex_t g_db_mutex;
 extern pthread_mutex_t g_nonce1_mutex;
 extern pthread_mutex_t g_job_create_mutex;
+
+extern volatile bool g_exiting;
 
 #include "db.h"
 #include "object.h"
@@ -103,6 +116,8 @@ extern YAAMP_DB *g_db;
 extern YAAMP_ALGO g_algos[];
 extern YAAMP_ALGO *g_current_algo;
 
+extern bool g_autoexchange;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 YAAMP_ALGO *stratum_find_algo(const char *name);
@@ -116,27 +131,58 @@ void scrypt_1024_1_1_256(const unsigned char *input, unsigned char *output);
 void scrypt_N_R_1_256(const char* input, char* output, uint32_t N, uint32_t R, uint32_t len);
 }
 
+void sha256_hash_hex(const char *input, char *output, unsigned int len);
 void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 
 #include "algos/c11.h"
 #include "algos/x11.h"
+#include "algos/x11evo.h"
 #include "algos/x13.h"
 #include "algos/x14.h"
 #include "algos/x15.h"
+#include "algos/x16r.h"
+#include "algos/x17.h"
+#include "algos/xevan.h"
+#include "algos/hmq17.h"
 #include "algos/nist5.h"
 #include "algos/fresh.h"
+#include "algos/hsr14.h"
 #include "algos/quark.h"
 #include "algos/neoscrypt.h"
-#include "algos/Lyra2RE.h"
+#include "algos/lyra2re.h"
+#include "algos/lyra2v2.h"
+#include "algos/lyra2z.h"
 #include "algos/blake.h"
+#include "algos/blakecoin.h"
+#include "algos/blake2.h"
 #include "algos/qubit.h"
 #include "algos/groestl.h"
+#include "algos/jha.h"
 #include "algos/skein.h"
 #include "algos/keccak.h"
+#include "algos/sha256t.h"
+#include "algos/skunk.h"
+#include "algos/timetravel.h"
+#include "algos/bitcore.h"
 
-//#include "algos/whirlpoolx.h"
-//#include "algos/zr5.h"
-//#include "jha.h"
-//#include "hash/m7m.h"
-
+#include "algos/bastion.h"
+#include "algos/bmw.h"
+#include "algos/deep.h"
+#include "algos/lbry.h"
+#include "algos/luffa.h"
+#include "algos/pentablake.h"
+#include "algos/whirlpool.h"
+#include "algos/whirlpoolx.h"
+#include "algos/skein2.h"
+#include "algos/yescrypt.h"
+#include "algos/zr5.h"
+#include "algos/hive.h"
+#include "algos/sib.h"
+#include "algos/m7m.h"
+#include "algos/phi.h"
+#include "algos/polytimos.h"
+#include "algos/tribus.h"
+#include "algos/veltor.h"
+#include "algos/velvet.h"
+#include "algos/argon2a.h"
 

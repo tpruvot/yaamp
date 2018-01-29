@@ -6,6 +6,8 @@ $s = 4*60*60;
 $t = time() - 7*24*60*60;
 $stats = getdbolist('db_hashstats', "time>$t and algo=:algo", array(':algo'=>$algo));
 
+$algo_unit_factor = yaamp_algo_mBTC_factor($algo);
+
 $res = array();
 $first = 0;
 foreach($stats as $n)
@@ -19,16 +21,13 @@ foreach($stats as $n)
 	$res[$i] += $n->hashrate/4;
 }
 
-echo '[';
+$data = array();
 
 foreach($res as $i=>$n)
 {
-	$m = round($n/1000000, 3);
-	if($i != $first) echo ',';
+	$m = round($n/(1000000*$algo_unit_factor), 3);
 	$d = date('Y-m-d H:i:s', $i);
-	echo "[\"$d\",$m]";
+	$data[] = array($d, $m);
 }
 
-echo ']';
-
-
+echo json_encode($data);

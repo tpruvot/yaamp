@@ -25,6 +25,12 @@ if(!$refcoin)
 			You will not receive payments using this address.</div>";
 
 	$refcoin = getdbosql('db_coins', "symbol='BTC'");
+
+} elseif (!YAAMP_ALLOW_EXCHANGE && $user->coinid == 6 && $defaultalgo != 'sha256') {
+
+	echo "<div style='color: red; padding: 10px; '>This pool does not convert/trade currencies.
+		You will not receive payments using this BTC address.</div>";
+	return;
 }
 
 echo "<table class='dataGrid2'>";
@@ -110,34 +116,43 @@ $total_pending = bitcoinvaluetoa($total_pending);
 
 if(!$show_details && $total_unsold > 0)
 {
-	echo "<tr><td colspan=6 align=right>
-		<label style='font-size: .8em;'>
-			<input type='checkbox' onclick='javascript:main_wallet_refresh_details()'>
+	echo '
+	<tr><td colspan="6" align="right">
+		<label style="font-size: .8em;">
+			<input type="checkbox" onclick="javascript:main_wallet_refresh_details()">
 			Show Details
 		</label>
-	</td></tr>";
+	</td></tr>';
 }
 
-echo "<tr class='ssrow' style='border-top: 3px solid #eee;'>";
+echo '<tr class="ssrow" style="border-top: 3px solid #eee;">';
 
-echo "<td valign=top><img width=16 src='$refcoin->image'></td>";
-echo "<td valign=top><b>";
+echo '<td valign="top"><img width="16" src="'.$refcoin->image.'"></td>';
+echo '<td valign="top"><b>';
 
 if($refcoin->symbol == 'BTC')
-	echo "$refcoin->name";
+	echo $refcoin->name;
 else
-	echo "<a href='/site/block?id=$refcoin->id'>$refcoin->name</a>";
+	echo '<a href="/site/block?id='.$refcoin->id.'">'.$refcoin->name.'</a>';
 
-echo "<br><span style='font-size: .8em;'>(total pending)</span></b></td>";
+echo '<br/><span style="font-size: .8em;"">(total pending)</span></b></td>';
 
-echo "<td valign=top align=right style='font-size: .8em;'>$unconfirmed</td>";
-echo "<td valign=top align=right style='font-size: .8em;'>$confirmed</td>";
-echo "<td valign=top align=right style='font-size: .8em;'></td>";
-echo "<td valign=top align=right style='font-size: .8em;'>$total_unsold $refcoin->symbol</td>";
+echo '<td valign="top" align="right" style="font-size: .8em;">'.$unconfirmed.'</td>';
+echo '<td valign="top" align="right" style="font-size: .8em;">'.$confirmed.'</td>';
+echo '<td valign="top" align="right" style="font-size: .8em;"></td>';
+echo '<td valign="top" align="right" style="font-size: .8em;">'.$total_unsold.' '.$refcoin->symbol.'</td>';
 
 echo "</tr>";
 
-echo "<tr><td style='font-size: .7em;'>&nbsp;</td></tr>";
+// ////////////////////////////////////////////////////////////////////////////
+
+$fees_notice = '';
+if ($user->donation > 0) {
+	$fees_notice = 'Currently donating '.$user->donation.' % of the rewards.';
+} else if ($user->no_fees == 1) {
+	$fees_notice = 'Currently mining without pool fees.';
+}
+echo '<tr><td colspan="6" style="text-align:right; font-size: .8em;"><b>'.$fees_notice.'</b></td></tr>';
 
 // ////////////////////////////////////////////////////////////////////////////
 
@@ -196,18 +211,27 @@ echo "</table>";
 
 echo "</div>";
 
-$usd = number_format($mining->usdbtc, 2, '.', ' ');
-echo "<p style='font-size: .8em'>
-	&nbsp;* approximate from current exchange rates<br>
-	&nbsp;** bitstamp <b>$usd</b> USD/BTC
-	</p>";
+echo '<p style="font-size: .8em; margin-top: 0; padding-left: 4px;">';
+echo '* approximate from current exchange rates<br/>';
+if ($refcoin->symbol == 'BTC') {
+	$usd = number_format($mining->usdbtc, 2, '.', ' ');
+	echo '** bitstamp <b>$usd</b> USD/BTC';
+}
+echo '</p>';
 
-echo "</div><br>";
+if ($refcoin->payout_min) {
+	echo '<p style="font-size: .8em; padding-left: 4px;">';
+	echo '<b>Note:</b> Minimum payout for this wallet is '.($refcoin->payout_min).' '.$refcoin->symbol;
+	echo '</p>';
+}
 
-WriteBoxHeader("Last 24 Hours Payouts: $user->username");
+echo '</div><br/>';
+
+$header = "Last 24 Hours Payouts: ".$user->username;
+WriteBoxHeader($header);
 
 $t = time()-24*60*60;
-$list = getdbolist('db_payouts', "account_id=$user->id and time>$t order by time desc");
+$list = getdbolist('db_payouts', "account_id={$user->id} AND time>$t ORDER BY time DESC");
 
 echo "<table  class='dataGrid2'>";
 
@@ -219,37 +243,87 @@ echo "<th>Tx</th>";
 echo "</tr>";
 echo "</thead>";
 
-$total = 0;
+$total = 0; $firstid = 999999999;
 foreach($list as $payout)
 {
 	$d = datetoa2($payout->time);
 	$amount = bitcoinvaluetoa($payout->amount);
+	$firstid = min($firstid, (int) $payout->id);
+
+	echo '<tr class="ssrow">';
+	echo '<td align="right"><b>'.$d.' ago</b></td>';
+	echo '<td align="right"><b>'.$amount.'</b></td>';
 
 	$payout_tx = substr($payout->tx, 0, 36).'...';
+	$link = $refcoin->createExplorerLink($payout_tx, array('txid'=>$payout->tx), array(), true);
 
-	echo "<tr class='ssrow'>";
-
-	echo "<td align=right><b>$d ago</b></td>";
-	echo "<td align=right><b>$amount</b></td>";
-
-	if($user->coinid == 6)
-		$txurl = "https://blockchain.info/tx/$payout->tx";
-	else
-		$txurl = "/explorer?id=$user->coinid&txid=$payout->tx";
-
-	echo "<td style='font-family: monospace;'><a href='$txurl' target=_blank>$payout_tx</a></td>";
-	echo "</tr>";
+	echo '<td style="font-family: monospace;">'.$link.'</td>';
+	echo '</tr>';
 
 	$total += $payout->amount;
 }
 
 $amount = bitcoinvaluetoa($total);
 
-echo "<tr class='ssrow'>";
-echo "<td align=right>Total:</td>";
-echo "<td align=right><b>$amount</b></td>";
-echo "<td></td>";
-echo "</tr>";
+echo <<<end
+<tr class="ssrow">
+<td align="right">Total:</td>
+<td align="right"><b>{$amount}</b></td>
+<td></td>
+</tr>
+end;
+
+// Search extra Payouts which were not in the db (yiimp payout check command)
+// In this case, the id are greater than last 24h ones and the fee column is filled
+$list_extra = getdbolist('db_payouts', "account_id={$user->id} AND id>$firstid AND fee > 0.0 ORDER BY time DESC");
+
+if (!empty($list_extra)) {
+
+	echo <<<end
+	<tr class="ssrow" style="color: darkred;">
+	<th colspan="3"><b>Extra payouts detected in the last 24H to explain negative balances (buggy Wallets)</b></th>
+	</tr>
+	<tr class="ssrow">
+	<td colspan="3" style="font-size: .9em; padding-bottom: 8px;">
+	Some wallets (UFO,LYB) have a problem and don't always confirm a transaction in the requested time.<br/>
+	<!-- Please be honest and continue mining to handle these extra transactions sent to you. --><br/>
+	</th>
+	</tr>
+	<tr class="ssrow">
+	<th align="right">Time</th> <th align="right">Amount</th> <th>Tx</th>
+	</tr>
+end;
+
+	$total = 0.0;
+	foreach($list_extra as $payout)
+	{
+		$d = datetoa2($payout->time);
+		$amount = bitcoinvaluetoa($payout->amount);
+
+		echo '<tr class="ssrow">';
+		echo '<td align="right"><b>'.$d.' ago</b></td>';
+		echo '<td align="right"><b>'.$amount.'</b></td>';
+
+		$payout_tx = substr($payout->tx, 0, 36).'...';
+		$link = $refcoin->createExplorerLink($payout_tx, array('txid'=>$payout->tx), array(), true);
+
+		echo '<td style="font-family: monospace;">'.$link.'</td>';
+		echo '</tr>';
+
+		$total += $payout->amount;
+	}
+
+	$amount = bitcoinvaluetoa($total);
+
+	echo <<<end
+	<tr class="ssrow" style="color: darkred;">
+	<td align="right">Total:</td>
+	<td align="right"><b>{$amount}</b></td>
+	<td></td>
+	</tr>
+end;
+}
+
 
 echo "</table><br>";
 echo "</div>";

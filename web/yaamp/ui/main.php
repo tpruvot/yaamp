@@ -15,19 +15,26 @@ echo <<<END
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-<meta name="description" content="yet another anonymous mining pool for bitcoin and altcoin with auto profit switch and auto exchange">
-<meta name="keywords" content="anonymous,mining,pool,maxcoin,bitcoin,altcoin,auto,switch,exchange,profit,scrypt,x11,x13,x14,x15,lyra2,lyra2re,neoscrypt,sha256,quark">
-
-<title>yiimp</title>
+<meta name="description" content="Yii mining pools for alternative crypto currencies">
+<meta name="keywords" content="anonymous,mining,pool,maxcoin,bitcoin,altcoin,auto,switch,exchange,profit,decred,scrypt,x11,x13,x14,x15,lbry,lyra2re,neoscrypt,sha256,quark,skein2">
 
 END;
+
+$pageTitle = empty($this->pageTitle) ? YAAMP_SITE_NAME : YAAMP_SITE_NAME." - ".$this->pageTitle;
+
+echo '<title>'.$pageTitle.'</title>';
 
 echo CHtml::cssFile("/extensions/jquery/themes/ui-lightness/jquery-ui.css");
 echo CHtml::cssFile('/yaamp/ui/css/main.css');
 echo CHtml::cssFile('/yaamp/ui/css/table.css');
 
-echo CHtml::scriptFile('/extensions/jquery/js/jquery-1.8.3-dev.js');
-echo CHtml::scriptFile('/extensions/jquery/js/jquery-ui-1.9.1.custom.min.js');
+//echo CHtml::scriptFile('/extensions/jquery/js/jquery-1.8.3-dev.js');
+//echo CHtml::scriptFile('/extensions/jquery/js/jquery-ui-1.9.1.custom.min.js');
+
+$cs = app()->getClientScript();
+$cs->registerCoreScript('jquery.ui');
+//$cs->registerScriptFile('/yaamp/ui/js/jquery.tablesorter.js', CClientScript::POS_END);
+
 echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.js');
 
 // if(!controller()->admin)
@@ -50,8 +57,8 @@ echo "</head>";
 
 ///////////////////////////////////////////////////////////////
 
-echo "<body class='page'>";
-echo "<a href='/site/mainbtc' style='display: none;'>main</a>";
+echo '<body class="page">';
+echo '<a href="/site/mainbtc" style="display: none;">main</a>';
 
 showPageHeader();
 showPageContent($content);
@@ -73,11 +80,10 @@ function showItemHeader($selected, $url, $name)
 
 function showPageHeader()
 {
-	echo "<div class='tabmenu-out'>";
-	echo "<div class='tabmenu-inner'>";
+	echo '<div class="tabmenu-out">';
+	echo '<div class="tabmenu-inner">';
 
-//	echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Yet Another Anonymous Mining Pool</a>";
-	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	echo '&nbsp;&nbsp;<a href="/">'.YAAMP_SITE_NAME.'</a>';
 
 	$action = controller()->action->id;
 	$wallet = user()->getState('yaamp-wallet');
@@ -88,30 +94,40 @@ function showPageHeader()
 	showItemHeader(controller()->id=='site'&&($action=='index' || $action=='wallet') && $ad, "/?address=$wallet", 'Wallet');
 	showItemHeader(controller()->id=='stats', '/stats', 'Graphs');
 	showItemHeader($action=='miners', '/site/miners', 'Miners');
-	showItemHeader(controller()->id=='renting', '/renting', 'Rental');
+	if (YIIMP_PUBLIC_EXPLORER)
+		showItemHeader(controller()->id=='explorer', '/explorer', 'Explorers');
+
+	if (YIIMP_PUBLIC_BENCHMARK)
+		showItemHeader(controller()->id=='bench', '/bench', 'Benchs');
+
+	if (YAAMP_RENTAL)
+		showItemHeader(controller()->id=='renting', '/renting', 'Rental');
 
 	if(controller()->admin)
 	{
-//		debuglog("admin {$_SERVER['REMOTE_ADDR']}");
-//		$algo = user()->getState('yaamp-algo');
+		if (isAdminIP($_SERVER['REMOTE_ADDR']) === false)
+			debuglog("admin {$_SERVER['REMOTE_ADDR']}");
 
-		showItemHeader(controller()->id=='explorer', '/explorer', 'Explorers');
-//		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
-		showItemHeader($action=='common', '/site/common', 'Admin');
-		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'List');
-//		showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
+		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
+		showItemHeader($action=='common', '/site/common', 'Dashboard');
+		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'Wallets');
 
-//		showItemHeader(controller()->id=='trading', '/trading', 'Trading');
-//		showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
+		if (YAAMP_RENTAL)
+			showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
+
+		if (YAAMP_ALLOW_EXCHANGE)
+			showItemHeader(controller()->id=='trading', '/trading', 'Trading');
+
+		if (YAAMP_USE_NICEHASH_API)
+			showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
 	}
 
-	echo "<span style='float: right;'>";
+	echo '<span style="float: right;">';
 
 	$mining = getdbosql('db_mining');
-	$nextpayment = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ);
+	$nextpayment = date('H:i T', $mining->last_payout+YAAMP_PAYMENTS_FREQ);
 
-	echo "<span style='font-size: .8em;'>Next Payout: $nextpayment EUST</span>";
-	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&copy; yiimp.ccminer.org</span>";
+	echo '<span style="font-size: .8em;">Next Payout: '.$nextpayment.'</span>';
 
 	echo "</div>";
 	echo "</div>";
@@ -119,13 +135,13 @@ function showPageHeader()
 
 function showPageFooter()
 {
-	echo "<div class='footer'>";
+	echo '<div class="footer">';
 	$year = date("Y", time());
 
-	echo "<p>&copy; $year. All Rights Reserved. yiimp -
-		<a href='/site/terms'>Terms and conditions</a></p>";
+	echo "<p>&copy; $year ".YAAMP_SITE_NAME.' - '.
+		'<a href="http://github.com/tpruvot/yiimp">Open source Project</a></p>';
 
-	echo "</div><!-- footer -->";
+	echo '</div><!-- footer -->';
 }
 
 

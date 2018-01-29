@@ -71,13 +71,38 @@ bool coind_can_mine(YAAMP_COIND *coind, bool isaux)
 	if(!coind->enable) return false;
 	if(!coind->auto_ready) return false;
 	if(!rpc_connected(&coind->rpc)) return false;
-	if(!coind->height || !coind->difficulty) return false;
-
+	if(!coind->height) return false;
+	if(!coind->difficulty) return false;
 	if(coind->isaux != isaux) return false;
 //	if(isaux && !coind->aux.chainid) return false;
 
-//	debuglog("can mine %s\n", coind->name);
 	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool coind_validate_user_address(YAAMP_COIND *coind, char* const address)
+{
+	if(!address[0]) return false;
+
+	char params[YAAMP_SMALLBUFSIZE];
+	sprintf(params, "[\"%s\"]", address);
+
+	json_value *json = rpc_call(&coind->rpc, "validateaddress", params);
+	if(!json) return false;
+
+	json_value *json_result = json_get_object(json, "result");
+	if(!json_result) {
+		json_value_free(json);
+		return false;
+	}
+
+	bool isvalid = json_get_bool(json_result, "isvalid");
+	if(!isvalid) stratumlog("%s user address %s is not valid.\n", coind->name, address);
+
+	json_value_free(json);
+
+	return isvalid;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,33 +131,79 @@ bool coind_validate_address(YAAMP_COIND *coind)
 	if(!ismine) stratumlog("%s wallet %s is not mine.\n", coind->name, coind->wallet);
 
 	const char *p = json_get_string(json_result, "pubkey");
-	if(p) strcpy(coind->pubkey, p);
+	strcpy(coind->pubkey, p ? p : "");
 
+	const char *acc = json_get_string(json_result, "account");
+	if (acc) strcpy(coind->account, acc);
+
+	if (!base58_decode(coind->wallet, coind->script_pubkey))
+		stratumlog("Warning: unable to decode %s %s script pubkey\n", coind->symbol, coind->wallet);
+
+	// if base58 decode fails
+	if (!strlen(coind->script_pubkey)) {
+		const char *pk = json_get_string(json_result, "scriptPubKey");
+		if (pk && strlen(pk) > 10) {
+			strcpy(coind->script_pubkey, &pk[6]);
+			coind->script_pubkey[strlen(pk)-6-4] = '\0';
+			stratumlog("%s %s extracted script pubkey is %s\n", coind->symbol, coind->wallet, coind->script_pubkey);
+		} else {
+			stratumlog("%s wallet addr '%s' seems incorrect!'", coind->symbol, coind->wallet);
+		}
+	}
 	json_value_free(json);
-	base58_decode(coind->wallet, coind->script_pubkey);
 
 	return isvalid && ismine;
 }
 
 void coind_init(YAAMP_COIND *coind)
 {
+	char params[YAAMP_SMALLBUFSIZE];
+	char account[YAAMP_SMALLBUFSIZE];
+
 	yaamp_create_mutex(&coind->mutex);
+
+	strcpy(account, coind->account);
+	if(!strcmp(coind->rpcencoding, "DCR")) {
+		coind->usegetwork = true;
+		//coind->noblocknotify = true;
+		//sprintf(account, "default");
+	}
 
 	bool valid = coind_validate_address(coind);
 	if(valid) return;
 
-	json_value *json = rpc_call(&coind->rpc, "getaccountaddress", "[\"\"]");
+	sprintf(params, "[\"%s\"]", account);
+
+	json_value *json = rpc_call(&coind->rpc, "getaccountaddress", params);
 	if(!json)
 	{
-		stratumlog("ERROR getaccountaddress %s\n", coind->name);
-		return;
+		json = rpc_call(&coind->rpc, "getaddressesbyaccount", params);
+		if (json && json_is_array(json) && json->u.object.length) {
+			debuglog("is array...");
+			if (json->u.object.values[0].value->type == json_string)
+				json = json->u.object.values[0].value;
+		}
+		if (!json) {
+			stratumlog("ERROR getaccountaddress %s\n", coind->name);
+			return;
+		}
 	}
 
-	strcpy(coind->wallet, json->u.object.values[0].value->u.string.ptr);
+	if (json->u.object.values[0].value->type == json_string) {
+		strcpy(coind->wallet, json->u.object.values[0].value->u.string.ptr);
+	}
+	else {
+		strcpy(coind->wallet, "");
+		stratumlog("ERROR getaccountaddress %s\n", coind->name);
+	}
+
 	json_value_free(json);
 
-	debuglog(">>>>>>>>>>>>>>>>>>>> using wallet %s\n", coind->wallet);
 	coind_validate_address(coind);
+	if (strlen(coind->wallet)) {
+		debuglog(">>>>>>>>>>>>>>>>>>>> using wallet %s %s\n",
+			coind->wallet, coind->account);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,19 +216,23 @@ void coind_init(YAAMP_COIND *coind)
 //	CommonUnlock(&coind->mutex);
 //}
 
-//void coind_terminate(YAAMP_COIND *coind)
-//{
-//	debuglog("disconnecting from coind %s\n", coind->symbol);
+void coind_terminate(YAAMP_COIND *coind)
+{
+	debuglog("disconnecting from coind %s\n", coind->symbol);
 
-//	rpc_close(&coind->rpc);
-//	object_delete(coind);
+	rpc_close(&coind->rpc);
+#ifdef HAVE_CURL
+	if (coind->rpc.curl) rpc_curl_close(&coind->rpc);
+#endif
 
-//	pthread_mutex_unlock(&coind->mutex);
-//	pthread_mutex_destroy(&coind->mutex);
+	pthread_mutex_unlock(&coind->mutex);
+	pthread_mutex_destroy(&coind->mutex);
 //	pthread_cond_destroy(&coind->cond);
 
+	object_delete(coind);
+
 //	pthread_exit(NULL);
-//}
+}
 
 //void *coind_thread(void *p)
 //{

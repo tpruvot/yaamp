@@ -1,6 +1,6 @@
 <?php
 
-$renter = getrenterparam(getparam('address'));
+$renter = getrenterparam(''.getparam('address'));
 if(!$renter) return;
 
 echo "<div class='main-left-box'>";

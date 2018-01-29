@@ -4,15 +4,21 @@
 
 void db_reconnect(YAAMP_DB *db)
 {
+	if (g_exiting) {
+		db_close(db);
+		return;
+	}
+
 	mysql_init(&db->mysql);
 	for(int i=0; i<6; i++)
 	{
-		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, 0, 0, 0);
+		MYSQL *p = mysql_real_connect(&db->mysql, g_sql_host, g_sql_username, g_sql_password, g_sql_database, g_sql_port, 0, 0);
 		if(p) break;
 
 		stratumlog("%d, %s\n", i, mysql_error(&db->mysql));
 		sleep(10);
 
+		mysql_close(&db->mysql);
 		mysql_init(&db->mysql);
 	}
 }
@@ -27,8 +33,11 @@ YAAMP_DB *db_connect()
 
 void db_close(YAAMP_DB *db)
 {
-	mysql_close(&db->mysql);
-	delete db;
+	if (db) {
+		mysql_close(&db->mysql);
+		delete db;
+	}
+	db = NULL;
 }
 
 char *db_clean_string(YAAMP_DB *db, char *string)
@@ -36,16 +45,17 @@ char *db_clean_string(YAAMP_DB *db, char *string)
 	string[1000] = 0;
 	char tmp[1024];
 
-    unsigned long ret = mysql_real_escape_string(&db->mysql, tmp, string, strlen(string));
-    strcpy(string, tmp);
+	unsigned long ret = mysql_real_escape_string(&db->mysql, tmp, string, strlen(string));
+	strcpy(string, tmp);
 
-    return string;
+	return string;
 }
 
 void db_query(YAAMP_DB *db, const char *format, ...)
 {
 	va_list arglist;
 	va_start(arglist, format);
+	if(!db) return;
 
 	char *buffer = (char *)malloc(YAAMP_SMALLBUFSIZE+strlen(format));
 	if(!buffer) return;
@@ -53,7 +63,7 @@ void db_query(YAAMP_DB *db, const char *format, ...)
 	int len = vsprintf(buffer, format, arglist);
 	va_end(arglist);
 
-	while(1)
+	while(!g_exiting)
 	{
 		int res = mysql_query(&db->mysql, buffer);
 		if(!res) break;
@@ -62,6 +72,7 @@ void db_query(YAAMP_DB *db, const char *format, ...)
 		stratumlog("SQL ERROR: %d, %s\n", res, mysql_error(&db->mysql));
 		if(res != CR_SERVER_GONE_ERROR && res != CR_SERVER_LOST) exit(1);
 
+		usleep(100*YAAMP_MS);
 		db_reconnect(db);
 	}
 
@@ -74,20 +85,39 @@ void db_register_stratum(YAAMP_DB *db)
 {
 	int pid = getpid();
 	int t = time(NULL);
+	if(!db) return;
 
-	db_query(db, "insert into stratums (pid, time, algo) values (%d, %d, '%s') on duplicate key update time=%d",
-		pid, t, g_current_algo->name, t);
+	db_query(db, "INSERT INTO stratums (pid, time, started, algo, port) VALUES (%d, %d, %d, '%s', %d) "
+		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', port=%d",
+		pid, t, t, g_stratum_algo, g_tcp_port,
+		t, g_stratum_algo, g_tcp_port
+	);
 }
 
 void db_update_algos(YAAMP_DB *db)
 {
+	int pid = getpid();
+	//int fds = 0; // todo, sample: ls -l /proc/$PID/fd | grep socket | grep -c .
+	if(!db) return;
+
 	if(g_current_algo->overflow)
 	{
 		debuglog("setting overflow\n");
 		g_current_algo->overflow = false;
 
-		db_query(db, "update algos set overflow=true where name='%s'", g_current_algo->name);
+		db_query(db, "UPDATE algos SET overflow=true WHERE name='%s'", g_stratum_algo);
 	}
+
+	char symbol[16] = "NULL\0";
+	if(g_list_coind.count == 1) {
+		if (g_list_coind.first) {
+			CLI li = g_list_coind.first;
+			YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
+			sprintf(symbol,"'%s'", coind->symbol);
+		}
+	}
+
+	db_query(db, "UPDATE stratums SET workers=%d, symbol=%s WHERE pid=%d", g_list_client.count, symbol, pid);
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -127,6 +157,8 @@ void db_update_algos(YAAMP_DB *db)
 
 void db_update_coinds(YAAMP_DB *db)
 {
+	if(!db) return;
+
 	for(CLI li = g_list_coind.first; li; li = li->next)
 	{
 		YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
@@ -139,10 +171,11 @@ void db_update_coinds(YAAMP_DB *db)
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	db_query(db, "select id, name, rpchost, rpcport, rpcuser, rpcpasswd, rpcencoding, master_wallet, reward, price, "\
-		"hassubmitblock, txmessage, enable, auto_ready, algo, pool_ttf, charity_address, charity_amount, charity_percent, "\
-		"reward_mul, symbol, auxpow, actual_ttf, network_ttf, usememorypool "\
-		"from coins where enable and auto_ready and algo='%s' order by index_avg", g_stratum_algo);
+	db_query(db, "SELECT id, name, rpchost, rpcport, rpcuser, rpcpasswd, rpcencoding, master_wallet, reward, price, "
+		"hassubmitblock, txmessage, enable, auto_ready, algo, pool_ttf, charity_address, charity_amount, charity_percent, "
+		"reward_mul, symbol, auxpow, actual_ttf, network_ttf, usememorypool, hasmasternodes, algo, symbol2, "
+		"rpccurl, rpcssl, rpccert, account, multialgos, max_miners, max_shares, usesegwit "
+		"FROM coins WHERE enable AND auto_ready AND algo='%s' ORDER BY index_avg", g_stratum_algo);
 
 	MYSQL_RES *result = mysql_store_result(&db->mysql);
 	if(!result) yaamp_error("Cant query database");
@@ -167,12 +200,46 @@ void db_update_coinds(YAAMP_DB *db)
 			coind->newcoind = false;
 
 		strcpy(coind->name, row[1]);
+		strcpy(coind->symbol, row[20]);
+		// optional coin filters
+		if(coind->newcoind) {
+			bool ignore = false;
+			if (strlen(g_stratum_coin_include) && !strstr(g_stratum_coin_include, coind->symbol)) ignore = true;
+			if (strlen(g_stratum_coin_exclude) && strstr(g_stratum_coin_exclude, coind->symbol)) ignore = true;
+			if (ignore) {
+				object_delete(coind);
+				continue;
+			}
+		}
 
 		if(row[7]) strcpy(coind->wallet, row[7]);
-		if(row[6]) coind->pos = strcmp(row[6], "POS")? false: true;
+		if(row[6]) strcpy(coind->rpcencoding, row[6]);
+		if(row[6]) coind->pos = strcasecmp(row[6], "POS")? false: true;
 		if(row[10]) coind->hassubmitblock = atoi(row[10]);
 
-		if(row[2]) strcpy(coind->rpc.host, row[2]);
+		coind->rpc.ssl = 0;
+		// deprecated method to set ssl and cert (before db specific fields)
+		if(row[2]) {
+			char buffer[1024];
+			char cert[1024];
+			strcpy(buffer, row[2]);
+			// sample ssl host : "https://mycert@127.0.0.1"
+			if (strstr(buffer, "https://") != NULL) {
+				strcpy(buffer, row[2] + 8);
+				if (strstr(buffer, "@") != NULL) {
+					int p = (strstr(buffer, "@") - buffer);
+					strcpy(cert, buffer); cert[p] = '\0';
+					strcpy(buffer, row[2] + 8 + p + 1);
+				} else {
+					strcpy(cert, "yiimp");
+				}
+				coind->rpc.ssl = 1;
+				sprintf(coind->rpc.cert, "/usr/share/ca-certificates/%s.crt", cert);
+			}
+			strcpy(coind->rpc.cert, "");
+			strcpy(coind->rpc.host, buffer);
+		}
+
 		if(row[3]) coind->rpc.port = atoi(row[3]);
 
 		if(row[4] && row[5])
@@ -196,7 +263,6 @@ void db_update_coinds(YAAMP_DB *db)
 		if(row[18]) coind->charity_percent = atof(row[18]);
 		if(row[19]) coind->reward_mul = atof(row[19]);
 
-		strcpy(coind->symbol, row[20]);
 		if(row[21]) coind->isaux = atoi(row[21]);
 
 		if(row[22] && row[23]) coind->actual_ttf = min(atoi(row[22]), atoi(row[23]));
@@ -205,21 +271,62 @@ void db_update_coinds(YAAMP_DB *db)
 		coind->actual_ttf = max(coind->actual_ttf, 20);
 
 		if(row[24]) coind->usememorypool = atoi(row[24]);
+		if(row[25]) coind->hasmasternodes = atoi(row[25]);
+
+		if(row[26]) strcpy(coind->algo, row[26]);
+		if(row[27]) strcpy(coind->symbol2, row[27]); // if pool + aux, prevent double submit
+
+		if(row[28]) coind->rpc.curl = atoi(row[28]) != 0;
+		if(row[29]) coind->rpc.ssl = atoi(row[29]) != 0;
+		if(row[30]) strcpy(coind->rpc.cert, row[30]);
+
+		if(row[31]) strcpy(coind->account, row[31]);
+		if(row[32]) coind->multialgos = atoi(row[32]);
+		if(row[33] && atoi(row[33]) > 0) g_stratum_max_cons = atoi(row[33]);
+		if(row[34] && atol(row[34]) > 0) g_max_shares = atol(row[34]);
+		if(row[35]) coind->usesegwit = atoi(row[35]) > 0;
+
+		if(coind->usesegwit) g_stratum_segwit = true;
+
+		// force the right rpcencoding for DCR
+		if(!strcmp(coind->symbol, "DCR") && strcmp(coind->rpcencoding, "DCR"))
+			strcpy(coind->rpcencoding, "DCR");
+
+		// old dash masternodes coins..
+		if(coind->hasmasternodes) {
+			if (strcmp(coind->symbol, "ALQO") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "BSD") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "BWK") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "CHC") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "CRW") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "MAG") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "VSX") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "XLR") == 0) coind->oldmasternodes = true;
+		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		coind->touch = true;
+		//coind->touch = true;
 		if(coind->newcoind)
 		{
 			debuglog("connecting to coind %s\n", coind->symbol);
 
 			bool b = rpc_connect(&coind->rpc);
+			if (!b) {
+				debuglog("%s: connect failure\n", coind->symbol);
+				object_delete(coind);
+				continue;
+			}
 			coind_init(coind);
 
 			g_list_coind.AddTail(coind);
 			usleep(100*YAAMP_MS);
 		}
-
+		coind->touch = true;
 		coind_create_job(coind);
 	}
 
@@ -232,11 +339,7 @@ void db_update_coinds(YAAMP_DB *db)
 
 		if(!coind->touch)
 		{
-			debuglog("remove coind %s\n", coind->name);
-
-			rpc_close(&coind->rpc);
-			object_delete(coind);
-
+			coind_terminate(coind);
 			continue;
 		}
 
@@ -251,6 +354,8 @@ void db_update_coinds(YAAMP_DB *db)
 
 void db_update_remotes(YAAMP_DB *db)
 {
+	if(!db) return;
+
 	db_query(db, "select id, speed/1000000, host, port, username, password, time, price, renterid from jobs where active and ready and algo='%s' order by time", g_stratum_algo);
 
 	MYSQL_RES *result = mysql_store_result(&db->mysql);
@@ -380,6 +485,8 @@ void db_update_remotes(YAAMP_DB *db)
 
 void db_update_renters(YAAMP_DB *db)
 {
+	if(!db) return;
+
 	db_query(db, "select id, balance, updated from renters");
 
 	MYSQL_RES *result = mysql_store_result(&db->mysql);
@@ -410,9 +517,76 @@ void db_update_renters(YAAMP_DB *db)
 	g_list_renter.Leave();
 }
 
+///////////////////////////////////////////////////////////////////////
 
+static void _json_str_safe(YAAMP_DB *db, json_value *json, const char *key, size_t maxlen, char* out)
+{
+	json_value *val = json_get_val(json, key);
+	out[0] = '\0';
+	if (db && val && json_is_string(val)) {
+		strncpy(out, json_string_value(val), maxlen);
+		out[maxlen-1] = '\0';
+		db_clean_string(db, out);
+	}
+}
+#define json_str_safe(stats, k, out) _json_str_safe(db, stats, k, sizeof(out), out)
 
+static int json_int_safe(json_value *json, const char *key)
+{
+	json_value *val = json_get_val(json, key);
+	return val ? (int) json_integer_value(val) : 0;
+}
 
+static double json_double_safe(json_value *json, const char *key)
+{
+	json_value *val = json_get_val(json, key);
+	return val ? json_double_value(val) : 0.;
+}
 
+void db_store_stats(YAAMP_DB *db, YAAMP_CLIENT *client, json_value *stats)
+{
+	int t = time(NULL);
+	json_value *algo, *val;
+	char sdev[80], stype[8], svid[12], sarch[8];
+	char salgo[32], sclient[48], sdriver[32], sos[8];
+	double khashes, intensity, throughput;
+	int power, freq, memf, realfreq, realmemf, plimit;
 
+	if (!db) return;
 
+	json_str_safe(stats, "algo", salgo);
+	if (strcasecmp(g_current_algo->name, salgo) && client->submit_bad) {
+	//	debuglog("stats: wrong algo used %s != %s", salgo, g_current_algo->name);
+		return;
+	}
+
+	json_str_safe(stats, "device", sdev);
+	json_str_safe(stats, "type", stype);
+	json_str_safe(stats, "vendorid", svid);
+	json_str_safe(stats, "arch", sarch); // or cpu best feature
+	json_str_safe(stats, "client", sclient);
+	json_str_safe(stats, "os", sos);
+	json_str_safe(stats, "driver", sdriver); // or cpu compiler
+
+	power = json_int_safe(stats, "power");
+	freq  = json_int_safe(stats, "freq");
+	memf  = json_int_safe(stats, "memf");
+	realfreq = json_int_safe(stats, "curr_freq");
+	realmemf = json_int_safe(stats, "curr_memf");
+	plimit = json_int_safe(stats, "plimit");
+	intensity  = json_double_safe(stats, "intensity");
+	khashes    = json_double_safe(stats, "khashes");
+	throughput = json_double_safe(stats, "throughput");
+	if (throughput < 0.) throughput = 0.;
+	if (khashes < 0. || intensity < 0.) return;
+
+	db_query(db, "INSERT INTO benchmarks("
+		"time, algo, type, device, arch, vendorid, os, driver,"
+		"client, khps, freq, memf, realfreq, realmemf, power, plimit, "
+		"intensity, throughput, userid )"
+		"VALUES (%d,'%s','%s','%s','%s','%s','%s','%s',"
+		"'%s',%f,%d,%d,%d,%d,%d,%d, %.2f,%.0f,%d)",
+		t, g_current_algo->name, stype, sdev, sarch, svid, sos, sdriver,
+		sclient, khashes, freq, memf, realfreq, realmemf, power, plimit,
+		intensity, throughput, client->userid);
+}
