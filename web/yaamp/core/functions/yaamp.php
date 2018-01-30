@@ -238,7 +238,7 @@ function getAlgoPort($algo)
 		'veltor'	=> 5034,
 		'velvet'	=> 6133,
 		'yescrypt'	=> 6233,
-		'yescrypt'	=> 6333,
+		'yescryptR16'	=> 6333,
 		'bastion'	=> 6433,
 		'hsr'		=> 7433,
 		'phi'		=> 8333,
