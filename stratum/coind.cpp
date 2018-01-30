@@ -98,7 +98,7 @@ bool coind_validate_user_address(YAAMP_COIND *coind, char* const address)
 	}
 
 	bool isvalid = json_get_bool(json_result, "isvalid");
-	if(!isvalid) stratumlog("%s user address %s is not valid.\n", coind->name, address);
+	if(!isvalid) stratumlog("%s: %s user address %s is not valid.\n", g_stratum_algo, coind->symbol, address);
 
 	json_value_free(json);
 
@@ -247,8 +247,6 @@ void coind_terminate(YAAMP_COIND *coind)
 //	CommonLock(&coind->mutex);
 //	while(!coind->deleted)
 //	{
-//		debuglog("calling coind_getinfo %s\n", coind->symbol);
-
 //		job_create_last(coind, true);
 //		pthread_cond_wait(&coind->cond, &coind->mutex);
 //	}
