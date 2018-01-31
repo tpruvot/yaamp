@@ -942,7 +942,12 @@ yescrypt_kdf(const yescrypt_shared_t * shared, yescrypt_local_t * local,
 		{
 			HMAC_SHA256_CTX_Y ctx;
 			HMAC_SHA256_Init_Y(&ctx, buf, buflen);
-			HMAC_SHA256_Update_Y(&ctx, salt, saltlen);
+			if (r == 16)	{ // yescryptR16
+				HMAC_SHA256_Update_Y(&ctx, "Client Key", 10);
+			}
+			else	{ // yescrypt
+				HMAC_SHA256_Update_Y(&ctx, salt, saltlen);
+			}
 			HMAC_SHA256_Final_Y((uint8_t *)sha256, &ctx);
 		}
 		/* Compute StoredKey */
