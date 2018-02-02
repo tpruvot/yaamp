@@ -147,6 +147,12 @@ echo CUFHtml::activeCheckBox($coin, 'installed');
 echo '<p class="formHint2">Required to be visible in the Wallets board</p>';
 echo CUFHtml::closeCtrlHolder();
 
+echo CUFHtml::openActiveCtrlHolder($coin, 'no_explorer');
+echo CUFHtml::activeLabelEx($coin, 'no_explorer');
+echo CUFHtml::activeCheckBox($coin, 'no_explorer');
+echo '<p class="formHint2">Disable block explorer for the public</p>';
+echo CUFHtml::closeCtrlHolder();
+
 echo CUFHtml::openActiveCtrlHolder($coin, 'watch');
 echo CUFHtml::activeLabelEx($coin, 'watch');
 echo CUFHtml::activeCheckBox($coin, 'watch');
@@ -201,6 +207,12 @@ echo CUFHtml::activeTextField($coin, 'charity_address', array('maxlength'=>200))
 echo '<p class="formHint2">Foundation address if "dev fees" are required</p>';
 echo CUFHtml::closeCtrlHolder();
 
+echo CUFHtml::openActiveCtrlHolder($coin, 'hasgetinfo');
+echo CUFHtml::activeLabelEx($coin, 'hasgetinfo');
+echo CUFHtml::activeCheckBox($coin, 'hasgetinfo');
+echo '<p class="formHint2">Enable if getinfo rpc method is present</p>';
+echo CUFHtml::closeCtrlHolder();
+
 echo CUFHtml::openActiveCtrlHolder($coin, 'hassubmitblock');
 echo CUFHtml::activeLabelEx($coin, 'hassubmitblock');
 echo CUFHtml::activeCheckBox($coin, 'hassubmitblock');
@@ -216,7 +228,7 @@ echo CUFHtml::closeCtrlHolder();
 echo CUFHtml::openActiveCtrlHolder($coin, 'hasmasternodes');
 echo CUFHtml::activeLabelEx($coin, 'hasmasternodes');
 echo CUFHtml::activeCheckBox($coin, 'hasmasternodes');
-echo '<p class="formHint2">Require "payee" and "payee_amount" fields in getblocktemplate (DASH)</p>';
+echo '<p class="formHint2">Require "payee" and "payee_amount", or masternode object in getblocktemplate</p>';
 echo CUFHtml::closeCtrlHolder();
 
 echo CUFHtml::openActiveCtrlHolder($coin, 'usesegwit');

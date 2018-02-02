@@ -57,6 +57,14 @@ class ExplorerController extends CommonController
 
 		$id = getiparam('id');
 		$coin = getdbo('db_coins', $id);
+		if($coin && $coin->no_explorer) {
+			$link = $coin->link_explorer;
+			//$txid = getparam('txid');
+			//$hash = getparam('hash');
+			//if (!empty($txid)) $link .= 'tx/'.$txid;
+			//elseif (!empty($hash)) $link .= 'block/'.$hash;
+			die("Block explorer disabled, please use <a href=\"$link\">$link</a>");
+		}
 		$height = getiparam('height');
 		if($coin && intval($height)>0)
 		{
