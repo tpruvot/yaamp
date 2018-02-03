@@ -370,6 +370,9 @@ end;
 		{
 			if(!controller()->admin && $algo == 'sha256') continue;
 			if(!controller()->admin && $algo == 'scryptn') continue;
+			
+			$coins = getdbocount('db_coins', "enable and visible and auto_ready and algo=:algo", array(':algo'=>$algo));
+			if (!$coins || $coins <= 0) continue; // don't isplay the algo if no coins set on it
 
 			$selected = $algo==$a? 'selected': '';
 			echo "<option $selected value='$algo'>$algo</option>";
