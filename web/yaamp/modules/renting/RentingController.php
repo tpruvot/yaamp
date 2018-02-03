@@ -161,7 +161,7 @@ class RentingController extends CommonController
 //		if($job->algo == 'sha256') $this->goback();
 
 		$renter = getdbo('db_renters', $job->renterid);
-		if(!$renter || $renter->balance<=0.00001000 || $renter->address != user()->getState('yaamp-deposit')) $this->goback();
+		if(!$renter || $renter->balance<=YAAMP_RENTING_MIN_BALANCE || $renter->address != user()->getState('yaamp-deposit')) $this->goback();
 
 		$rent = dboscalar("select rent from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$job->algo));
 		if($job->price > $rent) $job->active = true;
@@ -178,7 +178,7 @@ class RentingController extends CommonController
 	{
 		$deposit = user()->getState('yaamp-deposit');
 		$renter = getrenterparam($deposit);
-		if(!$renter || $renter->balance<=0.00001000) $this->goback();
+		if(!$renter || $renter->balance<=YAAMP_RENTING_MIN_BALANCE) $this->goback();
 
 		$list = getdbolist('db_jobs', "renterid=$renter->id");
 		foreach($list as $job)
