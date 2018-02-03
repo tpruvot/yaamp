@@ -14,7 +14,7 @@ echo "<th>Algo</th>";
 echo "<th style='text-align:right;'>Jobs</th>";
 echo "<th style='text-align:right;'>Total</th>";
 //echo "<th>For Rent**</th>";
-echo "<th style='text-align:right;'t>Rented</th>";
+echo "<th style='text-align:right;'>Rented</th>";
 echo "<th></th>";
 echo "<th style='text-align:right;'>Available</th>";
 //echo "<th>Paying</th>";
