@@ -11,14 +11,14 @@ showTableSorter('maintable3');
 echo "<thead>";
 echo "<tr>";
 echo "<th>Algo</th>";
-echo "<th align=right>Jobs</th>";
-echo "<th align=right>Total</th>";
+echo "<th style='text-align:right;'>Jobs</th>";
+echo "<th style='text-align:right;'>Total</th>";
 //echo "<th>For Rent**</th>";
-echo "<th align=right>Rented</th>";
+echo "<th style='text-align:right;'t>Rented</th>";
 echo "<th></th>";
-echo "<th align=right>Available</th>";
+echo "<th style='text-align:right;'>Available</th>";
 //echo "<th>Paying</th>";
-echo "<th align=right>Current Price</th>";
+echo "<th style='text-align:right;'>Current Price</th>";
 echo "</tr>";
 echo "</thead>";
 
@@ -26,6 +26,9 @@ $algos = array();
 foreach(yaamp_get_algos() as $algo)
 {
 	$algo_norm = yaamp_get_algo_norm($algo);
+	
+	$coins = getdbocount('db_coins', "enable and visible and auto_ready and algo=:algo", array(':algo'=>$algo));
+	if (!$coins || $coins <= 0) continue; // don't isplay the algo if no coins set on it
 
 	$price = controller()->memcache->get_database_scalar("current_price-$algo",
 			"select price from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
