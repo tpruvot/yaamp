@@ -16,14 +16,14 @@ $balance = bitcoinvaluetoa($renter->balance);
 echo <<<END
 
 <table cellspacing=20 width=100%>
-<tr><td valign=top width=50%>
+<tr><td style='vertical-align:top; width:50%;'>
 
 <!--  -->
 
 <div id='balance_results'></div>
 <div id='orders_results'></div>
 
-</td><td valign=top>
+</td><td style='vertical-align:top;'>
 
 <div id='pool_current_results'>
 <br><br><br><br><br><br><br><br><br><br>
