@@ -14,9 +14,9 @@ echo "<thead>";
 echo "<tr>";
 echo "<th>ID</th>";
 echo "<th>Address</th>";
-echo "<th align=right>Time</th>";
-echo "<th align=right>Type</th>";
-echo "<th align=right>Amount</th>";
+echo "<th style='text-align:right;'>Time</th>";
+echo "<th style='text-align:right;'>Type</th>";
+echo "<th style='text-align:right;'>Amount</th>";
 echo "<th>Tx</th>";
 echo "</tr>";
 echo "</thead>";
@@ -34,9 +34,9 @@ foreach($list as $tx)
 	echo "<td>$renter->id</td>";
 	echo "<td><a href='/renting?address=$renter->address'>$renter->address</a></td>";
 
-	echo "<td align=right><b>$d ago</b></td>";
-	echo "<td align=right title='$tx->address'>$tx->type</td>";
-	echo "<td align=right><b>$amount</b></td>";
+	echo "<td style='text-align:right;'><b>$d ago</b></td>";
+	echo "<td style='text-align:right;' title='$tx->address'>$tx->type</td>";
+	echo "<td style='text-align:right;'><b>$amount</b></td>";
 
 	if(strlen($tx->tx) > 32)
 	{
