@@ -8,7 +8,7 @@
 
 #include <ar2/blake2b.h>
 
-void blake2s_hash(const char* input, char* output, uint32_t len)
+void blake2s_hash(const char* input, char* output, uint64_t len)
 {
 	uint8_t hash[BLAKE2B_OUTBYTES];
 	blake2b_state blake2_ctx;
