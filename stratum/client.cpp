@@ -548,6 +548,14 @@ void *client_thread(void *p)
 
 		client->id_int = json_get_int(json, "id");
 		client->id_str = json_get_string(json, "id");
+		if (client->id_str && strlen(client->id_str) > 16) {
+			json_value_free(json);
+			clientlog(client, "bad json, wrong client id len");
+			client->submit_bad++;
+			client->id_str = "";
+			break;
+		}
+
 
 		const char *method = json_get_string(json, "method");
 
