@@ -47,6 +47,7 @@ class db_coins extends CActiveRecord
 			'rpcssl'	=> 'RPC SSL',
 			'rpccert'	=> 'RPC Certificate',
 			'serveruser'	=> 'Server user',
+			'hasgetinfo'	=> 'Has getinfo',
 			'hassubmitblock'=> 'Has submitblock',
 			'hasmasternodes'=> 'Masternodes',
 			'usesegwit'	=> 'Use segwit',

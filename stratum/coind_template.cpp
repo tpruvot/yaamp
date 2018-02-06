@@ -68,17 +68,17 @@ YAAMP_JOB_TEMPLATE *coind_create_template_memorypool(YAAMP_COIND *coind)
 
 	json_value_free(json);
 
-	json = rpc_call(&coind->rpc, "getinfo", "[]");
+	json = rpc_call(&coind->rpc, "getmininginfo", "[]");
 	if(!json || json->type == json_null)
 	{
-		coind_error(coind, "coind_getinfo");
+		coind_error(coind, "coind getmininginfo");
 		return NULL;
 	}
 
 	json_result = json_get_object(json, "result");
 	if(!json_result || json_result->type == json_null)
 	{
-		coind_error(coind, "coind_getinfo");
+		coind_error(coind, "coind getmininginfo");
 		json_value_free(json);
 
 		return NULL;
