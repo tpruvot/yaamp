@@ -11,9 +11,9 @@
 
 #define _ALIGN(x) __attribute__ ((aligned(x)))
 
-#define T_COSTS 2
+#define T_COSTS 1
 #define M_COSTS 250
-#define MASK 1
+#define MASK 0
 #define ZERO 0
 
 inline void argon_call(void *out, void *in, void *salt, int type)
