@@ -14,7 +14,7 @@ echo "<tr>";
 echo "<th></th>";
 echo "<th>Server</th>";
 echo "<th>Algo</th>";
-echo "<th style='vertical-align:top; width:50%;'>Max Price</th>";
+echo "<th style='text-align:right;'>Max Price</th>";
 //echo "<th>Current<br>Price</th>";
 echo "<th style='text-align:right;'>Max Hash</th>";
 echo "<th style='text-align:right;'>Hash*</th>";
