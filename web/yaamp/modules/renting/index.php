@@ -298,7 +298,7 @@ Amount: <input type="text" name="withdraw_amount" class="main-text-input" style=
 Address: <input type="text" name="withdraw_address" class="main-text-input" style='width: 300px;'>
 
 <br><br>
-<p>Withdraw fees: 0.0001</p>
+<p>Withdraw fees 0.0001</p>
 <br>
 <input type="submit" value="Withdraw" class="main-submit-button">
 </form>
