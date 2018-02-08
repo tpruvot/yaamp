@@ -298,19 +298,7 @@ Amount: <input type="text" name="withdraw_amount" class="main-text-input" style=
 Address: <input type="text" name="withdraw_address" class="main-text-input" style='width: 300px;'>
 
 <br><br>
-<p>Withdraw fees (fixed old theory): 0.0001</p>
-<p>Withdraw fees (BTC/kB, estimatefee 6:):
-END;
-
-//$btc = null;
-$btc = getdbosql('db_coins', "symbol='BTC'");
-if(!$btc) die();
-$remote = new WalletRPC($btc);
-echo $remote->estimatefee(6);
-echo "<br />Withdraw fee (tx 226 Bytes):";
-echo 226 * $remote->estimatefee(6) / 1024;
-echo <<<END
-</p>
+<p>Withdraw fees: 0.0001</p>
 <br>
 <input type="submit" value="Withdraw" class="main-submit-button">
 </form>
