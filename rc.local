@@ -70,4 +70,5 @@ screen -dmS m7m $STRATUM_DIR/run.sh m7m
 screen -dmS veltor $STRATUM_DIR/run.sh veltor
 screen -dmS velvet $STRATUM_DIR/run.sh velvet
 screen -dmS argon2 $STRATUM_DIR/run.sh argon2
-
+screen -dmS polytimos $STRATUM_DIR/run.sh polytimos # polytimos
+screen -dmS yescryptR16 $STRATUM_DIR/run.sh polytimos # yescryptR16
