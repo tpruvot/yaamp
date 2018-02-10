@@ -193,7 +193,7 @@ foreach($algos as $item)
 		echo "<th data-sorter='numeric' align='left'>url</th>";
 		echo "<th data-sorter='numeric' align='left'>fds</th>";
 		echo "</tr>";
-		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo:=algo='$algo_selected'");
+		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo_selected'");
 		foreach ($stratums_details_list as $stratums_details)	{
 			echo "<tr>";
 			echo "<td>".$stratums_details['pid']."</td><td>".$stratums_details['time']."</td><td>";
