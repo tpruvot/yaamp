@@ -762,13 +762,7 @@ class SiteController extends CommonController
 			return;
 		}
 		user()->setState('yaamp-algo', $algo);
-		$this->redirect("/site/mining");
-	}
-	
-	public function actionAdminStratums()
-	{
-		if(!$this->admin) return;
-		$this->render('admin_stratums');
+		$this->redirect("common");
 	}
 	
 	/////////////////////////////////////////////////
