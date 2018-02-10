@@ -2,6 +2,8 @@
 
 $mining = getdbosql('db_mining');
 
+$algo_selected = user()->getState('yaamp-algo');
+
 $showrental = (bool) YAAMP_RENTAL;
 
 echo <<<END
@@ -136,7 +138,7 @@ foreach($algos as $item)
                 $urls = $urls . "\n" . $stra['url'];
         }
         echo '<td style="background-color: '.$algo_color.'"><b title="'.$urls.'">';
-	echo CHtml::link($algo, '/site/gomining?algo='.$algo);
+	echo CHtml::link($algo, '/site/Gostratums?algo='.$algo);
 	echo '</b></td>';
 	echo '<td align="left" style="font-size: .8em;" data="'.$ts.'">'.$isup.'&nbsp;'.$time.'</td>';
 	echo '<td align="right" style="font-size: .8em;">'.(empty($coins) ? '-' : $coins).'</td>';
@@ -184,6 +186,35 @@ foreach($algos as $item)
 	echo '<td align="right" style="font-size: .8em; '.$style.'">'.$btcmhday1.'</td>';
 
 	echo '</tr>';
+	
+	if ($algo_selected == $algo)	{
+		echo "<tr>";
+		echo "<td colspan='13'>";
+		echo "<table>";
+		echo "<thead>";
+		echo "<tr>";
+		echo "<th data-sorter='numeric' align='left">PID</th>";
+		echo "<th data-sorter='numeric' align='left">Time</th>";
+		echo "<th data-sorter='numeric' align='left">Started</th>";
+		echo "<th data-sorter='numeric' align='left">Workers</th>";
+		echo "<th data-sorter='numeric' align='left">Port</th>";
+		echo "<th data-sorter='numeric' align='left">Symbol</th>";
+		echo "<th data-sorter='numeric' align='left">url</th>";
+		echo "<th data-sorter='numeric' align='left">fds</th>";
+		echo "</tr>";
+		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo:=algo='$algo_selected'");
+		foreach ($stratums_details_list as $stratums_details)	{
+			echo "<tr>";
+			echo "<td>".$stratums_details['pid']."</td><td>".$stratums_details['time']."</td><td>";
+			echo $stratums_details['started']."</td><td>".$stratums_details['workers']."</td><td>";
+			echo $stratums_details['port']."</td><td>".$stratums_details['symbol']."</td><td>";
+			echo $stratums_details['url']."</td><td>".$stratums_details['fds']."</td><td>";
+			echo "</tr>";
+		}
+		echo "</table>";
+		echo "</td>";
+		echo "</tr>";
+	}
 }
 
 echo '</tbody>';
