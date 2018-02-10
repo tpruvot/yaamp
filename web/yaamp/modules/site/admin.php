@@ -12,14 +12,16 @@ $server = getparam('server');
 echo <<<end
 <div align="right" style="margin-top: -14px; margin-bottom: 6px;">
 Select Server:
-<select id='server_select'>
-<option value=''>all</option>
-<option value='yaamp1'>yaamp1</option>
-<option value='yaamp2'>yaamp2</option>
-<option value='yaamp3'>yaamp3</option>
-<option value='yaamp4'>yaamp4</option>
-<option value='yaamp5'>yaamp5</option>
-<option value='yaamp6'>yaamp6</option>
+<select id="server_select">
+<option value="">all</option>
+end;
+
+$serverlist = dbolist("SELECT DISTINCT rpchost FROM coins WHERE installed=1 ORDER BY rpchost");
+foreach ($serverlist as $srv)   {
+	echo '<option value="'.$srv['rpchost'].'">'.$srv['rpchost'].'</option>';
+}
+
+echo <<<end
 </select>&nbsp;
 <input class="search" type="search" data-column="all" style="width: 140px;" placeholder="Search..." />
 </div>

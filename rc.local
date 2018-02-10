@@ -25,8 +25,9 @@ screen -dmS deep $STRATUM_DIR/run.sh deep
 screen -dmS x11 $STRATUM_DIR/run.sh x11
 screen -dmS x11evo $STRATUM_DIR/run.sh x11evo
 screen -dmS x13 $STRATUM_DIR/run.sh x13
-screen -dmS x14 $STRATUM_DIR/run.sh x14
-screen -dmS x15 $STRATUM_DIR/run.sh x15
+#screen -dmS x14 $STRATUM_DIR/run.sh x14
+#screen -dmS x15 $STRATUM_DIR/run.sh x15
+#screen -dmS x16r $STRATUM_DIR/run.sh x16r
 screen -dmS x17 $STRATUM_DIR/run.sh x17
 screen -dmS xevan $STRATUM_DIR/run.sh xevan
 screen -dmS timetravel $STRATUM_DIR/run.sh timetravel
@@ -59,11 +60,15 @@ screen -dmS vanilla $STRATUM_DIR/run.sh vanilla # blake 8
 screen -dmS decred $STRATUM_DIR/run.sh decred # blake 14
 
 #screen -dmS keccak $STRATUM_DIR/run.sh keccak
+#screen -dmS keccakc $STRATUM_DIR/run.sh keccakc
+#screen -dmS phi $STRATUM_DIR/run.sh phi
+#screen -dmS polytimos $STRATUM_DIR/run.sh polytimos
 screen -dmS whirlpool $STRATUM_DIR/run.sh whirlpool
 
 screen -dmS skein $STRATUM_DIR/run.sh skein
 screen -dmS skein2 $STRATUM_DIR/run.sh skein2
 screen -dmS yescrypt $STRATUM_DIR/run.sh yescrypt
+#screen -dmS yescryptR16 $STRATUM_DIR/run.sh yescryptR16
 screen -dmS zr5 $STRATUM_DIR/run.sh zr5
 screen -dmS sib $STRATUM_DIR/run.sh sib
 screen -dmS m7m $STRATUM_DIR/run.sh m7m

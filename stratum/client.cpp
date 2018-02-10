@@ -548,6 +548,10 @@ void *client_thread(void *p)
 
 		client->id_int = json_get_int(json, "id");
 		client->id_str = json_get_string(json, "id");
+		if (client->id_str && strlen(client->id_str) > 32) {
+			clientlog(client, "bad id");
+			break;
+		}
 
 		const char *method = json_get_string(json, "method");
 
