@@ -754,6 +754,25 @@ class SiteController extends CommonController
 
 	/////////////////////////////////////////////////
 
+	public function actionGostratums()
+	{
+		if(!$this->admin) return;
+		$algo = substr(getparam('algo'), 0, 32);
+		if ($algo == 'all') {
+			return;
+		}
+		user()->setState('yaamp-algo', $algo);
+		$this->redirect("/site/mining");
+	}
+	
+	public function actionAdminStratums()
+	{
+		if(!$this->admin) return;
+		$this->render('admin_stratums');
+	}
+	
+	/////////////////////////////////////////////////
+	
 	public function actionBalances()
 	{
 		if(!$this->admin) return;
