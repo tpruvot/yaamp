@@ -127,7 +127,15 @@ foreach($algos as $item)
 	$ts = $isup ? datetoa2($stratum->started) : '';
 
 	echo '<tr class="ssrow">';
-	echo '<td style="background-color: '.$algo_color.'"><b>';
+	
+	$stratum_instances = dboscalar("SELECT COUNT(*) FROM stratums WHERE algo='$algo'");
+        $stratum_urls = dbolist("SELECT url FROM stratums WHERE algo='$algo'"); // AND NOT(url = NULL)");
+
+        $urls = $stratum_instances." Stratums TCP Server:";
+        foreach ($stratum_urls as $stra)        {
+                $urls = $urls . "\n" . $stra['url'];
+        }
+        echo '<td style="background-color: '.$algo_color.'"><b title="'.$urls.'">';
 	echo CHtml::link($algo, '/site/gomining?algo='.$algo);
 	echo '</b></td>';
 	echo '<td align="left" style="font-size: .8em;" data="'.$ts.'">'.$isup.'&nbsp;'.$time.'</td>';
