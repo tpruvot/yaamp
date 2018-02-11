@@ -187,7 +187,7 @@ foreach($algos as $item)
 
 	echo '</tr>';
 	
-	if ($algo_selected == $algo && $stratum_instances > 0)	{
+	if (($algo_selected == $algo || $algo_selected == "all") && $stratum_instances > 0)	{
 		echo '<tr>';
 		echo '<td colspan="13">';
 		showTableSorter('stratumstable', '{
@@ -214,7 +214,8 @@ foreach($algos as $item)
 		</thead>
 		<tbody>
 		END;
-		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo_selected'");
+		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo'");
+		
 		foreach ($stratums_details_list as $stratums_details)	{
 			$stra_details_time = datetoa2($stratums_details['time']);
 			$stra_details_started = datetoa2($stratums_details['started']);
