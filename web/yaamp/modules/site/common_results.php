@@ -187,14 +187,14 @@ foreach($algos as $item)
 
 	echo '</tr>';
 	
-	if ($algo_selected == $algo)	{
+	if ($algo_selected == $algo && $stratum_instances > 0)	{
 		echo '<tr>';
-		echo '<td colspan='13'>';
+		echo '<td colspan="13">';
 		showTableSorter('stratumstable', '{
 			tableClass: "dataGrid",
 			widgets: ["Storage","saveSort"],
 			textExtraction: {
-				1: function(node, table, cellIndex) { return $(node).attr("data"); },
+				1: function(node, table, cellIndex) { return $(node).attr("data"); }
 			},
 			widgetOptions: {
 				saveSort: true
@@ -203,25 +203,31 @@ foreach($algos as $item)
 		<table>
 		<thead>
 		<tr>
-		<th data-sorter='numeric' align='left'>PID</th>
-		<th data-sorter='numeric' align='left'>Time</th>
-		<th data-sorter='numeric' align='left'>Started</th>
-		<th data-sorter='numeric' align='left'>Workers</th>
-		<th data-sorter='numeric' align='left'>Port</th>
-		<th data-sorter='numeric' align='left'>Symbol</th>
-		<th data-sorter='numeric' align='left'>url</th>
-		<th data-sorter='numeric' align='left'>fds</th>
+		<th data-sorter="numeric" align="left">PID</th>
+		<th data-sorter="numeric" align="left">Time</th>
+		<th data-sorter="numeric" align="left">Started</th>
+		<th data-sorter="numeric" align="left">Workers</th>
+		<th data-sorter="numeric" align="left">Port</th>
+		<th data-sorter="text" align="left">Symbol</th>
+		<th data-sorter="text" align="left">url</th>
+		<th data-sorter="numeric" align="left">fds</th>
 		</tr>
 		</thead>
 		<tbody>
 		END;
 		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo_selected'");
 		foreach ($stratums_details_list as $stratums_details)	{
+			$stra_details_time = datetoa2($stratums_details['time']);
+			$stra_details_started = datetoa2($stratums_details['started']);
 			echo '<tr>';
-			echo '<td>'.$stratums_details['pid'].'</td><td>'.$stratums_details['time'].'</td><td>';
-			echo $stratums_details['started'].'</td><td>'.$stratums_details['workers'].'</td><td>';
-			echo $stratums_details['port'].'</td><td>'.$stratums_details['symbol'].'</td><td>';
-			echo $stratums_details['url'].'</td><td>'.$stratums_details['fds'].'</td><td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['pid'].'</td>';
+			echo '<td style="font-size: .8em;" data="'.$stratums_details['time'].'">'.$stra_details_time.'</td>';
+			echo '<td style="font-size: .8em;" data="'.$stratums_details['started'].'">'.$stra_details_started.'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['workers'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['port'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['symbol'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['url'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['fds'].'</td>';
 			echo '</tr>';
 		}
 		echo '</tbody>';
