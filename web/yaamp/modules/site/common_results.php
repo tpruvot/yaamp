@@ -204,14 +204,14 @@ foreach($algos as $item)
 		<table>
 		<thead>
 		<tr>
-		<th data-sorter='numeric' align='left">PID</th>
-		<th data-sorter='numeric' align='left">Time</th>
-		<th data-sorter='numeric' align='left">Started</th>
-		<th data-sorter='numeric' align='left">Workers</th>
-		<th data-sorter='numeric' align='left">Port</th>
-		<th data-sorter='numeric' align='left">Symbol</th>
-		<th data-sorter='numeric' align='left">url</th>
-		<th data-sorter='numeric' align='left">fds</th>
+		<th data-sorter='numeric' align='left'>PID</th>
+		<th data-sorter='numeric' align='left'>Time</th>
+		<th data-sorter='numeric' align='left'>Started</th>
+		<th data-sorter='numeric' align='left'>Workers</th>
+		<th data-sorter='numeric' align='left'>Port</th>
+		<th data-sorter='numeric' align='left'>Symbol</th>
+		<th data-sorter='numeric' align='left'>url</th>
+		<th data-sorter='numeric' align='left'>fds</th>
 		</tr>
 		</thead>
 		<tbody>
