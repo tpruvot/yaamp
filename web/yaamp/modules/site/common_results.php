@@ -188,8 +188,8 @@ foreach($algos as $item)
 	echo '</tr>';
 	
 	if ($algo_selected == $algo)	{
-		echo "<tr>";
-		echo "<td colspan='13'>";
+		echo '<tr>';
+		echo '<td colspan='13'>';
 		showTableSorter('stratumstable', '{
 			tableClass: "dataGrid",
 			widgets: ["Storage","saveSort"],
@@ -218,17 +218,17 @@ foreach($algos as $item)
 		END;
 		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo:=algo='$algo_selected'");
 		foreach ($stratums_details_list as $stratums_details)	{
-			echo "<tr>";
-			echo "<td>".$stratums_details['pid']."</td><td>".$stratums_details['time']."</td><td>";
-			echo $stratums_details['started']."</td><td>".$stratums_details['workers']."</td><td>";
-			echo $stratums_details['port']."</td><td>".$stratums_details['symbol']."</td><td>";
-			echo $stratums_details['url']."</td><td>".$stratums_details['fds']."</td><td>";
-			echo "</tr>";
+			echo '<tr>';
+			echo '<td>'.$stratums_details['pid'].'</td><td>'.$stratums_details['time'].'</td><td>';
+			echo $stratums_details['started'].'</td><td>'.$stratums_details['workers'].'</td><td>';
+			echo $stratums_details['port'].'</td><td>'.$stratums_details['symbol'].'</td><td>';
+			echo $stratums_details['url'].'</td><td>'.$stratums_details['fds'].'</td><td>';
+			echo '</tr>';
 		}
 		echo '</tbody>';
-		echo "</table>";
-		echo "</td>";
-		echo "</tr>";
+		echo '</table>';
+		echo '</td>';
+		echo '</tr>';
 	}
 }
 
