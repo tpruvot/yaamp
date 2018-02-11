@@ -131,14 +131,14 @@ foreach($algos as $item)
 	echo '<tr class="ssrow">';
 	
 	$stratum_instances = dboscalar("SELECT COUNT(*) FROM stratums WHERE algo='$algo'");
-        $stratum_urls = dbolist("SELECT url FROM stratums WHERE algo='$algo'"); // AND NOT(url = NULL)");
-
-        $urls = $stratum_instances." Stratums TCP Server:";
-        foreach ($stratum_urls as $stra)        {
-                $urls = $urls . "\n" . $stra['url'];
-        }
-        echo '<td style="background-color: '.$algo_color.'"><b title="'.$urls.'">';
-	echo CHtml::link($algo, '/site/Gostratums?algo='.$algo);
+	$stratum_urls = dbolist("SELECT url FROM stratums WHERE algo='$algo' AND url IS NOT NULL");
+	
+	$urls = $stratum_instances." Stratums servers:";
+	foreach ($stratum_urls as $stra)        {
+		$urls = $urls . "\n" . $stra['url'];
+	}
+	echo '<td style="background-color: '.$algo_color.'"><b title="'.$urls.'">';
+	echo CHtml::link($algo, '/site/gostratums?algo='.$algo);
 	echo '</b></td>';
 	echo '<td align="left" style="font-size: .8em;" data="'.$ts.'">'.$isup.'&nbsp;'.$time.'</td>';
 	echo '<td align="right" style="font-size: .8em;">'.(empty($coins) ? '-' : $coins).'</td>';
@@ -190,18 +190,32 @@ foreach($algos as $item)
 	if ($algo_selected == $algo)	{
 		echo "<tr>";
 		echo "<td colspan='13'>";
-		echo "<table>";
-		echo "<thead>";
-		echo "<tr>";
-		echo "<th data-sorter='numeric' align='left">PID</th>";
-		echo "<th data-sorter='numeric' align='left">Time</th>";
-		echo "<th data-sorter='numeric' align='left">Started</th>";
-		echo "<th data-sorter='numeric' align='left">Workers</th>";
-		echo "<th data-sorter='numeric' align='left">Port</th>";
-		echo "<th data-sorter='numeric' align='left">Symbol</th>";
-		echo "<th data-sorter='numeric' align='left">url</th>";
-		echo "<th data-sorter='numeric' align='left">fds</th>";
-		echo "</tr>";
+		showTableSorter('stratumstable', '{
+			tableClass: "dataGrid",
+			widgets: ["Storage","saveSort"],
+			textExtraction: {
+				1: function(node, table, cellIndex) { return $(node).attr("data"); },
+				5: function(node, table, cellIndex) { return $(node).attr("data"); }
+			},
+			widgetOptions: {
+				saveSort: true
+			}}');
+		echo <<<END
+		<table>
+		<thead>
+		<tr>
+		<th data-sorter='numeric' align='left">PID</th>
+		<th data-sorter='numeric' align='left">Time</th>
+		<th data-sorter='numeric' align='left">Started</th>
+		<th data-sorter='numeric' align='left">Workers</th>
+		<th data-sorter='numeric' align='left">Port</th>
+		<th data-sorter='numeric' align='left">Symbol</th>
+		<th data-sorter='numeric' align='left">url</th>
+		<th data-sorter='numeric' align='left">fds</th>
+		</tr>
+		</thead>
+		<tbody>
+		END;
 		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo:=algo='$algo_selected'");
 		foreach ($stratums_details_list as $stratums_details)	{
 			echo "<tr>";
@@ -211,6 +225,7 @@ foreach($algos as $item)
 			echo $stratums_details['url']."</td><td>".$stratums_details['fds']."</td><td>";
 			echo "</tr>";
 		}
+		echo '</tbody>';
 		echo "</table>";
 		echo "</td>";
 		echo "</tr>";
