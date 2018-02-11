@@ -195,7 +195,6 @@ foreach($algos as $item)
 			widgets: ["Storage","saveSort"],
 			textExtraction: {
 				1: function(node, table, cellIndex) { return $(node).attr("data"); },
-				5: function(node, table, cellIndex) { return $(node).attr("data"); }
 			},
 			widgetOptions: {
 				saveSort: true
@@ -216,7 +215,7 @@ foreach($algos as $item)
 		</thead>
 		<tbody>
 		END;
-		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo:=algo='$algo_selected'");
+		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo_selected'");
 		foreach ($stratums_details_list as $stratums_details)	{
 			echo '<tr>';
 			echo '<td>'.$stratums_details['pid'].'</td><td>'.$stratums_details['time'].'</td><td>';
