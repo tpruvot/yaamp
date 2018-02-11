@@ -200,7 +200,6 @@ foreach($algos as $item)
 				saveSort: true
 			}}');
 		echo <<<END
-		<table>
 		<thead>
 		<tr>
 		<th data-sorter="numeric" align="left">PID</th>
