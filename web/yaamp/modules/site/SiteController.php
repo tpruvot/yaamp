@@ -758,9 +758,7 @@ class SiteController extends CommonController
 	{
 		if(!$this->admin) return;
 		$algo = substr(getparam('algo'), 0, 32);
-		if ($algo == 'all') {
-			return;
-		}
+
 		user()->setState('yaamp-algo', $algo);
 		$this->redirect("common");
 	}
