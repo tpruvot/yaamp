@@ -22,21 +22,21 @@ function BackendUpdateServices()
 		10=>'whirlx',
 		11=>'qubit',
 		12=>'quark',
-		13=>'Axiom',
+		// 13=>'Axiom',
 		14=>'lyra2v2', // 14 = Lyra2REv2
-		15=>'ScryptJaneNf16', // 15 = ScryptJaneNf16
+		// 15=>'ScryptJaneNf16', // 15 = ScryptJaneNf16
 		16=>'blakecoin', // 16 = Blake256r8
-		17=>'Blake256r14', // ??
-		18=>'Blake256r8vnl', // ??
-		19=>'Hodl',
-		20=>'DaggerHashimoto',
+		// 17=>'Blake256r14', // ??
+		// 18=>'Blake256r8vnl', // ??
+		// 19=>'Hodl',
+		// 20=>'DaggerHashimoto',
 		// 21=>'Decred', // obsolete
-		22=>'CryptoNight',
+		// 22=>'CryptoNight',
 		23=>'Lbry',
 		24=>'Equihash',
-		25=>'Pascal',
+		// 25=>'Pascal',
 		26=>'sib', // X11Gost
-		27=>'Sia',
+		// 27=>'Sia',
 		27=>'Blake2s',
 		27=>'Skunk',
 	);
