@@ -32,13 +32,13 @@ function BackendUpdateServices()
 		// 20=>'DaggerHashimoto',
 		// 21=>'Decred', // obsolete
 		// 22=>'CryptoNight',
-		23=>'Lbry',
-		24=>'Equihash',
+		23=>'lbry',
+		24=>'equihash',
 		// 25=>'Pascal',
 		26=>'sib', // X11Gost
 		// 27=>'Sia',
-		27=>'Blake2s',
-		27=>'Skunk',
+		27=>'blake2s',
+		27=>'skunk',
 	);
 
 	$res = fetch_url('https://api.nicehash.com/api?method=stats.global.current');
