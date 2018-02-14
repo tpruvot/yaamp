@@ -26,11 +26,11 @@ function BackendUpdateServices()
 		14=>'lyra2v2', // 14 = Lyra2REv2
 		// 15=>'ScryptJaneNf16', // 15 = ScryptJaneNf16
 		16=>'blakecoin', // 16 = Blake256r8
-		// 17=>'Blake256r14', // ??
-		// 18=>'Blake256r8vnl', // ??
+		// 17=>'Blake256r14',
+		// 18=>'Blake256r8vnl',
 		// 19=>'Hodl',
 		// 20=>'DaggerHashimoto',
-		// 21=>'Decred', // obsolete
+		// 21=>'Decred',
 		// 22=>'CryptoNight',
 		23=>'lbry',
 		24=>'equihash',
