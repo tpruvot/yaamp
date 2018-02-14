@@ -37,8 +37,8 @@ function BackendUpdateServices()
 		// 25=>'Pascal',
 		26=>'sib', // X11Gost
 		// 27=>'Sia',
-		27=>'blake2s',
-		27=>'skunk',
+		28=>'blake2s',
+		29=>'skunk',
 	);
 
 	$res = fetch_url('https://api.nicehash.com/api?method=stats.global.current');
