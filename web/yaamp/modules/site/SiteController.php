@@ -415,7 +415,7 @@ class SiteController extends CommonController
 		$algo = user()->getState('yaamp-algo');
 		$memcache = controller()->memcache->memcache;
 		$memkey = $algo.'_'.str_replace('/','_',$partial);
-		$html = memcache_get($memcache, $memkey);
+		$html = controller()->memcache->get($memkey);
 
 		if (!empty($html)) {
 			echo $html;
@@ -428,7 +428,7 @@ class SiteController extends CommonController
 		$html = ob_get_clean();
 		echo $html;
 
-		memcache_set($memcache, $memkey, $html, MEMCACHE_COMPRESSED, $cachetime);
+		controller()->memcache->set($memkey, $html, MEMCACHE_COMPRESSED, $cachetime);
 	}
 
 	// Pool Status : public right panel with all algos and live stats

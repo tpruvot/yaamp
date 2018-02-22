@@ -507,8 +507,8 @@ function cronstate2text($state)
 	}
 }
 
-//$state_block = memcache_get($this->memcache->memcache, 'cronjob_block_state');
-$state_main = memcache_get($this->memcache->memcache, 'cronjob_main_state');
+//$state_block = $this->memcache->get('cronjob_block_state');
+$state_main = $this->memcache->get('cronjob_main_state');
 $btc = getdbosql('db_coins', "symbol='BTC'");
 if (!$btc) $btc = json_decode('{"id": 6, "balance": 0}');
 
@@ -517,24 +517,24 @@ for($i=0; $i<10; $i++)
 {
 // 	if($i != $state_block-1 && $state_block>0)
 // 	{
-// 		$state = memcache_get($this->memcache->memcache, "cronjob_block_state_$i");
+// 		$state = $this->memcache->get("cronjob_block_state_$i");
 // 		if($state) echo "block $i ";
 // 	}
 
 	if($i != $state_main-1 && $state_main>0)
 	{
-		$state = memcache_get($this->memcache->memcache, "cronjob_main_state_$i");
+		$state = $this->memcache->get("cronjob_main_state_$i");
 		if($state) echo "main $i ";
 	}
 }
 
 echo '</span>';
 
-$block_time = sectoa(time()-memcache_get($this->memcache->memcache, "cronjob_block_time_start"));
-$loop2_time = sectoa(time()-memcache_get($this->memcache->memcache, "cronjob_loop2_time_start"));
-$main_time2 = sectoa(time()-memcache_get($this->memcache->memcache, "cronjob_main_time_start"));
+$block_time = sectoa(time()-$this->memcache->get("cronjob_block_time_start"));
+$loop2_time = sectoa(time()-$this->memcache->get("cronjob_loop2_time_start"));
+$main_time2 = sectoa(time()-$this->memcache->get("cronjob_main_time_start"));
 
-$main_time = sectoa(memcache_get($this->memcache->memcache, "cronjob_main_time"));
+$main_time = sectoa($this->memcache->get("cronjob_main_time"));
 $main_text = cronstate2text($state_main);
 
 echo "*** main  ($main_time) $state_main $main_text ($main_time2), loop2 ($loop2_time), block ($block_time)<br>";

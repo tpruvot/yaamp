@@ -20,8 +20,7 @@ class ApiController extends CommonController
 			return;
 		}
 
-		$memcache = controller()->memcache->memcache;
-		$json = memcache_get($memcache, "api_status");
+		$json = controller()->memcache->get("api_status");
 
 		if (!empty($json)) {
 			echo $json;
@@ -97,7 +96,7 @@ class ApiController extends CommonController
 		$json = json_encode($stats);
 		echo $json;
 
-		memcache_set($memcache, "api_status", $json, MEMCACHE_COMPRESSED, 30);
+		controller()->memcache->set("api_status", $json, MEMCACHE_COMPRESSED, 30);
 	}
 
 	public function actionCurrencies()
@@ -112,9 +111,7 @@ class ApiController extends CommonController
 			return;
 		}
 
-		$memcache = controller()->memcache->memcache;
-
-		$json = memcache_get($memcache, "api_currencies");
+		$json = controller()->memcache->get("api_currencies");
 		if (empty($json)) {
 
 			$data = array();
@@ -186,7 +183,7 @@ class ApiController extends CommonController
 					$data[$symbol]['symbol'] = $coin->symbol2;
 			}
 			$json = json_encode($data);
-			memcache_set($memcache, "api_currencies", $json, MEMCACHE_COMPRESSED, 15);
+			controller()->memcache->set("api_currencies", $json, MEMCACHE_COMPRESSED, 15);
 		}
 
 		echo str_replace("},","},\n", $json);

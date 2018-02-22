@@ -2,8 +2,7 @@
 
 echo "<a href='/site/memcached'>refresh</a><br>";
 
-$memcache = controller()->memcache->memcache;
-$a = memcache_get($this->memcache->memcache, 'url-map');
+$a = controller()->memcache->memcache->get( 'url-map');
 
 function printStats($stat)
 {
@@ -51,7 +50,7 @@ function cmp($a, $b)
 if (!empty($a))
 foreach($a as $url=>$n)
 {
-	$d = memcache_get($this->memcache->memcache, "$url-time");
+	$d = $this->memcache->get("$url-time");
 	$avg = $d/$n;
 
 	$res[] = array($url, $n, $d, $avg);
