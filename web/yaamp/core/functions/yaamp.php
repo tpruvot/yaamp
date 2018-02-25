@@ -51,6 +51,7 @@ function yaamp_get_algos()
 		'skunk',
 		'timetravel',
 		'tribus',
+		'a5a',
 		'vanilla',
 		'veltor',
 		'velvet',
@@ -169,6 +170,7 @@ function getAlgoColors($algo)
 		'bitcore'	=> '#f790c0',
 		'skunk'		=> '#dedefe',
 		'tribus'	=> '#c0d0d0',
+	        'a5a'		=> '#f0f0f0',
 		'vanilla'	=> '#f0f0f0',
 		'velvet'	=> '#aac0cc',
 		'whirlpool'	=> '#d0e0e0',
@@ -245,6 +247,7 @@ function getAlgoPort($algo)
 		'polytimos'	=> 8463,
 		'skunk'		=> 8433,
 		'tribus'	=> 8533,
+	        'a5a'   	=> 8633,
 	);
 
 	global $configCustomPorts;

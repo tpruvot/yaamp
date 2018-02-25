@@ -142,6 +142,7 @@ YAAMP_ALGO g_algos[] =
 	{"myr-gr", groestlmyriad_hash, 1, 0, 0}, /* groestl + sha 64 */
 	{"skein", skein_hash, 1, 0, 0},
 	{"tribus", tribus_hash, 1, 0, 0},
+	{"a5a", a5a_hash, 0x10000, 0, 0},
 	{"keccak", keccak256_hash, 0x80, 0, sha256_hash_hex },
 	{"phi", phi_hash, 1, 0, 0},
 	{"polytimos", polytimos_hash, 1, 0, 0},
