@@ -754,6 +754,17 @@ class SiteController extends CommonController
 
 	/////////////////////////////////////////////////
 
+	public function actionGostratums()
+	{
+		if(!$this->admin) return;
+		$algo = substr(getparam('algo'), 0, 32);
+
+		user()->setState('yaamp-algo', $algo);
+		$this->redirect("common");
+	}
+	
+	/////////////////////////////////////////////////
+	
 	public function actionBalances()
 	{
 		if(!$this->admin) return;

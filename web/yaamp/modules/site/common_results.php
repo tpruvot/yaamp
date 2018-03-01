@@ -2,6 +2,8 @@
 
 $mining = getdbosql('db_mining');
 
+$algo_selected = user()->getState('yaamp-algo');
+
 $showrental = (bool) YAAMP_RENTAL;
 
 echo <<<END
@@ -127,8 +129,16 @@ foreach($algos as $item)
 	$ts = $isup ? datetoa2($stratum->started) : '';
 
 	echo '<tr class="ssrow">';
-	echo '<td style="background-color: '.$algo_color.'"><b>';
-	echo CHtml::link($algo, '/site/gomining?algo='.$algo);
+	
+	$stratum_instances = dboscalar("SELECT COUNT(*) FROM stratums WHERE algo='$algo'");
+	$stratum_urls = dbolist("SELECT url FROM stratums WHERE algo='$algo' AND url IS NOT NULL");
+	
+	$urls = $stratum_instances." Stratums servers:";
+	foreach ($stratum_urls as $stra)        {
+		$urls = $urls . "\n" . $stra['url'];
+	}
+	echo '<td style="background-color: '.$algo_color.'"><b title="'.$urls.'">';
+	echo CHtml::link($algo, '/site/gostratums?algo='.$algo);
 	echo '</b></td>';
 	echo '<td align="left" style="font-size: .8em;" data="'.$ts.'">'.$isup.'&nbsp;'.$time.'</td>';
 	echo '<td align="right" style="font-size: .8em;">'.(empty($coins) ? '-' : $coins).'</td>';
@@ -176,6 +186,55 @@ foreach($algos as $item)
 	echo '<td align="right" style="font-size: .8em; '.$style.'">'.$btcmhday1.'</td>';
 
 	echo '</tr>';
+	
+	if (($algo_selected == $algo || $algo_selected == "all") && $stratum_instances > 0)	{
+		echo '<tr>';
+		echo '<td colspan="13">';
+		showTableSorter('stratumstable', '{
+			tableClass: "dataGrid",
+			widgets: ["Storage","saveSort"],
+			textExtraction: {
+				1: function(node, table, cellIndex) { return $(node).attr("data"); }
+			},
+			widgetOptions: {
+				saveSort: true
+			}}');
+		echo <<<END
+		<thead>
+		<tr>
+		<th data-sorter="numeric" align="left">PID</th>
+		<th data-sorter="numeric" align="left">Time</th>
+		<th data-sorter="numeric" align="left">Started</th>
+		<th data-sorter="numeric" align="left">Workers</th>
+		<th data-sorter="numeric" align="left">Port</th>
+		<th data-sorter="text" align="left">Symbol</th>
+		<th data-sorter="text" align="left">url</th>
+		<th data-sorter="numeric" align="left">fds</th>
+		</tr>
+		</thead>
+		<tbody>
+		END;
+		$stratums_details_list = dbolist("SELECT * FROM stratums WHERE algo='$algo'");
+		
+		foreach ($stratums_details_list as $stratums_details)	{
+			$stra_details_time = datetoa2($stratums_details['time']);
+			$stra_details_started = datetoa2($stratums_details['started']);
+			echo '<tr>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['pid'].'</td>';
+			echo '<td style="font-size: .8em;" data="'.$stratums_details['time'].'">'.$stra_details_time.'</td>';
+			echo '<td style="font-size: .8em;" data="'.$stratums_details['started'].'">'.$stra_details_started.'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['workers'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['port'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['symbol'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['url'].'</td>';
+			echo '<td style="font-size: .8em;">'.$stratums_details['fds'].'</td>';
+			echo '</tr>';
+		}
+		echo '</tbody>';
+		echo '</table>';
+		echo '</td>';
+		echo '</tr>';
+	}
 }
 
 echo '</tbody>';

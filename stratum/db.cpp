@@ -87,9 +87,9 @@ void db_register_stratum(YAAMP_DB *db)
 	int t = time(NULL);
 	if(!db) return;
 
-	db_query(db, "INSERT INTO stratums (pid, time, started, algo, port) VALUES (%d, %d, %d, '%s', %d) "
+	db_query(db, "INSERT INTO stratums (pid, time, started, algo, port, url) VALUES (%d, %d, %d, '%s', %d, '%s') "
 		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', port=%d",
-		pid, t, t, g_stratum_algo, g_tcp_port,
+		pid, t, t, g_stratum_algo, g_tcp_port, g_tcp_server,
 		t, g_stratum_algo, g_tcp_port
 	);
 }
