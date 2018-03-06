@@ -285,20 +285,20 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 				block_confirm(coind->id, submitvalues->hash_be);
 			}
 
-#ifdef HASH_DEBUGLOG_
-			debuglog("--------------------------------------------------------------\n");
-			debuglog("hash1 %s\n", hash1);
-			debuglog("hash2 %s\n", submitvalues->hash_be);
-#endif
+			if (g_debuglog_hash) {
+				debuglog("--------------------------------------------------------------\n");
+				debuglog("hash1 %s\n", hash1);
+				debuglog("hash2 %s\n", submitvalues->hash_be);
+			}
 		}
 
 		else {
 			debuglog("*** REJECTED :( %s block %d %d txs\n", coind->name, templ->height, templ->txcount);
 			rejectlog("REJECTED %s block %d\n", coind->symbol, templ->height);
-#ifdef HASH_DEBUGLOG_
-			//debuglog("block %s\n", block_hex);
-			debuglog("--------------------------------------------------------------\n");
-#endif
+			if (g_debuglog_hash) {
+				//debuglog("block %s\n", block_hex);
+				debuglog("--------------------------------------------------------------\n");
+			}
 		}
 	}
 
@@ -324,9 +324,9 @@ void client_submit_error(YAAMP_CLIENT *client, YAAMP_JOB *job, int id, const cha
 		share_add(client, job, false, extranonce2, ntime, nonce, 0, id);
 
 		client->submit_bad++;
-#ifdef HASH_DEBUGLOG_
-		dump_submit_debug(message, client, job, extranonce2, ntime, nonce);
-#endif
+		if (g_debuglog_hash) {
+			dump_submit_debug(message, client, job, extranonce2, ntime, nonce);
+		}
 	}
 
 	object_unlock(job);
@@ -377,9 +377,9 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	if (json_params->u.array.length == 6)
 		strncpy(vote, json_params->u.array.values[5]->u.string.ptr, 7);
 
-#ifdef HASH_DEBUGLOG_
-	debuglog("submit %s (uid %d) %d, %s, %s, %s\n", client->sock->ip, client->userid, jobid, extranonce2, ntime, nonce);
-#endif
+	if (g_debuglog_hash) {
+		debuglog("submit %s (uid %d) %d, %s, %s, %s\n", client->sock->ip, client->userid, jobid, extranonce2, ntime, nonce);
+	}
 
 	string_lower(extranonce2);
 	string_lower(ntime);
@@ -480,11 +480,11 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	// minimum hash diff begins with 0000, for all...
 	uint8_t pfx = submitvalues.hash_bin[30] | submitvalues.hash_bin[31];
 	if(pfx) {
-#ifdef HASH_DEBUGLOG_
-		debuglog("Possible %s error, hash starts with %02x%02x%02x%02x\n", g_current_algo->name,
-			(int) submitvalues.hash_bin[31], (int) submitvalues.hash_bin[30],
-			(int) submitvalues.hash_bin[29], (int) submitvalues.hash_bin[28]);
-#endif
+		if (g_debuglog_hash) {
+			debuglog("Possible %s error, hash starts with %02x%02x%02x%02x\n", g_current_algo->name,
+				(int) submitvalues.hash_bin[31], (int) submitvalues.hash_bin[30],
+				(int) submitvalues.hash_bin[29], (int) submitvalues.hash_bin[28]);
+		}
 		client_submit_error(client, job, 25, "Invalid share", extranonce2, ntime, nonce);
 		return true;
 	}
@@ -494,11 +494,11 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	uint64_t coin_target = decode_compact(templ->nbits);
 	if (templ->nbits && !coin_target) coin_target = 0xFFFF000000000000ULL;
 
-#ifdef HASH_DEBUGLOG_
-	debuglog("%016llx actual\n", hash_int);
-	debuglog("%016llx target\n", user_target);
-	debuglog("%016llx coin\n", coin_target);
-#endif
+	if (g_debuglog_hash) {
+		debuglog("%016llx actual\n", hash_int);
+		debuglog("%016llx target\n", user_target);
+		debuglog("%016llx coin\n", coin_target);
+	}
 	if(hash_int > user_target && hash_int > coin_target)
 	{
 		client_submit_error(client, job, 26, "Low difficulty share", extranonce2, ntime, nonce);
@@ -524,12 +524,12 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 //		share_diff = share_diff / g_current_algo->diff_multiplier;
 //	}
 
-#ifndef HASH_DEBUGLOG_
-	// only log a few...
-	if (share_diff > (client->difficulty_actual * 16))
-		debuglog("submit %s (uid %d) %d, %s, %s, %s, %.3f/%.3f\n", client->sock->ip, client->userid,
-			jobid, extranonce2, ntime, nonce, share_diff, client->difficulty_actual);
-#endif
+	if (g_debuglog_hash) {
+		// only log a few...
+		if (share_diff > (client->difficulty_actual * 16))
+			debuglog("submit %s (uid %d) %d, %s, %s, %s, %.3f/%.3f\n", client->sock->ip, client->userid,
+				jobid, extranonce2, ntime, nonce, share_diff, client->difficulty_actual);
+	}
 
 	share_add(client, job, true, extranonce2, ntime, nonce, share_diff, 0);
 	object_unlock(job);

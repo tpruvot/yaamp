@@ -37,9 +37,9 @@ bool rpc_connect(YAAMP_RPC *rpc)
 	rpc->id = 0;
 	rpc->bufpos = 0;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("connected to %s:%d\n", rpc->host, rpc->port);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("connected to %s:%d\n", rpc->host, rpc->port);
+	}
 
 	return true;
 }
@@ -52,9 +52,9 @@ void rpc_close(YAAMP_RPC *rpc)
 	close(rpc->sock);
 	rpc->sock = 0;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("disconnected from %s:%d\n", rpc->host, rpc->port);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("disconnected from %s:%d\n", rpc->host, rpc->port);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -66,9 +66,9 @@ int rpc_send_raw(YAAMP_RPC *rpc, const char *buffer, int bytes)
 	int res = send(rpc->sock, buffer, bytes, MSG_NOSIGNAL);
 	if(res <= 0) return res;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("sending >%s<\n", buffer);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("sending >%s<\n", buffer);
+	}
 
 	return res;
 }
@@ -148,9 +148,9 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 	while(!g_exiting)
 	{
 		int bytes = recv(rpc->sock, buffer+bufpos, YAAMP_SMALLBUFSIZE-bufpos-1, 0);
-#ifdef RPC_DEBUGLOG_
-		debuglog("got %s\n", buffer+bufpos);
-#endif
+		if (g_debuglog_rpc) {
+			debuglog("got %s\n", buffer+bufpos);
+		}
 		if(bytes <= 0)
 		{
 			debuglog("ERROR: recv1, %d, %d, %s, %s\n", bytes, errno, data, buffer);

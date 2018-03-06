@@ -90,6 +90,13 @@ extern bool g_stratum_renting;
 extern bool g_stratum_segwit;
 extern int g_limit_txs_per_block;
 
+extern bool g_debuglog_client;
+extern bool g_debuglog_hash;
+extern bool g_debuglog_socket;
+extern bool g_debuglog_rpc;
+extern bool g_debuglog_list;
+extern bool g_debuglog_remote;
+
 extern uint64_t g_max_shares;
 extern uint64_t g_shares_counter;
 

@@ -40,9 +40,9 @@ bool remote_connected(YAAMP_REMOTE *remote)
 
 void remote_close(YAAMP_REMOTE *remote)
 {
-#ifdef REMOTE_DEBUGLOG_
-	debuglog("remote_close JOB%d\n", remote->id);
-#endif
+	if (g_debuglog_remote) {
+		debuglog("remote_close JOB%d\n", remote->id);
+	}
 
 	remote->difficulty_actual = 0;
 
@@ -65,9 +65,9 @@ bool remote_connect(YAAMP_REMOTE *remote)
 	if(remote_connected(remote))
 		remote_close(remote);
 
-#ifdef REMOTE_DEBUGLOG_
-	debuglog("connecting to %s:%d JOB%d\n", remote->host, remote->port, remote->id);
-#endif
+	if (g_debuglog_remote) {
+		debuglog("connecting to %s:%d JOB%d\n", remote->host, remote->port, remote->id);
+	}
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(sock <= 0) return false;
@@ -85,9 +85,9 @@ bool remote_connect(YAAMP_REMOTE *remote)
 	int res = connect(sock, (struct sockaddr*)&serv, sizeof(serv));
 	if(res < 0)
 	{
-#ifdef REMOTE_DEBUGLOG_
-		debuglog("cant connect to %s:%d JOB%d\n", remote->host, remote->port, remote->id);
-#endif
+		if (g_debuglog_remote) {
+			debuglog("cant connect to %s:%d JOB%d\n", remote->host, remote->port, remote->id);
+		}
 		return false;
 	}
 

@@ -68,9 +68,9 @@ YAAMP_SOCKET *socket_initialize(int sock)
 
 void socket_close(YAAMP_SOCKET *s)
 {
-#ifdef SOCKET_DEBUGLOG_
-	debuglog("socket_close\n");
-#endif
+	if (g_debuglog_socket) {
+		debuglog("socket_close\n");
+	}
 
 	if(!s) return;
 	if(s->sock) close(s->sock);
@@ -174,9 +174,9 @@ json_value *socket_nextjson(YAAMP_SOCKET *s, YAAMP_CLIENT *client)
 
 int socket_send_raw(YAAMP_SOCKET *s, const char *buffer, int size)
 {
-#ifdef SOCKET_DEBUGLOG_
-	debuglog("socket send: %s", buffer);
-#endif
+	if (g_debuglog_socket) {
+		debuglog("socket send: %s", buffer);
+	}
 
 	int res = send(s->sock, buffer, size, MSG_NOSIGNAL);
 	return res;

@@ -39,6 +39,13 @@ bool g_stratum_segwit = false;
 
 int g_limit_txs_per_block = 0;
 
+bool g_debuglog_client;
+bool g_debuglog_hash;
+bool g_debuglog_socket;
+bool g_debuglog_rpc;
+bool g_debuglog_list;
+bool g_debuglog_remote;
+
 bool g_autoexchange = true;
 
 uint64_t g_max_shares = 0;
@@ -240,6 +247,13 @@ int main(int argc, char **argv)
 	g_stratum_renting = iniparser_getint(ini, "STRATUM:renting", true);
 
 	g_limit_txs_per_block = iniparser_getint(ini, "STRATUM:max_txs_per_block", 0);
+
+	g_debuglog_client = iniparser_getint(ini, "DEBUGLOG:client", false);
+	g_debuglog_hash = iniparser_getint(ini, "DEBUGLOG:hash", false);
+	g_debuglog_socket = iniparser_getint(ini, "DEBUGLOG:socket", false);
+	g_debuglog_rpc = iniparser_getint(ini, "DEBUGLOG:rpc", false);
+	g_debuglog_list = iniparser_getint(ini, "DEBUGLOG:list", false);
+	g_debuglog_remote = iniparser_getint(ini, "DEBUGLOG:remote", false);
 
 	iniparser_freedict(ini);
 
