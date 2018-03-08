@@ -19,6 +19,7 @@ if (!defined('YIIMP_KWH_USD_PRICE')) define('YIIMP_KWH_USD_PRICE', 0.25);
 if (!defined('YAAMP_FEES_MINING')) define('YAAMP_FEES_MINING', 0.5);
 if (!defined('YAAMP_FEES_EXCHANGE')) define('YAAMP_FEES_EXCHANGE', 2);
 if (!defined('YAAMP_FEES_RENTING')) define('YAAMP_FEES_RENTING', 2);
+if (!defined('YAAMP_RENTING_MIN_BALANCE')) define('YAAMP_RENTING_MIN_BALANCE', 0.00001000);
 if (!defined('YAAMP_TXFEE_RENTING_WD')) define('YAAMP_TXFEE_RENTING_WD', 0.002);
 if (!defined('YAAMP_PAYMENTS_FREQ')) define('YAAMP_PAYMENTS_FREQ', 24*60*60);
 if (!defined('YAAMP_PAYMENTS_MINI')) define('YAAMP_PAYMENTS_MINI', 0.001);

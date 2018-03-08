@@ -18,10 +18,10 @@ echo "<tr>";
 //echo "<th width=80></th>";
 echo "<th>Server</th>";
 //echo "<th>Algo</th>";
-echo "<th align=right>Max Price</th>";
-echo "<th align=right>Max Hash</th>";
-echo "<th align=right>Hash*</th>";
-echo "<th align=right>Diff</th>";
+echo "<th style='text-align:right;'>Max Price</th>";
+echo "<th style='text-align:right;'>Max Hash</th>";
+echo "<th style='text-align:right;'>Hash*</th>";
+echo "<th style='text-align:right;'>Diff</th>";
 echo "</tr>";
 echo "</thead><tbody>";
 
@@ -64,10 +64,10 @@ foreach($list as $job)
 //	echo "<td>$d</td>";
 //	echo "<td>$job->algo</td>";
 
-	echo "<td align=right>$price</td>";
-	echo "<td align=right>$maxhash</td>";
-	echo "<td align=right title='$title_percent'>$hashrate</td>";
-	echo "<td align=right>$diff</td>";
+	echo "<td style='text-align:right;'>$price</td>";
+	echo "<td style='text-align:right;'>$maxhash</td>";
+	echo "<td style='text-align:right;' title='$title_percent'>$hashrate</td>";
+	echo "<td style='text-align:right;'>$diff</td>";
 	echo "</tr>";
 
 	$style_ext = '';	//$job->active? 'background-color: #dfd;': '';

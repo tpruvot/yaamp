@@ -73,9 +73,9 @@ echo "<table class='dataGrid2'>";
 
 echo "<thead>";
 echo "<tr>";
-echo "<th align=right>Time</th>";
-echo "<th align=right>Type</th>";
-echo "<th align=right>Amount</th>";
+echo "<th style='text-align:right;'>Time</th>";
+echo "<th style='text-align:right;'>Type</th>";
+echo "<th style='text-align:right;'>Amount</th>";
 echo "<th>Tx</th>";
 echo "</tr>";
 echo "</thead>";
@@ -87,9 +87,9 @@ foreach($list as $tx)
 
 	echo "<tr class='ssrow'>";
 
-	echo "<td align=right><b>$d ago</b></td>";
-	echo "<td align=right title='$tx->address'>$tx->type</td>";
-	echo "<td align=right><b>$amount</b></td>";
+	echo "<td style='text-align:right;'><b>$d ago</b></td>";
+	echo "<td style='text-align:right;' title='$tx->address'>$tx->type</td>";
+	echo "<td style='text-align:right;'><b>$amount</b></td>";
 
 	if(strlen($tx->tx) > 32)
 	{

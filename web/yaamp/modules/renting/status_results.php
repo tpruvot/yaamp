@@ -11,14 +11,14 @@ showTableSorter('maintable3');
 echo "<thead>";
 echo "<tr>";
 echo "<th>Algo</th>";
-echo "<th align=right>Jobs</th>";
-echo "<th align=right>Total</th>";
+echo "<th style='text-align:right;'>Jobs</th>";
+echo "<th style='text-align:right;'>Total</th>";
 //echo "<th>For Rent**</th>";
-echo "<th align=right>Rented</th>";
+echo "<th style='text-align:right;'>Rented</th>";
 echo "<th></th>";
-echo "<th align=right>Available</th>";
+echo "<th style='text-align:right;'>Available</th>";
 //echo "<th>Paying</th>";
-echo "<th align=right>Current Price</th>";
+echo "<th style='text-align:right;'>Current Price</th>";
 echo "</tr>";
 echo "</thead>";
 
@@ -26,6 +26,9 @@ $algos = array();
 foreach(yaamp_get_algos() as $algo)
 {
 	$algo_norm = yaamp_get_algo_norm($algo);
+	
+	$coins = getdbocount('db_coins', "enable and visible and auto_ready and algo=:algo", array(':algo'=>$algo));
+	if (!$coins || $coins <= 0) continue; // don't isplay the algo if no coins set on it
 
 	$price = controller()->memcache->get_database_scalar("current_price-$algo",
 			"select price from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
@@ -76,14 +79,14 @@ foreach($algos as $item)
 		echo "<tr style='cursor: pointer' class='ssrow' onclick='javascript:select_algo(\"$algo\")'>";
 
 	echo "<td><b>$algo</b></td>";
-	echo "<td align=right style='font-size: .9em;'>$count1 / $count2</td>";
-//	echo "<td align=right style='font-size: .9em;'>$total</td>";
-	echo "<td align=right style='font-size: .9em;' title='pool hashrate $total'>$hashrate</td>";
-	echo "<td align=right style='font-size: .9em;'>$hashrate_jobs</td>";
-	echo "<td align=right style='font-size: .8em;'>$percent</td>";
-	echo "<td align=right style='font-size: .9em;'>$available</td>";
-//	echo "<td align=right style='font-size: .9em;'>$price</td>";
-	echo "<td align=right style='font-size: .9em;'><b>$renting</b></td>";
+	echo "<td style='text-align:right;' style='font-size: .9em;'>$count1 / $count2</td>";
+//	echo "<td style='text-align:right;' style='font-size: .9em;'>$total</td>";
+	echo "<td style='text-align:right;' style='font-size: .9em;' title='pool hashrate $total'>$hashrate</td>";
+	echo "<td style='text-align:right;' style='font-size: .9em;'>$hashrate_jobs</td>";
+	echo "<td style='text-align:right;' style='font-size: .8em;'>$percent</td>";
+	echo "<td style='text-align:right;' style='font-size: .9em;'>$available</td>";
+//	echo "<td style='text-align:right;' style='font-size: .9em;'>$price</td>";
+	echo "<td style='text-align:right;' style='font-size: .9em;'><b>$renting</b></td>";
 	echo "</tr>";
 }
 

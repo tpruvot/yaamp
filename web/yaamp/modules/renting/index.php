@@ -16,14 +16,14 @@ $balance = bitcoinvaluetoa($renter->balance);
 echo <<<END
 
 <table cellspacing=20 width=100%>
-<tr><td valign=top width=50%>
+<tr><td style='vertical-align:top; width:50%;'>
 
 <!--  -->
 
 <div id='balance_results'></div>
 <div id='orders_results'></div>
 
-</td><td valign=top>
+</td><td style='vertical-align:top;'>
 
 <div id='pool_current_results'>
 <br><br><br><br><br><br><br><br><br><br>
@@ -57,7 +57,7 @@ function page_refresh()
 
 function select_algo(algo)
 {
-	window.location.href = '/site/algo?algo='+algo;
+	window.location.href = '/site/algo?algo='+algo+'&r=/renting';
 }
 
 ////////////////////////////////////////////////////
@@ -298,7 +298,7 @@ Amount: <input type="text" name="withdraw_amount" class="main-text-input" style=
 Address: <input type="text" name="withdraw_address" class="main-text-input" style='width: 300px;'>
 
 <br><br>
-<p>withdraw fees 0.0001</p>
+<p>Withdraw fees 0.0001</p>
 <br>
 <input type="submit" value="Withdraw" class="main-submit-button">
 </form>

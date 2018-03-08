@@ -86,7 +86,7 @@ function page_refresh()
 
 function select_algo(algo)
 {
-	window.location.href = '/site/algo?algo='+algo;
+	window.location.href = '/site/algo?algo='+algo+'&r=/renting';
 }
 
 ////////////////////////////////////////////////////

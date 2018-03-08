@@ -28,7 +28,7 @@ echo <<<end
 </style>
 
 <table cellspacing=20 width=100%>
-<tr><td valign=top width=50%>
+<tr><td style='vertical-align:top; width:50%;'>
 
 <div class="yaamp-login-container">
 <form action='/renting/login' method='post'>
@@ -86,7 +86,7 @@ echo <<<end
 
 </div>
 
-</td><td valign=top>
+</td><td style='vertical-align:top;'>
 
 <div id='pool_current_results'>
 <br><br><br><br><br><br><br><br><br><br>
@@ -142,7 +142,7 @@ function page_refresh()
 
 function select_algo(algo)
 {
-	window.location.href = '/site/algo?algo='+algo;
+	window.location.href = '/site/algo?algo='+algo+'&r=/renting';
 }
 
 ////////////////////////////////////////////////////

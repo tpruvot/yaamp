@@ -14,11 +14,11 @@ echo "<tr>";
 echo "<th></th>";
 echo "<th>Server</th>";
 echo "<th>Algo</th>";
-echo "<th align=right>Max Price</th>";
+echo "<th style='text-align:right;'>Max Price</th>";
 //echo "<th>Current<br>Price</th>";
-echo "<th align=right>Max Hash</th>";
-echo "<th align=right>Hash*</th>";
-echo "<th align=right>Diff</th>";
+echo "<th style='text-align:right;'>Max Hash</th>";
+echo "<th style='text-align:right;'>Hash*</th>";
+echo "<th style='text-align:right;'>Diff</th>";
 echo "<th></th>";
 echo "</tr>";
 echo "</thead><tbody>";
@@ -67,11 +67,11 @@ foreach($list as $job)
 	echo "<td>$job->algo</td>";
 	echo "<td align=right title='Current Price $rent'>$price $p</td>";
 //	echo "<td>$rent</td>";
-	echo "<td align=right>$maxhash</td>";
-	echo "<td align=right title='$title_percent'>$hashrate</td>";
-	echo "<td align=right>$diff</td>";
+	echo "<td style='text-align:right;'>$maxhash</td>";
+	echo "<td style='text-align:right;' title='$title_percent'>$hashrate</td>";
+	echo "<td style='text-align:right;'>$diff</td>";
 
-	echo "<td valign=center>";
+	echo "<td style='vertical-align:center;'>";
 
 	if(YAAMP_RENTAL)
 	{
