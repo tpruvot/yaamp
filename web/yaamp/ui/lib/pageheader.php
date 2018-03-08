@@ -11,16 +11,20 @@
 	<meta name="description" content="yiimp mining pool for bitcoin and altcoin with auto profit switch and auto exchange">
 	<meta name="keywords" content="yiimp,anonymous,mining,pool,maxcoin,bitcoin,altcoin,auto,switch,exchange,profit">
 
-	<title>YiiMP</title>
-
 <?php
+	
+$pageTitle = empty($this->pageTitle) ? YAAMP_SITE_NAME : YAAMP_SITE_NAME." - ".$this->pageTitle;
+echo '<title>'.$pageTitle.'</title>';
 
 echo CHtml::cssFile("/extensions/jquery/themes/ui-lightness/jquery-ui.css");
 echo CHtml::cssFile('/yaamp/ui/css/main.css');
 echo CHtml::cssFile('/yaamp/ui/css/table.css');
 //echo CHtml::scriptFile('/yaamp/ui/js/jquery.tablesorter.js');
 
-echo CHtml::scriptFile('/extensions/jquery/js/jquery-1.8.3-dev.js');
-echo CHtml::scriptFile('/extensions/jquery/js/jquery-ui-1.9.1.custom.min.js');
+//echo CHtml::scriptFile('/extensions/jquery/js/jquery-1.8.3-dev.js');
+//echo CHtml::scriptFile('/extensions/jquery/js/jquery-ui-1.9.1.custom.min.js');
+
+$cs = app()->getClientScript();
+$cs->registerCoreScript('jquery.ui');
 
 echo "</head>";

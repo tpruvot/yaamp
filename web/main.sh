@@ -1,8 +1,15 @@
 #!/bin/bash
 
-cd /var/web
+PHP_CLI='php -d max_execution_time=120'
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd ${DIR}
+
+date
+echo started in ${DIR}
+
 while true; do
-        php5 run.php cronjob/run
+        ${PHP_CLI} runconsole.php cronjob/run
         sleep 90
 done
 exec bash

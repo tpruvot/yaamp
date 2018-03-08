@@ -44,28 +44,58 @@ void object_delete(YAAMP_OBJECT *object)
 void object_prune(CommonList *list, YAAMP_OBJECT_DELETE_FUNC deletefunc)
 {
 	list->Enter();
-	for(CLI li = list->first; li; )
+	for(CLI li = list->first; li && list->count > 0; )
 	{
+		CLI todel = li;
 		YAAMP_OBJECT *object = (YAAMP_OBJECT *)li->data;
 		li = li->next;
 
-//		if(object->deleted && object->locked)
-//			debuglog("object set for delete is locked\n");
+		if(!object) continue;
 
 		if(object->deleted && !object->lock_count)
 		{
-			list->Delete(object);
 			deletefunc(object);
+			todel->data = NULL;
+			list->Delete(todel);
 		}
 
 		else if(object->lock_count && object->unlock)
 			object->lock_count--;
 	}
 
-//	debuglog("still %d objects in list\n", list->count);
 	list->Leave();
 }
 
+void object_prune_debug(CommonList *list, YAAMP_OBJECT_DELETE_FUNC deletefunc)
+{
+	list->Enter();
+	for(CLI li = list->first; li && list->count > 0; )
+	{
+		CLI todel = li;
+		YAAMP_OBJECT *object = (YAAMP_OBJECT *)li->data;
+		li = li->next;
+
+		if(!object) continue;
+
+		if(object->deleted && object->lock_count)
+			debuglog("object set for delete is locked\n");
+
+		if(object->deleted && !object->lock_count)
+		{
+			deletefunc(object);
+			todel->data = NULL;
+			list->Delete(todel);
+		}
+
+		else if(object->lock_count && object->unlock)
+			object->lock_count--;
+	}
+
+	if (list->count)
+		debuglog("still %d objects in list\n", list->count);
+
+	list->Leave();
+}
 
 
 

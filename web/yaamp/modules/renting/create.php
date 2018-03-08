@@ -19,7 +19,7 @@ if(!$b)
 $btc = getdbosql('db_coins', "symbol='BTC'");
 if(!$btc) return;
 
-$remote = new Bitcoin($btc->rpcuser, $btc->rpcpasswd, $btc->rpchost, $btc->rpcport);
+$remote = new WalletRPC($btc);
 $renter = new db_renters;
 
 $renter->created = time();
@@ -41,9 +41,11 @@ if($received1>0)
 	debuglog("create new renter, moving initial $received1");
 }
 
-$recents = isset($_COOKIE['deposits'])? unserialize($_COOKIE['deposits']): array();
+$raw_recents = isset($_COOKIE['deposits'])? explode("|", $_COOKIE['deposits']): array();
+$recents = array();
+foreach($raw_recents as $addr) $recents[$addr] = $addr;
 $recents[$renter->address] = $renter->address;
-setcookie('deposits', serialize($recents), time()+60*60*24*30, '/');
+setcookie('deposits', implode("|", $recents), time()+60*60*24*30, '/');
 
 user()->setState('yaamp-deposit', $renter->address);
 controller()->redirect('settings');

@@ -1,32 +1,29 @@
 <?php
 
-$symbol = getparam('symbol');
-$string = "<option value='all'>-all-</option>";
+JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
 
-$list = getdbolist('db_coins', "enable and id in (select distinct coinid from accounts where balance>0.0001)");
+echo getAdminSideBarLinks();
+
+$symbol = getparam('symbol');
+$coins = "<option value='all'>-all-</option>";
+
+$list = getdbolist('db_coins', "enable AND (".
+	"id IN (SELECT DISTINCT coinid FROM accounts WHERE balance>0.0001) ".
+	"OR id IN (SELECT DISTINCT coinid from earnings) ) ORDER BY symbol");
 foreach($list as $coin)
 {
 	if($coin->symbol == $symbol)
-		$string .= "<option value='$coin->symbol' selected>$coin->symbol</option>";
+		$coins .= '<option value="'.$coin->symbol.'" selected>'.$coin->symbol.'</option>';
 	else
-		$string .= "<option value='$coin->symbol'>$coin->symbol</option>";
+		$coins .= '<option value="'.$coin->symbol.'">'.$coin->symbol.'</option>';
 }
+
 
 echo <<<end
 
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
-<a href='/site/monsters'>Big Miners</a>&nbsp;
-<a href='/site/emptymarkets'>EmptyMarket</a>&nbsp;
-
-<div>
-Select Algo: <select id='coin_select'>$string</select>&nbsp;
+<div align="right" style="margin-top: -14px; margin-bottom: -6px; margin-right: 140px;">
+Select coin: <select id='coin_select'>$coins</select>&nbsp;
 </div>
 
 <div id='main_results'></div>
@@ -75,6 +72,3 @@ function main_refresh()
 </script>
 
 end;
-
-
-

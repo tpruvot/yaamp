@@ -6,36 +6,41 @@ function BackendStatsUpdate()
 //	$t1xx = microtime(true);
 
 	$t = time()-2*60;
-	$errors = '';
+	$idleing = array();
 
 	$list = getdbolist('db_stratums', "time<$t");
-	foreach($list as $stratum)
-	{
-		debuglog("stratum $stratum->algo terminated");
-		$errors .= "$stratum->algo, ";
+	foreach($list as $stratum) {
+		$idleing[$stratum->algo] = $stratum->algo;
 	}
 
-	if(!empty($errors))
-		send_email_alert('stratums', "stratums restarted $errors", "stratums were restarted: $errors");
+	if(!empty($idleing)) {
+		//noisy...
+		//debuglog("stratum restarted: ".implode(', ',$idleing));
+		//send_email_alert('stratums', "stratum restart", "stratum restart: ".implode(', ',$idleing));
+	}
 
-	dborun("delete from stratums where time<$t");
-	dborun("delete from workers where pid not in (select pid from stratums)");
+	dborun("DELETE FROM stratums WHERE time<$t");
+	dborun("DELETE FROM workers WHERE pid NOT IN (SELECT pid FROM stratums)");
+
+	// todo: cleanup could be done once per day or week...
+	dborun("DELETE FROM hashstats WHERE IFNULL(hashrate,0) = 0 AND IFNULL(earnings,0) = 0");
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	// long term stats
 
-	$t = floor(time()/60/60)*60*60;
+	$tm = floor(time()/60/60)*60*60;
 	foreach(yaamp_get_algos() as $algo)
 	{
 		$pool_rate = yaamp_pool_rate($algo);
 
-		$stats = getdbosql('db_hashstats', "time=$t and algo=:algo", array(':algo'=>$algo));
+		$stats = getdbosql('db_hashstats', "time=$tm and algo=:algo", array(':algo'=>$algo));
 		if(!$stats)
 		{
 			$stats = new db_hashstats;
-			$stats->time = $t;
+			$stats->time = $tm;
 			$stats->hashrate = $pool_rate;
 			$stats->algo = $algo;
+			$stats->earnings = null;
 		}
 		else
 		{
@@ -43,23 +48,33 @@ function BackendStatsUpdate()
 			$stats->hashrate = round(($stats->hashrate*(100-$percent) + $pool_rate*$percent) / 100);
 		}
 
-		$stats->earnings = dboscalar("select sum(amount*price) from blocks where time>$t and category!='orphan' and algo=:algo", array(':algo'=>$algo));
-		$stats->save();
+		$earnings = bitcoinvaluetoa(dboscalar(
+			"SELECT SUM(amount*price) FROM blocks WHERE algo=:algo AND time>$tm AND category!='orphan'",
+			array(':algo'=>$algo)
+		));
+
+		if (bitcoinvaluetoa($stats->earnings) != $earnings) {
+			debuglog("$algo earnings: $earnings BTC");
+			$stats->earnings = $earnings;
+		}
+
+		if (floatval($earnings) || $stats->hashrate)
+			$stats->save();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	// short term stats
 
 	$step = 15;
-	$t = floor(time()/$step/60)*$step*60;
+	$tm = floor(time()/$step/60)*$step*60;
 
 	foreach(yaamp_get_algos() as $algo)
 	{
-		$stats = getdbosql('db_hashrate', "time=$t and algo=:algo", array(':algo'=>$algo));
+		$stats = getdbosql('db_hashrate', "time=$tm and algo=:algo", array(':algo'=>$algo));
 		if(!$stats)
 		{
 			$stats = new db_hashrate;
-			$stats->time = $t;
+			$stats->time = $tm;
 			$stats->hashrate = dboscalar("select hashrate from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
 			$stats->hashrate_bad = 0;	//dboscalar("select hashrate_bad from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
 			$stats->price = dboscalar("select price from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
@@ -86,7 +101,7 @@ function BackendStatsUpdate()
 			$total_diff = dboscalar("select sum(difficulty) from shares where valid and algo=:algo and time>$t1", array(':algo'=>$algo));
 		}
 
-		if($total_diff>0)
+		if($total_diff > 0)
 		{
 			$price = 0;
 			$rent = 0;
@@ -158,9 +173,11 @@ function BackendStatsUpdate()
 	//////////////////////////////////////////////////////////////
 
 	$step = 15;
-	$t = floor(time()/$step/60)*$step*60;
+	$tm = floor(time()/$step/60)*$step*60;
 
 	$btc = getdbosql('db_coins', "symbol='BTC'");
+	if (!$btc) $btc = json_decode('{"id": 6, "balance": 0}');
+
 	$topay = dboscalar("select sum(balance) from accounts where coinid=$btc->id");	//here: take other currencies too
 	$margin = $btc->balance - $topay;
 
@@ -180,11 +197,11 @@ function BackendStatsUpdate()
 
 	$total_profit = $btc->balance + $balances + $onsell + $wallets - $topay - $renters;
 
-	$stats = getdbosql('db_stats', "time=$t");
+	$stats = getdbosql('db_stats', "time=$tm");
 	if(!$stats)
 	{
 		$stats = new db_stats;
-		$stats->time = $t;
+		$stats->time = $tm;
 	}
 
 	$stats->profit = $total_profit;
@@ -234,18 +251,18 @@ function BackendStatsUpdate2()
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	$step = 15;
-	$t = floor(time()/$step/60)*$step*60;
+	$tm = floor(time()/$step/60)*$step*60;
 
-	$list = dbolist("select userid, algo from shares where time>$t group by userid, algo");
+	$list = dbolist("select userid, algo from shares where time>$tm group by userid, algo");
 	foreach($list as $item)
 	{
-		$stats = getdbosql('db_hashuser', "time=$t and algo=:algo and userid=:userid",
+		$stats = getdbosql('db_hashuser', "time=$tm and algo=:algo and userid=:userid",
 			array(':algo'=>$item['algo'], ':userid'=>$item['userid']));
 		if(!$stats)
 		{
 			$stats = new db_hashuser;
 			$stats->userid = $item['userid'];
-			$stats->time = $t;
+			$stats->time = $tm;
 			$stats->hashrate = dboscalar("select hashrate from hashuser where algo=:algo and userid=:userid order by time desc limit 1",
 				array(':algo'=>$item['algo'], ':userid'=>$item['userid']));
 			$stats->hashrate_bad = 0;
@@ -269,20 +286,20 @@ function BackendStatsUpdate2()
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	$step = 15;
-	$t = floor(time()/$step/60)*$step*60;
+	$tm = floor(time()/$step/60)*$step*60;
 
-	$list = dbolist("select distinct jobid from jobsubmits where time>$t");
+	$list = dbolist("select distinct jobid from jobsubmits where time>$tm");
 	foreach($list as $item)
 	{
 		$jobid = $item['jobid'];
 
-		$stats = getdbosql('db_hashrenter', "time=$t and jobid=$jobid");
+		$stats = getdbosql('db_hashrenter', "time=$tm and jobid=$jobid");
 		if(!$stats)
 		{
 			$stats = new db_hashrenter;
 			//	$stats->renterid = ;
 			$stats->jobid = $item['jobid'];
-			$stats->time = $t;
+			$stats->time = $tm;
 			$stats->hashrate = dboscalar("select hashrate from hashrenter where jobid=:jobid order by time desc limit 1", array(':jobid'=>$jobid));
 			$stats->hashrate_bad = 0;	//dboscalar("select hashrate_bad from hashrenter where jobid=$jobid order by time desc limit 1");
 		}
@@ -303,18 +320,18 @@ function BackendStatsUpdate2()
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	$t = floor(time()/$step/60)*$step*60;
+	$tm = floor(time()/$step/60)*$step*60;
 	$d = time()-24*60*60;
 
-	$list = getdbolist('db_accounts', "balance>0 or last_login>$d");
+	$list = getdbolist('db_accounts', "balance>0 OR last_earning>$d");
 	foreach($list as $user)
 	{
-		$stats = getdbosql('db_balanceuser', "time=$t and userid=$user->id");
+		$stats = getdbosql('db_balanceuser', "time=$tm and userid=$user->id");
 		if(!$stats)
 		{
 			$stats = new db_balanceuser;
 			$stats->userid = $user->id;
-			$stats->time = $t;
+			$stats->time = $tm;
 		}
 
 // 		$refcoin = getdbo('db_coins', $user->coinid);
@@ -336,12 +353,5 @@ function BackendStatsUpdate2()
 
 
 }
-
-
-
-
-
-
-
 
 

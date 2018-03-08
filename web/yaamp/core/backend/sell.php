@@ -14,7 +14,7 @@ function sellCoinToExchange($coin)
 {
 	if($coin->dontsell) return;
 
-	$remote = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport);
+	$remote = new WalletRPC($coin);
 
 	$info = $remote->getinfo();
 	if(!$info || !$info['balance']) return false;
@@ -87,9 +87,7 @@ function sellCoinToExchange($coin)
 	{
 	//	debuglog($remote->error);
 
-		if($coin->symbol == 'MUE')
-			$amount = min($amount, 5000);
-		else if($coin->symbol == 'DIME')
+		if($coin->symbol == 'DIME')
 			$amount = min($amount, 10000000);
 		else if($coin->symbol == 'CNOTE')
 			$amount = min($amount, 10000);

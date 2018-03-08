@@ -30,6 +30,7 @@ class CExchangeCoin
 
 	public static function create($coin, $marketname)
 	{
+/*
 		switch($marketname)
 		{
 			case 'cryptsy':
@@ -39,9 +40,12 @@ class CExchangeCoin
 
 		$cexcoin->load();
 		return $cexcoin;
+*/
 	}
 
 };
+
+/*
 
 class CExchangeCoinCryptsy extends CExchangeCoin
 {
@@ -79,6 +83,5 @@ class CExchangeCoinCryptsy extends CExchangeCoin
 
 };
 
-
-
+*/
 

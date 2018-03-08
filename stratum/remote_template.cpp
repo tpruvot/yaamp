@@ -4,6 +4,10 @@
 void remote_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VALUES *submitvalues, char *extranonce2, char *ntime, char *nonce)
 {
 	YAAMP_REMOTE *remote = job->remote;
+	if(!remote) {
+		debuglog("job has no remote!\n");
+		return;
+	}
 	if(remote->deleted) return;
 	if(remote->status != YAAMP_REMOTE_READY) return;
 	if(!remote_connected(remote)) return;
@@ -12,7 +16,7 @@ void remote_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VALUES *submi
 	uint64_t remote_target = diff_to_target(remote->difficulty_actual);
 
 //	debuglog("%016llx actual\n", hash_int);
-//	debuglog("%016llx target\n", remote_target);
+//	debuglog("%016llx target diff multiplier=%u\n", remote_target, g_current_algo->diff_multiplier);
 
 	if(hash_int > remote_target) return;
 	remote->speed_avg += remote->difficulty_actual / g_current_algo->diff_multiplier * 42;

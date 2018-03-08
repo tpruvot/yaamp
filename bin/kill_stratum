@@ -1,0 +1,13 @@
+#!/bin/bash
+
+PLINE=$(ps -ef | grep "stratum config/$1" | grep -v grep)
+if [ $? ]; then
+	PS=$(echo $PLINE | cut -d ' ' -f 2)
+	if [ $PS ]; then
+		kill $PS
+		echo "killed stratum process $PS"
+	else
+		echo "Process not found"
+		exit 1
+	fi
+fi

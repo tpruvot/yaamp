@@ -6,16 +6,24 @@
  * @link http://www.hramov.info
  * @version 0.1
  */
-class UniForm extends CWidget
+//Yii::import('zii.widgets.jui.CJuiWidget');
+
+class UniForm extends CWidget /* or CJuiWidget */
 {
 	public function init()
 	{
+		parent::init();
+
 		echo CHtml::cssFile('/yaamp/ui/css/uni-form.css');
-	//	echo CHtml::scriptFile('sansspace/ui/js/uni-form.jquery.js');
 	}
 
 	public function run()
 	{
+		$cs = Yii::app()->getClientScript();
+		$cs->registerCoreScript("jquery");
+		$cs->registerCoreScript("jquery.ui");
+		$cs->registerScriptFile('/yaamp/ui/js/uni-form.jquery.js', CClientScript::POS_END);
+
 		CHtml::$requiredCss = '';
 		CHtml::$afterRequiredLabel='';
 		CHtml::$beforeRequiredLabel='<em>*</em> ';

@@ -5,7 +5,7 @@ $defaultalgo = user()->getState('yaamp-algo');
 $rent = dboscalar("select rent from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$defaultalgo));
 $rent = mbitcoinvaluetoa($rent);
 
-$renter = getrenterparam(getparam('address'));
+$renter = getrenterparam(''.getparam('address'));
 
 echo "<div class='main-left-box'>";
 echo "<div class='main-left-title'>All started jobs ($defaultalgo) - Current Price $rent</div>";
@@ -79,9 +79,9 @@ foreach($list as $job)
 echo "</tbody></table>";
 
 echo "<p style='font-size: .8em'>
-		&nbsp;* approximate from the last 5 minutes submitted shares<br>
-		&nbsp;** price in mBTC/Mh/day (mBTC/Gh/day for sha256)<br>
-		</p>";
+	&nbsp;* approximate from the last 5 minutes submitted shares<br>
+	&nbsp;** price in mBTC/MH/day (GH/day for sha and blake algos)<br>
+	</p>";
 
 echo "<br>";
 echo "</div></div><br>";
