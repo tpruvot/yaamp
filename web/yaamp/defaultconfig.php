@@ -16,7 +16,12 @@ if (!defined('YIIMP_PUBLIC_BENCHMARK')) define('YIIMP_PUBLIC_BENCHMARK', false);
 if (!defined('YIIMP_FIAT_ALTERNATIVE')) define('YIIMP_FIAT_ALTERNATIVE', 'EUR');
 if (!defined('YIIMP_KWH_USD_PRICE')) define('YIIMP_KWH_USD_PRICE', 0.25);
 
-if (!defined('YAAMP_FEES_MINING')) define('YAAMP_FEES_MINING', 0.5);
+if (!defined('YAAMP_FEES_MINING_DEFAULT')) define('YAAMP_FEES_MINING_DEFAULT', 0.5);
+if (defined('YAAMP_FEES_MINING_RANDOM'))
+        define('YAAMP_FEES_MINING', YAAMP_FEES_MINING_DEFAULT + 0.01 * mt_rand() / mt_getrandmax());
+else
+        define('YAAMP_FEES_MINING', YAAMP_FEES_MINING_DEFAULT);
+  
 if (!defined('YAAMP_FEES_EXCHANGE')) define('YAAMP_FEES_EXCHANGE', 2);
 if (!defined('YAAMP_FEES_RENTING')) define('YAAMP_FEES_RENTING', 2);
 if (!defined('YAAMP_TXFEE_RENTING_WD')) define('YAAMP_TXFEE_RENTING_WD', 0.002);
