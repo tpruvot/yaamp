@@ -109,6 +109,87 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			coind->charity_percent = 10;
 		if (strlen(coind->charity_address) == 0)
 			sprintf(coind->charity_address, "BCDrF1hWdKTmrjXXVFTezPjKBmGigmaXg5");
+	}else if(strcmp(coind->symbol, "WAE") == 0) {
+        char script_dests[1024] = { 0 };
+		char script_payee[1024];
+		char payee_address[1024];
+		char payees[4];
+		int npayees = 1;
+
+        bool masternode_payments = true;
+        bool masternodes_enabled = true;
+		if (masternodes_enabled && masternode_payments) {
+            const char *payee = json_get_string(json_result, "payee");
+			json_int_t amount = json_get_int(json_result, "payee_amount");
+			if (payee && amount)
+                ++npayees;
+        }
+
+        // treasury 5% @ 10 STAK per block
+		json_int_t charity_amount = 0;
+
+        //testnet
+        //sprintf(coind->charity_address, "93ASJtDuVYVdKXemH9BrtSMscznvsp9stD");  
+
+        switch (templ->height % 4) {
+			case 0: sprintf(coind->charity_address, "KfzDtWeER35PwedRswa9hG1EbaMnFoMZcf");  
+			break;
+			case 1: sprintf(coind->charity_address, "KfzDtWeER35PwedRswa9hG1EbaMnFoMZcf"); 
+			break;
+			case 2: sprintf(coind->charity_address, "KfzDtWeER35PwedRswa9hG1EbaMnFoMZcf"); 
+			break;
+			case 3: sprintf(coind->charity_address, "KfzDtWeER35PwedRswa9hG1EbaMnFoMZcf"); 
+			break;
+		}
+        
+        //stratumlog("[squbs] templ->height = %d, templ->height % 4 = %d, devfee_payee = %s\n", templ->height, templ->height % 4, coind->charity_address);
+
+        ++npayees;
+        available -= charity_amount;
+
+        strcpy(payee_address,coind->charity_address);
+        base58_decode(payee_address, script_payee);
+
+        //stratumlog("[squbs] * script_payee = %s\n", script_payee);
+
+		sprintf(payees, "%02x", npayees);
+		strcat(templ->coinb2, payees);
+
+        //stratumlog("[squbs] 0: templ->coinb2 = %s\n",templ->coinb2);
+
+        char echarity_amount[32];
+        encode_tx_value(echarity_amount, charity_amount);
+        strcat(templ->coinb2, echarity_amount);
+
+        char coinb2_part[1024] = {0};
+        char coinb2_len[3] = {0};
+                
+        sprintf(coinb2_part, "a9%02x%s87", (unsigned int) (strlen(script_payee) >> 1) & 0xFF, script_payee );
+        sprintf(coinb2_len, "%02x", (unsigned int) (strlen(coinb2_part) >> 1) & 0xFF );
+        strcat(templ->coinb2,coinb2_len);
+        strcat(templ->coinb2,coinb2_part);
+
+        //stratumlog("[squbs] 1: templ->coinb2 = %s\n",templ->coinb2);
+
+//		if (masternodes_enabled && masternode_payments) {
+            //duplicated: revisit ++todo
+            const char *payee = json_get_string(json_result, "payee");
+			json_int_t amount = json_get_int(json_result, "payee_amount");
+			if (payee && amount) {
+				available -= amount;
+				base58_decode(payee, script_payee);
+				job_pack_tx(coind, templ->coinb2, amount, script_payee);
+			}
+//		}
+
+		job_pack_tx(coind, templ->coinb2, available, NULL);
+        //stratumlog("[squbs] 2: templ->coinb2 = %s\n",templ->coinb2);
+
+		strcat(templ->coinb2, "00000000"); // locktime
+
+		//coind->reward = (double)available/100000000*coind->reward_mul;
+		coind->reward = (double)available/1200000000*coind->reward_mul;
+		return;
 	}
 	else if(strcmp(coind->symbol, "XZC") == 0) {
 		char script_payee[1024];
