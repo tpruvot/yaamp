@@ -2,7 +2,7 @@
 
 Required:
 
-	linux, mysql, php, memcached, a webserver (lighttpd or nginx recommended)
+	linux, mysql or mariadb, php-fpm, memcached, a webserver (lighttpd or nginx recommended)
 
 
 Config for nginx:
@@ -70,9 +70,9 @@ Future scripts and maybe the "cron" jobs will then use this yiic console interfa
 
 You need at least three backend shells (in screen) running these scripts:
 
-	web/main.sh
-	web/loop2.sh
-	web/blocks.sh
+	/var/web/main.sh
+	/var/web/loop2.sh
+	/var/web/blocks.sh
 
 Start one stratum per algo using the run.sh script with the algo as parameter. For example, for neoscrypt:
 
