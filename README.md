@@ -120,9 +120,8 @@ There a lot of unused code in the php branch. Lot come from other projects I wor
 
 
 Credits:
-globalzon to have released the initial Yaamp source code.
-tpruvot/yiimp
------------------------------
+globalzon / initial Yaamp source code.
+tpruvot/ further development
 
 
 
