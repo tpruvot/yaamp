@@ -306,6 +306,8 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 	if (g_debuglog_client) {
 		debuglog("notify: new %s block %s\n", coind->symbol, hash);
 	}
+	
+	snprintf(coind->lastnotifyhash, 161, "%s", hash);
 
 	coind->newblock = true;
 	coind->notreportingcounter = 0;
