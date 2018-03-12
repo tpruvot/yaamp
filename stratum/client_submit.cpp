@@ -283,6 +283,10 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 				sleep(1);
 				block_confirm(coind->id, submitvalues->hash_be);
 			}
+			
+			if(!strcmp(coind->lastnotifyhash,submitvalues->hash_be)) {
+				block_confirm(coind->id, submitvalues->hash_be);
+			}
 
 			if (g_debuglog_hash) {
 				debuglog("--------------------------------------------------------------\n");
