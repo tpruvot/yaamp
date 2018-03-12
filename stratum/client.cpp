@@ -298,7 +298,9 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 		return false;
 	}
 
-	YAAMP_COIND *coind = (YAAMP_COIND *)object_find(&g_list_coind, json_params->u.array.values[1]->u.integer, true);
+	int coinid = json_params->u.array.values[1]->u.integer;
+	if(!coinid) return false;
+	YAAMP_COIND *coind = (YAAMP_COIND *)object_find(&g_list_coind, coinid, true);
 	if(!coind) return false;
 
 	const char* hash = json_params->u.array.values[2]->u.string.ptr;
@@ -314,7 +316,7 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 		usleep(300*YAAMP_MS);
 	}
 
-	block_confirm(coind->id, hash);
+	bool confirmed = block_confirm(coind->id, hash);
 
 	coind_create_job(coind);
 	object_unlock(coind);
@@ -329,6 +331,13 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 	}
 
 	job_signal();
+
+	if (!confirmed) {
+		// for some wallets, a delay is required for the wallet to process blocks
+		usleep(1000*YAAMP_MS);
+		block_confirm(coinid, hash);
+	}
+
 	return true;
 }
 

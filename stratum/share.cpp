@@ -232,10 +232,10 @@ void block_add(int userid, int workerid, int coinid, int height, double diff, do
 }
 
 // called from blocknotify tool
-void block_confirm(int coinid, const char *blockhash)
+bool block_confirm(int coinid, const char *blockhash)
 {
 	char hash[192];
-	if(strlen(blockhash) < 64) return;
+	if(strlen(blockhash) < 64) return false;
 
 	snprintf(hash, 161, "%s", blockhash);
 
@@ -298,9 +298,10 @@ void block_confirm(int coinid, const char *blockhash)
 			strncpy(block->hash, blockhash, 65);
 			block->confirmed = true;
 
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
