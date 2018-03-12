@@ -47,6 +47,7 @@ public:
 	bool enable;
 	bool auto_ready;
 	bool newblock;
+	char lastnotifyhash[192];
 
 	int height;
 	double difficulty;
