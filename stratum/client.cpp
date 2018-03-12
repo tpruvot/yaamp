@@ -312,6 +312,8 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 
 	if (!strcmp("DCR", coind->rpcencoding)) {
 		usleep(300*YAAMP_MS);
+	} else {
+		sleep(1); // needed to prevent some cases when ACCEPT appears few ms after NOTIFY. TODO: make new block_confirm()
 	}
 
 	block_confirm(coind->id, hash);
