@@ -100,7 +100,7 @@ inline void submit_delete(YAAMP_OBJECT *object)
 void block_prune(YAAMP_DB *db);
 
 void block_add(int userid, int workerid, int coinid, int height, double diff, double diff_user, const char *hash1, const char *h2, int segwit);
-void block_confirm(int coinid, const char *hash);
+bool block_confirm(int coinid, const char *hash);
 
 YAAMP_SUBMIT *submit_add(int remoteid, double difficulty);
 void submit_prune(YAAMP_DB *db);
