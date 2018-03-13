@@ -41,7 +41,7 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 	db_clean_string(db, client->version);
 	db_clean_string(db, client->notify_id);
 	db_clean_string(db, client->worker);
-
+	
 	char symbol[16] = { 0 };
 	char *p = strstr(client->password, "c=");
 	if(!p) p = strstr(client->password, "s=");
@@ -58,6 +58,9 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 	if(gift > 100) gift = 100;
 #endif
 
+	string_strip(client->username);
+	string_strip(symbol);
+	
 	db_check_user_input(client->username);
 	if(strlen(client->username) < MIN_ADDRESS_LEN) {
 		// allow benchmark / test / donate usernames

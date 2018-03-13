@@ -107,6 +107,8 @@ int opened_files();
 void string_lower(char *s);
 void string_upper(char *s);
 
+void string_strip(char *s);
+
 int getblocheight(const char *coinb1);
 
 //////////////////////////////////////////////////////////////////////////
