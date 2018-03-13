@@ -698,7 +698,7 @@ void string_upper(char *s)
 	  s[i] = toupper(s[i]);
 }
 
-void walletaddress_strip(char *s)
+void string_strip(char *s)
 {
 	int i,j;
 	for(i = 0; s[i] != '\0'; ++i)
