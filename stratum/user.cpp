@@ -41,6 +41,8 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 	db_clean_string(db, client->version);
 	db_clean_string(db, client->notify_id);
 	db_clean_string(db, client->worker);
+	
+	walletaddress_strip(client->username);
 
 	char symbol[16] = { 0 };
 	char *p = strstr(client->password, "c=");
