@@ -145,6 +145,77 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		if (strlen(coind->charity_address) == 0 && !strcmp(coind->symbol, "DCR"))
 			sprintf(coind->charity_address, "Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx");
 	}
+	
+	// THIS CODE FOR SMART IS NOT WORKING YET AND NEEDS WORK. BLOCKS GET REJECTED WITH MESSAGE NO FOUNDER REWARDS.
+	else if (strcmp(coind->symbol, "SMART") == 0) {
+        char script_payee[512] = { 0 };
+        char payees[5];
+        int npayees = (templ->has_segwit_txs) ? 2 : 1;
+        bool masternode_payments = json_get_bool(json_result, "masternode_payments");
+        bool masternodes_enabled = json_get_bool(json_result, "enforce_masternode_payments");
+
+        if (masternodes_enabled && masternode_payments) {
+                const char *payee = json_get_string(json_result, "payee");
+                json_int_t amount = json_get_int(json_result, "payee_amount");
+                if (payee && amount)
+                        ++npayees;
+        }
+
+
+        //treasury 5000 * (143500/Blockheight) per block
+             int coinvalue = floor(0.5+((double)(5000 * 143500)/(templ->height +1)));
+             json_int_t charity_amount = coinvalue * 0.95;
+             int blockRotation = templ->height - 95 * (templ->height/95);
+                if (blockRotation >= 0 && blockRotation <= 7) {
+                   sprintf(coind->charity_address, "Siim7T5zMH3he8xxtQzhmHs4CQSuMrCV1M");
+                }
+                if (blockRotation >= 8 && blockRotation <= 15) {
+                    sprintf(coind->charity_address, "SW2FbVaBhU1Www855V37auQzGQd8fuLR9x");
+                }
+                if (blockRotation >= 16 && blockRotation <= 23) {
+                    sprintf(coind->charity_address, "SPusYr5tUdUyRXevJg7pnCc9Sm4HEzaYZF");
+                }
+                if (blockRotation >= 24 && blockRotation <= 38) {
+                    sprintf(coind->charity_address, "SU5bKb35xUV8aHG5dNarWHB3HBVjcCRjYo");
+                }
+                if (blockRotation >= 39 && blockRotation <= 94) {
+                    sprintf(coind->charity_address, "SXun9XDHLdBhG4Yd1ueZfLfRpC9kZgwT1b");
+                    }
+
+        ++npayees;
+        available -= charity_amount;
+        base58_decode(coind->charity_address, script_payee);
+        sprintf(payees, "%02x", npayees);
+        strcat(templ->coinb2, payees);
+        if (templ->has_segwit_txs) strcat(templ->coinb2, commitment);
+        char echarity_amount[32];
+        encode_tx_value(echarity_amount, charity_amount);
+        strcat(templ->coinb2, echarity_amount);
+        char coinb2_part[1024] = { 0 };
+        char coinb2_len[3] = { 0 };
+        sprintf(coinb2_part, "a9%02x%s87", (unsigned int)(strlen(script_payee) >> 1) & 0xFF, script_payee);
+        sprintf(coinb2_len, "%02x", (unsigned int)(strlen(coinb2_part) >> 1) & 0xFF);
+        strcat(templ->coinb2, coinb2_len);
+        strcat(templ->coinb2, coinb2_part);
+        if (masternodes_enabled && masternode_payments) {
+                //duplicated: revisit ++todo
+                const char *payee = json_get_string(json_result, "payee");
+                json_int_t amount = json_get_int(json_result, "payee_amount");
+                if (payee && amount) {
+                        available -= amount;
+                        base58_decode(payee, script_payee);
+                        job_pack_tx(coind, templ->coinb2, amount, script_payee);
+                }
+        }
+        job_pack_tx(coind, templ->coinb2, available, NULL);
+        strcat(templ->coinb2, "00000000"); // locktime
+
+        coind->reward = (double)available / 100000000 * coind->reward_mul;
+        return;
+     }
+
+	
+	
 	else if(strcmp(coind->symbol, "STAK") == 0) {
 		char script_payee[512] = { 0 };
 		char payees[4];
