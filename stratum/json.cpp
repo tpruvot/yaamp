@@ -118,6 +118,9 @@ static int new_value
       {
          case json_array:
 
+            if (value->u.array.length == 0)
+               break;
+
             if (! (value->u.array.values = (json_value **) json_alloc
                (state, value->u.array.length * sizeof (json_value *), 0)) )
             {
@@ -129,9 +132,12 @@ static int new_value
 
          case json_object:
 
+            if (value->u.object.length == 0)
+               break;
+
             values_size = sizeof (*value->u.object.values) * value->u.object.length;
 
-            if (! ((*(void **) &value->u.object.values) = json_alloc
+            if (! (value->u.object.values = (json_object_entry *) json_alloc
                   (state, values_size + ((unsigned long) value->u.object.values), 0)) )
             {
                return 0;
@@ -160,10 +166,11 @@ static int new_value
       return 1;
    }
 
-   value = (json_value *) json_alloc (state, sizeof (json_value), 1);
-
-   if (!value)
+   if (! (value = (json_value *) json_alloc
+      (state, sizeof (json_value) + state->settings.value_extra, 1)))
+   {
       return 0;
+   }
 
    if (!*root)
       *root = value;
@@ -769,7 +776,7 @@ json_value * json_parse_ex (json_settings * settings,
                         goto e_failed;
                      }
 
-                     top->u.dbl += ((double) num_fraction) / (pow (10, (double) num_digits));
+                     top->u.dbl += ((double) num_fraction) / (pow (10.0, (double) num_digits));
                   }
 
                   if (b == 'e' || b == 'E')
@@ -795,7 +802,7 @@ json_value * json_parse_ex (json_settings * settings,
                      goto e_failed;
                   }
 
-                  top->u.dbl *= pow (10, (double) (flags & flag_num_e_negative ? - num_e : num_e));
+                  top->u.dbl *= pow (10.0, (double) (flags & flag_num_e_negative ? - num_e : num_e));
                }
 
                if (flags & flag_num_negative)
