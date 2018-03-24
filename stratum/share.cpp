@@ -290,14 +290,14 @@ bool block_confirm(int coinid, const char *blockhash)
 	for(CLI li = g_list_block.first; li; li = li->next)
 	{
 		YAAMP_BLOCK *block = (YAAMP_BLOCK *)li->data;
-		if(block->coinid == coinid && !block->confirmed && !block->deleted)
+		if(block->coinid == coinid && !block->deleted)
 		{
 			if(strcmp(block->hash1, hash) && strcmp(block->hash2, hash)) continue;
-			debuglog("*** CONFIRMED %d : %s\n", block->height, block->hash2);
-
-			strncpy(block->hash, blockhash, 65);
-			block->confirmed = true;
-
+			if (!block->confirmed) {
+				debuglog("*** CONFIRMED %d : %s\n", block->height, block->hash2);
+				strncpy(block->hash, blockhash, 65);
+				block->confirmed = true;
+			}
 			return true;
 		}
 	}

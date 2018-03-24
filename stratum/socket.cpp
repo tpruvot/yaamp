@@ -50,16 +50,21 @@ void socket_real_ip(YAAMP_SOCKET *s)
 
 YAAMP_SOCKET *socket_initialize(int sock)
 {
+	struct timeval timeout;
+	timeout.tv_sec = g_socket_recv_timeout;
+	timeout.tv_usec = 0;
 	YAAMP_SOCKET *s = new YAAMP_SOCKET;
 	memset(s, 0, sizeof(YAAMP_SOCKET));
 
 	s->buflen = 0;
 	s->sock = sock;
 
+	setsockopt(s->sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
 //	yaamp_create_mutex(&s->mutex);
 //	pthread_mutex_lock(&s->mutex);
-	int res = 0;
 	if (!g_handle_haproxy_ips) {
+		int res = 0;
 		struct sockaddr_in name;
 		socklen_t len = sizeof(name);
 		memset(&name, 0, len);

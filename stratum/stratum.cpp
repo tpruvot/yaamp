@@ -40,6 +40,7 @@ bool g_stratum_segwit = false;
 int g_limit_txs_per_block = 0;
 
 bool g_handle_haproxy_ips = false;
+int g_socket_recv_timeout = 600;
 
 bool g_debuglog_client;
 bool g_debuglog_hash;
@@ -164,6 +165,7 @@ YAAMP_ALGO g_algos[] =
 	{"skein2", skein2_hash, 1, 0, 0},
 	{"yescrypt", yescrypt_hash, 0x10000, 0, 0},
 	{"yescryptR16", yescryptR16_hash, 0x10000, 0, 0 },
+	{"yescryptR32", yescryptR32_hash, 0x10000, 0, 0 },
 	{"zr5", zr5_hash, 1, 0, 0},
 
 	{"a5a", a5a_hash, 0x10000, 0, 0},
@@ -248,6 +250,7 @@ int main(int argc, char **argv)
 	g_stratum_reconnect = iniparser_getint(ini, "STRATUM:reconnect", true);
 	g_stratum_renting = iniparser_getint(ini, "STRATUM:renting", true);
 	g_handle_haproxy_ips = iniparser_getint(ini, "STRATUM:haproxy_ips", g_handle_haproxy_ips);
+	g_socket_recv_timeout = iniparser_getint(ini, "STRATUM:recv_timeout", 600);
 
 	g_max_shares = iniparser_getint(ini, "STRATUM:max_shares", g_max_shares);
 	g_limit_txs_per_block = iniparser_getint(ini, "STRATUM:max_txs_per_block", 0);

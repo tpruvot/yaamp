@@ -57,8 +57,10 @@ class CronjobController extends CommonController
 			dborun("update jobs set active=false");
 
 		BackendBlockFind1();
-		BackendClearEarnings();
-		BackendRentingUpdate();
+		if(!memcache_get($this->memcache->memcache, 'balances_locked')) {
+			BackendClearEarnings();
+			BackendRentingUpdate();
+		}
 		BackendProcessList();
 		BackendBlocksUpdate();
 
@@ -209,10 +211,13 @@ class CronjobController extends CommonController
 
 		sleep(10);
 		BackendDoBackup();
-
 		memcache_set($this->memcache->memcache, 'apache_locked', false);
 
+		// prevent user balances changes during payments (blocks thread)
+		memcache_set($this->memcache->memcache, 'balances_locked', true);
 		BackendPayments();
+		memcache_set($this->memcache->memcache, 'balances_locked', false);
+
 		BackendCleanDatabase();
 
 	//	BackendOptimizeTables();
