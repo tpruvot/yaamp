@@ -318,7 +318,7 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 		usleep(300*YAAMP_MS);
 	}
 
-	bool confirmed = block_confirm(coind->id, hash);
+	block_confirm(coind->id, hash);
 
 	coind_create_job(coind);
 	object_unlock(coind);
@@ -333,13 +333,6 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 	}
 
 	job_signal();
-
-	if (!confirmed) {
-		// for some wallets, a delay is required for the wallet to process blocks
-		usleep(1000*YAAMP_MS);
-		block_confirm(coind->id, hash);
-	}
-
 	return true;
 }
 
