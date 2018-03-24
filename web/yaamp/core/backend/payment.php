@@ -167,22 +167,22 @@ function BackendCoinPayments($coin)
 	$payouts = array();
 	foreach($users as $user)
 	{
-		$user = getdbo('db_accounts', $user->id);
 		if(!$user) continue;
 		if(!isset($addresses[$user->username])) continue;
+
+		$payment_amount = bitcoinvaluetoa($addresses[$user->username]);
 
 		$payout = new db_payouts;
 		$payout->account_id = $user->id;
 		$payout->time = time();
-		$payout->amount = bitcoinvaluetoa($user->balance*$coef);
+		$payout->amount = $payment_amount;
 		$payout->fee = 0;
 		$payout->idcoin = $coin->id;
 
 		if ($payout->save()) {
 			$payouts[$payout->id] = $user->id;
 
-			$user->balance = bitcoinvaluetoa(floatval($user->balance) - (floatval($user->balance)*$coef));
-			$user->save();
+			dborun("UPDATE accounts SET balance = balance - :amt WHERE id=:uid", array(':amt'=>$payment_amount, ':uid'=>$user->id));
 		}
 	}
 
