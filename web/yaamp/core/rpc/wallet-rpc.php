@@ -7,6 +7,7 @@ class WalletRPC {
 	public $type = 'Bitcoin';
 	protected $rpc;
 	protected $rpc_wallet;
+	protected $hasGetInfo = false;
 
 	// cache
 	protected $account;
@@ -42,6 +43,7 @@ class WalletRPC {
 			default:
 				$this->type = 'Bitcoin';
 				$this->rpc = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport, $url);
+				$this->hasGetInfo = $coin->hasgetinfo;
 			}
 
 		} else {
@@ -377,7 +379,35 @@ class WalletRPC {
 		}
 
 		// Bitcoin RPC
-		$res = $this->rpc->__call($method,$params);
+        switch ($method) {
+            case 'getinfo':
+                if ($this->hasGetInfo) {
+                    $res = $this->rpc->__call($method,$params);
+                } else {
+                    $miningInfo = $this->rpc->getmininginfo();
+                    $res["blocks"] = arraySafeVal($miningInfo,"blocks");
+                    $res["difficulty"] = arraySafeVal($miningInfo,"difficulty");
+                    $res["testnet"] = arraySafeVal($miningInfo,"chain") == "main" ? 'true' : 'false';
+                    $walletInfo = $this->rpc->getwalletinfo();
+                    $res["walletversion"] = arraySafeVal($walletInfo,"walletversion");
+                    $res["balance"] = arraySafeVal($walletInfo,"balance");
+                    $res["keypoololdest"] = arraySafeVal($walletInfo,"keypoololdest");
+                    $res["keypoolsize"] = arraySafeVal($walletInfo,"keypoolsize");
+                    $res["paytxfee"] = arraySafeVal($walletInfo,"paytxfee");
+                    $networkInfo = $this->rpc->getnetworkinfo();
+                    $res["version"] = arraySafeVal($networkInfo,"version");
+                    $res["protocolversion"] = arraySafeVal($networkInfo,"protocolversion");
+                    $res["timeoffset"] = arraySafeVal($networkInfo,"timeoffset");
+                    $res["connections"] = arraySafeVal($networkInfo,"connections");
+                    $res["proxy"] = arraySafeVal($networkInfo,"networks")[0]["proxy"];
+                    $res["relayfee"] = arraySafeVal($networkInfo,"relayfee");
+                }
+                break;
+            default:
+                $res = $this->rpc->__call($method,$params);
+                break;
+        }
+
 		$this->error = $this->rpc->error;
 		return $res;
 	}
