@@ -403,7 +403,7 @@ class WalletRPC {
 					$res["relayfee"] = arraySafeVal($networkInfo,"relayfee");
 				}
 				break;
-				default:
+			default:
             	$res = $this->rpc->__call($method,$params);
         }
 
