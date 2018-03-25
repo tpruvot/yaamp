@@ -387,7 +387,7 @@ class WalletRPC {
                     $miningInfo = $this->rpc->getmininginfo();
                     $res["blocks"] = arraySafeVal($miningInfo,"blocks");
                     $res["difficulty"] = arraySafeVal($miningInfo,"difficulty");
-                    $res["testnet"] = arraySafeVal($miningInfo,"chain") == "main" ? 'true' : 'false';
+                    $res["testnet"] = "main" == arraySafeVal($miningInfo,"chain") ? 'false' : 'true';
                     $walletInfo = $this->rpc->getwalletinfo();
                     $res["walletversion"] = arraySafeVal($walletInfo,"walletversion");
                     $res["balance"] = arraySafeVal($walletInfo,"balance");
@@ -399,13 +399,12 @@ class WalletRPC {
                     $res["protocolversion"] = arraySafeVal($networkInfo,"protocolversion");
                     $res["timeoffset"] = arraySafeVal($networkInfo,"timeoffset");
                     $res["connections"] = arraySafeVal($networkInfo,"connections");
-                    $res["proxy"] = arraySafeVal($networkInfo,"networks")[0]["proxy"];
+//                    $res["proxy"] = arraySafeVal($networkInfo,"networks")[0]["proxy"];
                     $res["relayfee"] = arraySafeVal($networkInfo,"relayfee");
                 }
                 break;
             default:
                 $res = $this->rpc->__call($method,$params);
-                break;
         }
 
 		$this->error = $this->rpc->error;
