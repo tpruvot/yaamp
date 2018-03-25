@@ -379,33 +379,33 @@ class WalletRPC {
 		}
 
 		// Bitcoin RPC
-        switch ($method) {
+        	switch ($method) {
 			case 'getinfo':
 				if ($this->hasGetInfo) {
-                	$res = $this->rpc->__call($method,$params);
+					$res = $this->rpc->__call($method,$params);
 				} else {
-                	$miningInfo = $this->rpc->getmininginfo();
-                	$res["blocks"] = arraySafeVal($miningInfo,"blocks");
-                	$res["difficulty"] = arraySafeVal($miningInfo,"difficulty");
-                	$res["testnet"] = "main" == arraySafeVal($miningInfo,"chain") ? 'false' : 'true';
-                	$walletInfo = $this->rpc->getwalletinfo();
-                	$res["walletversion"] = arraySafeVal($walletInfo,"walletversion");
-                	$res["balance"] = arraySafeVal($walletInfo,"balance");
-                	$res["keypoololdest"] = arraySafeVal($walletInfo,"keypoololdest");
-                	$res["keypoolsize"] = arraySafeVal($walletInfo,"keypoolsize");
-                	$res["paytxfee"] = arraySafeVal($walletInfo,"paytxfee");
-                	$networkInfo = $this->rpc->getnetworkinfo();
-                	$res["version"] = arraySafeVal($networkInfo,"version");
-                	$res["protocolversion"] = arraySafeVal($networkInfo,"protocolversion");
-                	$res["timeoffset"] = arraySafeVal($networkInfo,"timeoffset");
-                	$res["connections"] = arraySafeVal($networkInfo,"connections");
-//                    $res["proxy"] = arraySafeVal($networkInfo,"networks")[0]["proxy"];
+					$miningInfo = $this->rpc->getmininginfo();
+					$res["blocks"] = arraySafeVal($miningInfo,"blocks");
+					$res["difficulty"] = arraySafeVal($miningInfo,"difficulty");
+					$res["testnet"] = "main" == arraySafeVal($miningInfo,"chain") ? 'false' : 'true';
+					$walletInfo = $this->rpc->getwalletinfo();
+					$res["walletversion"] = arraySafeVal($walletInfo,"walletversion");
+					$res["balance"] = arraySafeVal($walletInfo,"balance");
+					$res["keypoololdest"] = arraySafeVal($walletInfo,"keypoololdest");
+					$res["keypoolsize"] = arraySafeVal($walletInfo,"keypoolsize");
+					$res["paytxfee"] = arraySafeVal($walletInfo,"paytxfee");
+					$networkInfo = $this->rpc->getnetworkinfo();
+					$res["version"] = arraySafeVal($networkInfo,"version");
+					$res["protocolversion"] = arraySafeVal($networkInfo,"protocolversion");
+					$res["timeoffset"] = arraySafeVal($networkInfo,"timeoffset");
+					$res["connections"] = arraySafeVal($networkInfo,"connections");
+//                    			$res["proxy"] = arraySafeVal($networkInfo,"networks")[0]["proxy"];
 					$res["relayfee"] = arraySafeVal($networkInfo,"relayfee");
 				}
 				break;
 			default:
-            	$res = $this->rpc->__call($method,$params);
-        }
+				$res = $this->rpc->__call($method,$params);
+        	}
 
 		$this->error = $this->rpc->error;
 		return $res;
