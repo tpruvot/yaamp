@@ -43,12 +43,15 @@ void db_close(YAAMP_DB *db)
 
 char *db_clean_string(YAAMP_DB *db, char *string)
 {
-	string[1000] = 0;
-	char tmp[1024];
-
-	unsigned long ret = mysql_real_escape_string(&db->mysql, tmp, string, strlen(string));
-	strcpy(string, tmp);
-
+	char *c = string;
+	size_t i, len = strlen(string) & 0x1FF;
+	for (i = 0; i < len; i++) {
+		bool isdigit = (c[i] >= '0' && c[i] <= '9');
+		bool isalpha = (c[i] >= 'a' && c[i] <= 'z') || (c[i] >= 'A' && c[i] <= 'Z');
+		bool issepch = (c[i] == '=' || c[i] == ',' || c[i] == ';' || c[i] == '.');
+		bool isextra = (c[i] == '/' || c[i] == '-' || c[i] == '_');
+		if (!isdigit && !isalpha && !issepch && !isextra) { c[i] = '\0'; break; }
+	}
 	return string;
 }
 
@@ -529,9 +532,14 @@ static void _json_str_safe(YAAMP_DB *db, json_value *json, const char *key, size
 	json_value *val = json_get_val(json, key);
 	out[0] = '\0';
 	if (db && val && json_is_string(val)) {
-		strncpy(out, json_string_value(val), maxlen);
+		char str[128] = { 0 };
+		char escaped[256] = { 0 };
+		snprintf(str, sizeof(str)-1, "%s", json_string_value(val));
+		str[maxlen-1] = '\0'; // truncate to dest len
+		//db_clean_string(db, str);
+		mysql_real_escape_string(&db->mysql, escaped, str, strlen(str));
+		snprintf(out, maxlen, "%s", escaped);
 		out[maxlen-1] = '\0';
-		db_clean_string(db, out);
 	}
 }
 #define json_str_safe(stats, k, out) _json_str_safe(db, stats, k, sizeof(out), out)

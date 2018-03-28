@@ -232,10 +232,10 @@ void block_add(int userid, int workerid, int coinid, int height, double diff, do
 }
 
 // called from blocknotify tool
-void block_confirm(int coinid, const char *blockhash)
+bool block_confirm(int coinid, const char *blockhash)
 {
 	char hash[192];
-	if(strlen(blockhash) < 64) return;
+	if(strlen(blockhash) < 64) return false;
 
 	snprintf(hash, 161, "%s", blockhash);
 
@@ -290,17 +290,18 @@ void block_confirm(int coinid, const char *blockhash)
 	for(CLI li = g_list_block.first; li; li = li->next)
 	{
 		YAAMP_BLOCK *block = (YAAMP_BLOCK *)li->data;
-		if(block->coinid == coinid && !block->confirmed && !block->deleted)
+		if(block->coinid == coinid && !block->deleted)
 		{
 			if(strcmp(block->hash1, hash) && strcmp(block->hash2, hash)) continue;
-			debuglog("*** CONFIRMED %d : %s\n", block->height, block->hash2);
-
-			strncpy(block->hash, blockhash, 65);
-			block->confirmed = true;
-
-			return;
+			if (!block->confirmed) {
+				debuglog("*** CONFIRMED %d : %s\n", block->height, block->hash2);
+				strncpy(block->hash, blockhash, 65);
+				block->confirmed = true;
+			}
+			return true;
 		}
 	}
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

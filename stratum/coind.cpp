@@ -165,7 +165,6 @@ void coind_init(YAAMP_COIND *coind)
 	strcpy(account, coind->account);
 	if(!strcmp(coind->rpcencoding, "DCR")) {
 		coind->usegetwork = true;
-		//coind->noblocknotify = true;
 		//sprintf(account, "default");
 	}
 

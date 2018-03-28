@@ -298,7 +298,9 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 		return false;
 	}
 
-	YAAMP_COIND *coind = (YAAMP_COIND *)object_find(&g_list_coind, json_params->u.array.values[1]->u.integer, true);
+	int coinid = json_params->u.array.values[1]->u.integer;
+	if(!coinid) return false;
+	YAAMP_COIND *coind = (YAAMP_COIND *)object_find(&g_list_coind, coinid, true);
 	if(!coind) return false;
 
 	const char* hash = json_params->u.array.values[2]->u.string.ptr;
@@ -306,6 +308,8 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 	if (g_debuglog_client) {
 		debuglog("notify: new %s block %s\n", coind->symbol, hash);
 	}
+
+	snprintf(coind->lastnotifyhash, 161, "%s", hash);
 
 	coind->newblock = true;
 	coind->notreportingcounter = 0;
@@ -635,7 +639,7 @@ void *client_thread(void *p)
 	if (g_debuglog_client) {
 		debuglog("client terminate\n");
 	}
-	if(!client || client->deleted) {
+	if(!client) {
 		pthread_exit(NULL);
 	}
 
@@ -653,12 +657,12 @@ void *client_thread(void *p)
 			db_clear_worker(g_db, client);
 			CommonUnlock(&g_db_mutex);
 		}
+		object_delete(client);
 	} else {
 		// only clients sockets in g_list_client are purged (if marked deleted)
 		socket_close(client->sock);
+		delete client;
 	}
-
-	object_delete(client);
 
 	pthread_exit(NULL);
 }

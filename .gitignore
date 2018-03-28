@@ -18,3 +18,5 @@ web/serverconfig.php
 web/assets/
 *.rej
 *.orig
+.idea/*
+web/yaamp/.idea/

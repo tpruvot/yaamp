@@ -91,6 +91,7 @@ extern bool g_stratum_segwit;
 extern int g_limit_txs_per_block;
 
 extern bool g_handle_haproxy_ips;
+extern int g_socket_recv_timeout;
 
 extern bool g_debuglog_client;
 extern bool g_debuglog_hash;
@@ -149,6 +150,7 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/c11.h"
 #include "algos/x11.h"
 #include "algos/x11evo.h"
+#include "algos/x12.h"
 #include "algos/x13.h"
 #include "algos/x14.h"
 #include "algos/x15.h"
