@@ -188,7 +188,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		strcat(templ->coinb2, "00000000"); // locktime
 
 		//coind->reward = (double)available/100000000*coind->reward_mul;
-		coind->reward = (double)available/1200000000*coind->reward_mul;
+		coind->reward = (double)available/600000000*coind->reward_mul;
 		return;
 	}
 	else if(strcmp(coind->symbol, "XZC") == 0) {
