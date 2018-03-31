@@ -357,7 +357,7 @@ function updateGraviexMarkets($force = false)
 			continue;
 		}
 
-        $symbol = strtolower($symbol);        
+		$symbol = strtolower($symbol);        
 		$dbpair = $symbol.'btc';
 		foreach ($markets as $pair => $ticker) {
 			if ($pair != $dbpair) continue;
