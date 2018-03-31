@@ -14,7 +14,7 @@ function BackendPricesUpdate()
 	updatePoloniexMarkets();
 	updateBleutradeMarkets();
 	updateCryptoBridgeMarkets();
-    updateGraviexMarkets();
+	updateGraviexMarkets();
 	updateKrakenMarkets();
 	updateKuCoinMarkets();
 	updateCCexMarkets();
