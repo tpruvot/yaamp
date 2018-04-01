@@ -176,6 +176,8 @@ YAAMP_ALGO g_algos[] =
 	{"veltor", veltor_hash, 1, 0, 0},
 	{"velvet", velvet_hash, 0x10000, 0, 0},
 	{"argon2", argon2_hash, 0x10000, 0, sha256_hash_hex },
+	{"argon2d-crds", argon2d_crds_hash, 0x10000, 0, sha256_hash_hex},
+	{"argon2d-dyn", argon2d_dyn_hash, 0x10000, 0, sha256_hash_hex},
 
 	{"sha256t", sha256t_hash, 1, 0, 0}, // sha256 3x
 

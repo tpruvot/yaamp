@@ -18,6 +18,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
 	yescrypt.c yescrypt-opt.c sha256_Y.c lbry.c \
 	m7m.c magimath.cpp velvet.c \
 	argon2a.c ar2/blake2b.c ar2/argon2.c ar2/ref.c ar2/cores.c ar2/ar2-scrypt-jane.c \
+	argon2d/opt.c argon2d/core.c argon2d/encoding.c argon2d/thread.c argon2d/blake2/blake2b.c argon2d-crds.c argon2d-dyn.c argon2d/argon2.c \
 	a5a.c a5amath.c \
 	hive.c pomelo.c \
 	phi.c polytimos.c skunk.c sib.c veltor.c gost.c x11evo.c
@@ -42,4 +43,5 @@ $(OUTPUT): $(OBJECTS)
 clean:
 	rm -f *.o
 	rm -f ar2/*.o
-
+	rm -f argon2d/*.o
+	rm -f argon2d/blake2/*.o
