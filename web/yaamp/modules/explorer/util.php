@@ -180,6 +180,9 @@ function versionToAlgo($coin, $version)
 	$algos['XVG'] = array(
 		0=>'scrypt', 1=>'scrypt', 2=>'myr-gr', 3=>'x17', 4=>'blake2s', 10=>'lyra2v2',
 	);
+	$algos['ARG'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'lyra2v2', 3=>'myr-gr', 4=>'argon2d', 5=>'yescrypt',
+	);
 	$symbol = $coin->symbol;
 	if (!empty($coin->symbol2)) $symbol = $coin->symbol2;
 
