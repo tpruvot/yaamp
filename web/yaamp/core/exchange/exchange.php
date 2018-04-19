@@ -106,7 +106,7 @@ function getMarketUrl($coin, $marketName)
 	else if($market == 'empoex')
 		$url = "http://www.empoex.com/trade/{$symbol}-{$base}";
 	else if($market == 'graviex')
-		$url = "https://graviex.net/api/v2/tickers/{$symbol}{$base}";
+		$url = "https://graviex.net/markets/{$lowsymbol}{$lowbase}";
 	else if($market == 'jubi')
 		$url = "http://jubi.com/coin/{$lowsymbol}";
 	else if($market == 'hitbtc')
