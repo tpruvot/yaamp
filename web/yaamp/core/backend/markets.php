@@ -15,6 +15,7 @@ function BackendPricesUpdate()
 	updateBleutradeMarkets();
 	updateCryptoBridgeMarkets();
 	updateGraviexMarkets();
+	updateExvoMarkets();
 	updateKrakenMarkets();
 	updateKuCoinMarkets();
 	updateCCexMarkets();
@@ -365,6 +366,53 @@ function updateGraviexMarkets($force = false)
 			$market->price = AverageIncrement($market->price, $ticker['ticker']['high']);
 			$market->price2 = AverageIncrement($market->price2, $price2);
 			$market->pricetime = time();
+			$market->save();
+
+			if (empty($coin->price2)) {
+				$coin->price = $market->price;
+				$coin->price2 = $market->price2;
+				$coin->market = $exchange;
+				$coin->save();
+			}
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+function updateExvoMarkets($force = false)
+{
+	$exchange = 'exvo';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$list = getdbolist('db_markets', "name LIKE '$exchange%'");
+	if (empty($list)) return;
+
+	$markets = exvo_api_query('tickers');
+	if(!is_array($markets)) return;
+
+	foreach($list as $market)
+	{
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+        
+		$symbol = $coin->getOfficialSymbol();
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+        $symbol = strtolower($symbol);        
+		$dbpair = $symbol.'btc';
+		foreach ($markets as $pair => $ticker) {
+			if ($pair != $dbpair) continue;
+			$price2 = ($ticker['ticker']['high']+$ticker['ticker']['low'])/2;
+			$market->price = AverageIncrement($market->price, $ticker['ticker']['high']);
+			$market->price2 = AverageIncrement($market->price2, $price2);
+			$market->pricetime = time();
+			//if ($market->disabled < 9) $market->disabled = (floatval($ticker['baseVolume']) < 0.01);
 			$market->save();
 
 			if (empty($coin->price2)) {
