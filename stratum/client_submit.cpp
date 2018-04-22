@@ -215,7 +215,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 	if(hash_int <= coin_target)
 	{
 		char count_hex[8] = { 0 };
-		if (templ->txcount <= 255)
+		if (templ->txcount <= 252)
 			sprintf(count_hex, "%02x", templ->txcount & 0xFF);
 		else
 			sprintf(count_hex, "fd%02x%02x", templ->txcount & 0xFF, templ->txcount >> 8);
