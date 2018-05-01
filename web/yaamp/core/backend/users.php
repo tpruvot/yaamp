@@ -70,7 +70,7 @@ function BackendUsersUpdate()
 		}
 
 		if (empty($user->coinid)) {
-			debuglog("{$user->username} is an unknown address!");
+			debuglog("{$user->hostaddr} - {$user->username} is an unknown address!");
 		}
 
 		$user->save();
