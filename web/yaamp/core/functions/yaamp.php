@@ -253,7 +253,7 @@ function getAlgoPort($algo)
 		'm7m'		=> 6033,
 		'veltor'	=> 5034,
 		'velvet'	=> 6133,
-		'velvet'	=> 3233,
+		'vitalium'	=> 3233,
 		'yescrypt'	=> 6233,
 		'yescryptR16'	=> 6333,
 		'yescryptR32'	=> 6343,
