@@ -507,20 +507,13 @@ function cronstate2text($state)
 	}
 }
 
-//$state_block = $this->memcache->get('cronjob_block_state');
-$state_main = $this->memcache->get('cronjob_main_state');
+$state_main = (int) $this->memcache->get('cronjob_main_state');
 $btc = getdbosql('db_coins', "symbol='BTC'");
 if (!$btc) $btc = json_decode('{"id": 6, "balance": 0}');
 
 echo '<span style="font-weight: bold; color: red;">';
 for($i=0; $i<10; $i++)
 {
-// 	if($i != $state_block-1 && $state_block>0)
-// 	{
-// 		$state = $this->memcache->get("cronjob_block_state_$i");
-// 		if($state) echo "block $i ";
-// 	}
-
 	if($i != $state_main-1 && $state_main>0)
 	{
 		$state = $this->memcache->get("cronjob_main_state_$i");
