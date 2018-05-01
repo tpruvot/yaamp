@@ -20,7 +20,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
 	argon2a.c ar2/blake2b.c ar2/argon2.c ar2/ref.c ar2/cores.c ar2/ar2-scrypt-jane.c \
 	a5a.c a5amath.c \
 	hive.c pomelo.c \
-	phi.c polytimos.c skunk.c sib.c veltor.c gost.c x11evo.c
+	phi.c polytimos.c skunk.c sib.c veltor.c gost.c x11evo.c vitalium.c
 
 OBJECTS=$(SOURCES:%.c=%.o) $(SOURCES:%.cpp=%.o)
 OUTPUT=libalgos.a
