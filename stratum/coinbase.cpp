@@ -204,7 +204,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		coind->reward = (double)available / 100000000 * coind->reward_mul;
 		return;
 	}
- else if(strcmp(coind->symbol, "MAC") == 0) {
+ 	else if(strcmp(coind->symbol, "MAC") == 0) {
 		char script_payee[1024] = { 0 };
 		char payees[4];
 		int npayees = (templ->has_segwit_txs) ? 2 : 1;
@@ -219,7 +219,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			if (payee && amount)
 				++npayees;
 		}
-  if(superblocks_enabled && superblock) {
+  		if(superblocks_enabled && superblock) {
 			for(int i = 0; i < superblock->u.array.length; i++) {
 				const char *payee = json_get_string(superblock->u.array.values[i], "payee");
 				json_int_t amount = json_get_int(superblock->u.array.values[i], "amount");
@@ -231,24 +231,24 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		sprintf(payees, "%02x", npayees);
 		strcat(templ->coinb2, payees);
 		if (templ->has_segwit_txs) strcat(templ->coinb2, commitment);
-  if(superblocks_enabled && superblock) {
+  		if(superblocks_enabled && superblock) {
 			for(int i = 0; i < superblock->u.array.length; i++) {
 				const char *payee = json_get_string(superblock->u.array.values[i], "payee");
 				json_int_t amount = json_get_int(superblock->u.array.values[i], "amount");
 				if (payee && amount) {
 					npayees++;
 					available -= amount;
-     // superblock payments are going to use P2SH addresses / segwit transactions
+     					// superblock payments are going to use P2SH addresses / segwit transactions
 					base58_decode(payee, script_payee);
-     char eamount[32];
-     encode_tx_value(eamount, amount);
-     strcat(templ->coinb2, eamount);
+					char eamount[32];
+					encode_tx_value(eamount, amount);
+					strcat(templ->coinb2, eamount);
 					char coinb2_part[1024] = { 0 };
-     char coinb2_len[3] = { 0 };
-     sprintf(coinb2_part, "a9%02x%s87", (unsigned int)(strlen(script_payee) >> 1) & 0xFF, script_payee);
-     sprintf(coinb2_len, "%02x", (unsigned int)(strlen(coinb2_part) >> 1) & 0xFF);
-     strcat(templ->coinb2, coinb2_len);
-     strcat(templ->coinb2, coinb2_part);
+					char coinb2_len[3] = { 0 };
+					sprintf(coinb2_part, "a9%02x%s87", (unsigned int)(strlen(script_payee) >> 1) & 0xFF, script_payee);
+					sprintf(coinb2_len, "%02x", (unsigned int)(strlen(coinb2_part) >> 1) & 0xFF);
+					strcat(templ->coinb2, coinb2_len);
+					strcat(templ->coinb2, coinb2_part);
 					debuglog("%s superblock %s %u\n", coind->symbol, payee, amount);
 				}
 			}
