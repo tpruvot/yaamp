@@ -83,7 +83,7 @@ function showPageHeader()
 	echo '<div class="tabmenu-out">';
 	echo '<div class="tabmenu-inner">';
 
-	echo '&nbsp;&nbsp;<a href="/">'.YAAMP_SITE_NAME.'</a>';
+	echo '<a href="/">'.YAAMP_SITE_NAME.'</a>';
 
 	$action = controller()->action->id;
 	$wallet = user()->getState('yaamp-wallet');
