@@ -254,7 +254,7 @@ function BackendCoinPayments($coin)
 			}
 			if ($amount_failed > 0.0) {
 				debuglog("Found failed payment(s) for {$user->username}, $amount_failed {$coin->symbol}!");
-				if ($coin->rpcencoding == 'DCR') {
+				if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') {
 					$data = $remote->validateaddress($user->username);
 					if (!$data['isvalid']) {
 						debuglog("Found bad address {$user->username}!! ($amount_failed {$coin->symbol})");

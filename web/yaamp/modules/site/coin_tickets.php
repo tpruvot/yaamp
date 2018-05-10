@@ -1,7 +1,7 @@
 <?php
 
 if (!$coin) $this->goback();
-$DCR = ($coin->rpcencoding == 'DCR');
+$DCR = ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR');
 
 if (!$DCR) $this->goback();
 

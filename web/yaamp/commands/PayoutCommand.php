@@ -123,7 +123,7 @@ class PayoutCommand extends CConsoleCommand
 
 		$remote = new WalletRPC($coin);
 		$account = '';
-		if ($coin->rpcencoding == 'DCR') $account = '*';
+		if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') $account = '*';
 		$rawtxs = $remote->listtransactions($account, 25000);
 
 		foreach ($ids as $uid => $user_addr)

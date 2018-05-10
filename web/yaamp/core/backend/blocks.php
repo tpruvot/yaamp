@@ -97,14 +97,14 @@ function BackendBlockFind1($coinid = NULL)
 			continue;
 		}
 		if(!$coin->enable) continue;
-		if($coin->rpcencoding == 'DCR' && !$coin->auto_ready) continue;
+		if(($coin->rpcencoding == 'DCR'  || $coin->symbol == 'DCR') && !$coin->auto_ready) continue;
 
 		$db_block->category = 'orphan';
 		$remote = new WalletRPC($coin);
 
 		$block = $remote->getblock($db_block->blockhash);
 		$block_age = time() - $db_block->time;
-		if($coin->rpcencoding == 'DCR' && $block_age < 2000) {
+		if(($coin->rpcencoding == 'DCR'  || $coin->symbol == 'DCR') && $block_age < 2000) {
 			// DCR generated blocks need some time to be accepted by the network (gettransaction)
 			if (!$block) continue;
 			$txid = $block['tx'][0];
@@ -202,7 +202,7 @@ function BackendBlocksUpdate($coinid = NULL)
 			if ($coin->enable) {
 				debuglog("{$coin->name} unable to find {$block->category} block {$block->height} tx {$block->txhash}!");
 				// DCR orphaned confirmations are not(no more) -1!
-				if($coin->rpcencoding == 'DCR' && $block->category == 'immature' && $coin->auto_ready) {
+				if(($coin->rpcencoding == 'DCR'  || $coin->symbol == 'DCR') && $block->category == 'immature' && $coin->auto_ready) {
 					$blockext = $remote->getblock($block->blockhash);
 					$conf = arraySafeVal($blockext,'confirmations',-1);
 					if ($conf == -1 || ($conf > 2 && arraySafeVal($blockext,'nextblockhash','') == '')) {
@@ -327,7 +327,7 @@ function BackendBlockFind2($coinid = NULL)
 			);
 			if($db_block) continue;
 
-			if ($coin->rpcencoding == 'DCR')
+			if ($coin->rpcencoding == 'DCR'  || $coin->symbol == 'DCR')
 				debuglog("{$coin->name} generated block {$blockext['height']} detected!");
 
 			$db_block = new db_blocks;
