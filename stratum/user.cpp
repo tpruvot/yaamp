@@ -108,8 +108,8 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 
 	else if(client->userid == 0 && strlen(client->username) >= MIN_ADDRESS_LEN)
 	{
-		db_query(db, "INSERT INTO accounts (username, coinsymbol, balance, donation) values ('%s', '%s', 0, %d)",
-			client->username, symbol, gift);
+		db_query(db, "INSERT INTO accounts (username, coinsymbol, balance, donation, hostaddr) values ('%s', '%s', 0, %d, '%s')",
+			client->username, symbol, gift, client->sock->ip);
 		client->userid = (int)mysql_insert_id(&db->mysql);
 	}
 

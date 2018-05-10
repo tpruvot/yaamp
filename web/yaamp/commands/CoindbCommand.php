@@ -441,7 +441,7 @@ class CoindbCommand extends CConsoleCommand
 			} catch (Exception $e) {
 				continue;
 			}
-			if (strlen($data) < 2048) continue;
+			if (strlen($data) < 3000 || strstr($data, 'script src')) continue;
 			echo $symbol." icon found\n";
 			file_put_contents($local, $data);
 			if (filesize($local) > 0) {

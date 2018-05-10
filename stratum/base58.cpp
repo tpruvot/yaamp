@@ -96,3 +96,19 @@ bool base58_decode(const char *input, char *output)
 
 	return true;
 }
+
+bool is_base58(char *input)
+{
+	// All alphanumeric characters except "0", "O", "I" and "l"
+	size_t i=0, len = strlen(input);
+	char *c = input;
+	while (i < len) {
+		bool isdigit = (c[i] >= '1' && c[i] <= '9');
+		bool isalpha = (c[i] >= 'a' && c[i] <= 'z') || (c[i] >= 'A' && c[i] <= 'Z');
+		if (!isdigit && !isalpha) return false;
+		if (c[i] == 'I' || c[i] == 'O' || c[i] == 'l') return false;
+		i++;
+	}
+	return true;
+}
+

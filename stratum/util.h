@@ -74,6 +74,7 @@ string merkle_with_first(vector<string> steps, string f);
 //////////////////////////////////////////////////////////////////////////
 
 bool base58_decode(const char *input, char *output);
+bool is_base58(char *input);
 
 void base64_encode(char *base64, const char *normal);
 void base64_decode(char *normal, const char *base64);

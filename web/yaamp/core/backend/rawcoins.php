@@ -406,7 +406,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('yobit','kucoin')))
+		if (in_array($marketname, array('yobit','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {

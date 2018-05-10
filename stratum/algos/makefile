@@ -8,7 +8,7 @@ CXXFLAGS = -O2 -I.. -march=native
 CFLAGS= $(CXXFLAGS) -std=gnu99
 LDFLAGS=-O2 -lgmp
 
-SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
+SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c allium.c \
 	blake.c scrypt.c c11.c x11.c x12.c x13.c sha256.c sha256t.c jha.c keccak.c deep.c tribus.c  \
 	hsr14.c sm3.c \
 	x14.c x15.c x17.c nist5.c fresh.c quark.c neoscrypt.c scryptn.c qubit.c skein.c groestl.c \
@@ -20,7 +20,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c Lyra2z.c Sponge.c \
 	argon2a.c ar2/blake2b.c ar2/argon2.c ar2/ref.c ar2/cores.c ar2/ar2-scrypt-jane.c \
 	a5a.c a5amath.c \
 	hive.c pomelo.c \
-	phi.c polytimos.c skunk.c sib.c veltor.c gost.c x11evo.c
+	phi.c polytimos.c skunk.c sib.c veltor.c gost.c x11evo.c vitalium.c
 
 OBJECTS=$(SOURCES:%.c=%.o) $(SOURCES:%.cpp=%.o)
 OUTPUT=libalgos.a

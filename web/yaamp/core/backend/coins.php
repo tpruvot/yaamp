@@ -140,7 +140,7 @@ function BackendCoinsUpdate()
 					$coin->charity_amount = $template['_V2']/100000000;
 
 				if(isset($template['payee_amount']) && $coin->symbol != 'LIMX') {
-					$coin->charity_amount = $template['payee_amount']/100000000;
+					$coin->charity_amount = doubleval($template['payee_amount'])/100000000;
 					$coin->reward -= $coin->charity_amount;
 				}
 

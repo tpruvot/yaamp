@@ -49,7 +49,8 @@ screen -dmS jha $STRATUM_DIR/run.sh jha
 #screen -dmS dmd-gr $STRATUM_DIR/run.sh dmd-gr
 screen -dmS myr-gr $STRATUM_DIR/run.sh myr-gr
 screen -dmS lbry $STRATUM_DIR/run.sh lbry
-screen -dmS lyra2 $STRATUM_DIR/run.sh lyra2
+screen -dmS allium $STRATUM_DIR/run.sh allium
+#screen -dmS lyra2 $STRATUM_DIR/run.sh lyra2
 screen -dmS lyra2v2 $STRATUM_DIR/run.sh lyra2v2
 screen -dmS zero $STRATUM_DIR/run.sh lyra2z
 
