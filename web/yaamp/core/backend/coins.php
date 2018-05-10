@@ -87,7 +87,7 @@ function BackendCoinsUpdate()
 
 		if(empty($coin->master_wallet))
 		{
-			if ($coin->rpcencoding == 'DCR' && empty($coin->account)) $coin->account = 'default';
+			if (($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') && empty($coin->account)) $coin->account = 'default';
 			$coin->master_wallet = $remote->getaccountaddress($coin->account);
 		}
 
@@ -213,7 +213,7 @@ function BackendCoinsUpdate()
 				}
 			}
 
-			else if ($coin->rpcencoding == 'DCR')
+			else if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR')
 			{
 				$wi = $remote->walletinfo();
 				$coin->auto_ready = ($coin->connections > 0 && arraySafeVal($wi,"daemonconnected"));

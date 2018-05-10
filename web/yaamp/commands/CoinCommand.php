@@ -284,10 +284,17 @@ class CoinCommand extends CConsoleCommand
 		}
 
 		// note: rpc not compatible with decred
+		if ($coin == 'DCR' || $coin == 'Decred') {
+			$txs = $remote->listtransactions('*', 900);
+			if(!$txs || !is_array($txs)) {
+				echo "no txs found!\n";
+				return 0;
+		} else {
 		$txs = $remote->listtransactions($coin->account, 900);
 		if(!$txs || !is_array($txs)) {
 			echo "no txs found!\n";
 			return 0;
+		}
 		}
 
 		$nbOk = $nbMissed = 0;
