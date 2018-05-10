@@ -7,11 +7,16 @@ class MarketController extends CommonController
 		if(!$this->admin) return;
 
 		$market = getdbo('db_markets', getiparam('id'));
+		if(!$market) {
+			user()->setFlash('error', "invalid market");
+			$this->goback();
+			return;
+		}
 		$coin = getdbo('db_coins', $market->coinid);
 
 		if(isset($_POST['db_markets']))
 		{
-			$market->attributes = $_POST['db_markets'];
+			$market->setAttributes($_POST['db_markets'], false);
 			if($market->save())
 				$this->redirect(array('site/coin', 'id'=>$coin->id));
 		}
@@ -19,15 +24,26 @@ class MarketController extends CommonController
 		$this->render('update', array('market'=>$market, 'coin'=>$coin));
 	}
 
+	public function actionEnable()
+	{
+		if(!$this->admin) return;
+
+		$enable = (int) getiparam('en');
+		$market = getdbo('db_markets', getiparam('id'));
+		if($market) {
+			$market->disabled = $enable ? 0 : 9;
+			$market->save();
+		}
+		$this->goback();
+	}
+
 	public function actionDelete()
 	{
 		if(!$this->admin) return;
 
 		$market = getdbo('db_markets', getiparam('id'));
-		$coin = getdbo('db_coins', $market->coinid);
-
 		if($market) $market->delete();
-		$this->redirect(array('site/coin', 'id'=>$coin->id));
+		$this->goback();
 	}
 
 	public function actionSellto()
@@ -35,10 +51,15 @@ class MarketController extends CommonController
 		if(!$this->admin) return;
 
 		$market = getdbo('db_markets', getiparam('id'));
+		if(!$market) {
+			user()->setFlash('error', "invalid market");
+			$this->goback();
+			return;
+		}
 		$coin = getdbo('db_coins', $market->coinid);
 		$amount = getparam('amount');
 
-		$remote = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport);
+		$remote = new WalletRPC($coin);
 
 		$info = $remote->getinfo();
 		if(!$info || !$info['balance']) return false;
@@ -61,6 +82,10 @@ class MarketController extends CommonController
 		{
 			user()->setFlash('error', $remote->error);
 			$this->redirect(array('site/coin', 'id'=>$coin->id));
+		} else {
+			$market->lastsent = time();
+			$market->save();
+			BackendUpdatePoolBalances($coin->id);
 		}
 
 		$exchange = new db_exchange;
@@ -77,10 +102,3 @@ class MarketController extends CommonController
 	}
 
 }
-
-
-
-
-
-
-

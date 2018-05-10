@@ -88,6 +88,7 @@ json_value *json_get_object(json_value *json, const char *name)
 FILE *g_debuglog = NULL;
 FILE *g_stratumlog = NULL;
 FILE *g_clientlog = NULL;
+FILE *g_rejectlog = NULL;
 
 void initlog(const char *algo)
 {
@@ -98,6 +99,23 @@ void initlog(const char *algo)
 
 	g_stratumlog = fopen("stratum.log", "a");
 	g_clientlog = fopen("client.log", "a");
+	g_rejectlog = fopen("reject.log", "a");
+}
+
+void closelogs()
+{
+	if (g_debuglog) {
+		fflush(g_debuglog); fclose(g_debuglog);
+	}
+	if (g_stratumlog) {
+		fflush(g_stratumlog); fclose(g_stratumlog);
+	}
+	if (g_clientlog) {
+		fflush(g_clientlog); fclose(g_clientlog);
+	}
+	if (g_rejectlog) {
+		fflush(g_rejectlog); fclose(g_rejectlog);
+	}
 }
 
 void clientlog(YAAMP_CLIENT *client, const char *format, ...)
@@ -116,7 +134,7 @@ void clientlog(YAAMP_CLIENT *client, const char *format, ...)
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	strftime(buffer2, 80, "%Y/%m/%d %H:%M:%S", timeinfo);
+	strftime(buffer2, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
 
 	char buffer3[YAAMP_SMALLBUFSIZE];
 	sprintf(buffer3, "%s [%s] %s, %s, %s\n", buffer2, client->sock->ip, client->username, g_current_algo->name, buffer);
@@ -131,7 +149,11 @@ void clientlog(YAAMP_CLIENT *client, const char *format, ...)
 	if(g_clientlog)
 	{
 		fprintf(g_clientlog, "%s", buffer3);
-		fflush(g_clientlog);
+		if (fflush(g_clientlog) == EOF) {
+			// reopen if wiped
+			fclose(g_clientlog);
+			g_clientlog = fopen("client.log", "a");
+		}
 	}
 }
 
@@ -159,6 +181,18 @@ void debuglog(const char *format, ...)
 		fprintf(g_debuglog, "%s: %s", buffer2, buffer);
 		fflush(g_debuglog);
 	}
+}
+
+void debuglog_hex(void *data, int len)
+{
+	uint8_t* const bin = (uint8_t*) data;
+	char *hex = (char*) calloc(1, len*2 + 2);
+	if (!hex) return;
+	for(int i=0; i < len; i++)
+		sprintf(hex+strlen(hex), "%02x", bin[i]);
+	strcpy(hex+strlen(hex), "\n");
+	debuglog(hex);
+	free(hex);
 }
 
 void stratumlog(const char *format, ...)
@@ -189,13 +223,66 @@ void stratumlog(const char *format, ...)
 	if(g_stratumlog)
 	{
 		fprintf(g_stratumlog, "%s: %s", buffer2, buffer);
-		fflush(g_stratumlog);
+		if (fflush(g_stratumlog) == EOF) {
+			fclose(g_stratumlog);
+			g_stratumlog = fopen("stratum.log", "a");
+		}
 	}
 }
+
+void stratumlogdate(const char *format, ...)
+{
+	char buffer[YAAMP_SMALLBUFSIZE];
+	char date[16];
+	va_list args;
+	time_t rawtime;
+	struct tm * timeinfo;
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(date, 16, "%Y-%m-%d", timeinfo);
+
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+
+	stratumlog("%s %s", date, buffer);
+}
+
+void rejectlog(const char *format, ...)
+{
+	char buffer[YAAMP_SMALLBUFSIZE];
+	va_list args;
+
+	va_start(args, format);
+	vsnprintf(buffer, YAAMP_SMALLBUFSIZE-1, format, args);
+	va_end(args);
+
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer2[80];
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	strftime(buffer2, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
+	printf("%s: %s", buffer2, buffer);
+
+	if(g_rejectlog)
+	{
+		fprintf(g_rejectlog, "%s: %s", buffer2, buffer);
+		if (fflush(g_rejectlog) == EOF) {
+			fclose(g_rejectlog);
+			g_rejectlog = fopen("reject.log", "a");
+		}
+	}
+}
+
 
 bool yaamp_error(char const *message)
 {
 	debuglog("ERROR: %d %s\n", errno, message);
+	closelogs();
 	exit(1);
 }
 
@@ -321,49 +408,6 @@ void base64_decode(char *normal, const char *base64)
 	*normal = 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-
-//const unsigned char g_base58_tab[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-//
-//void base58_decode(const char *input, char *output)
-//{
-//	int i;
-//
-//	unsigned char decoding_tab[256];
-//	memset(decoding_tab, 255, 256);
-//
-//	for(i = 0; i < 58; i++)
-//		decoding_tab[g_base58_tab[i]] = i;
-//
-//	unsigned long current = 0;
-//	int bit_filled = 0;
-//
-//	for(i = 0; base58[i]; i++)
-//	{
-//		if(base58[i] == 0x0A || base58[i] == 0x0D || base58[i] == 0x20 || base58[i] == 0x09)
-//			continue;
-//
-//		if(base58[i] == '=')
-//			break;
-//
-//		unsigned char digit = decoding_tab[base58[i]];
-//
-//		current <<= 6;
-//		current |= digit;
-//		bit_filled += 6;
-//
-//		if(bit_filled >= 8)
-//		{
-//			unsigned long b = (current >> (bit_filled - 8));
-//
-//			*normal++ = (unsigned char)(b & 0xFF);
-//			bit_filled -= 8;
-//		}
-//	}
-//
-//	*normal = 0;
-//}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 void hexlify(char *hex, const unsigned char *bin, int len)
@@ -371,6 +415,14 @@ void hexlify(char *hex, const unsigned char *bin, int len)
 	hex[0] = 0;
 	for(int i=0; i < len; i++)
 		sprintf(hex+strlen(hex), "%02x", bin[i]);
+}
+
+bool ishexa(char *hex, int len)
+{
+	for(int i=0; i<len; i++) {
+		if (!isxdigit(hex[i])) return false;
+	}
+	return true;
 }
 
 unsigned char binvalue(const char v)
@@ -594,13 +646,63 @@ uint64_t htoi64(const char *s)
     return val;
 }
 
+#if 0
+// gettimeofday seems deprecated in POSIX
 long long current_timestamp()
 {
-    struct timeval te;
-    gettimeofday(&te, NULL);
+	long long milliseconds;
+	struct timeval te;
 
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-    return milliseconds;
+	gettimeofday(&te, NULL);
+
+	milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
+	return milliseconds;
+}
+#else
+long long current_timestamp()
+{
+	long long milliseconds;
+	struct timespec te;
+
+	clock_gettime(CLOCK_REALTIME, &te);
+
+	milliseconds = 1000LL*te.tv_sec + round(te.tv_nsec/1e6);
+	return milliseconds;
+}
+#endif
+
+long long current_timestamp_dms() // allow 0.1 ms time
+{
+	long long dms;
+	struct timespec te;
+
+	clock_gettime(CLOCK_REALTIME, &te);
+
+	dms = 10000LL*te.tv_sec + round(te.tv_nsec/1e5);
+	return dms;
+}
+
+int opened_files()
+{
+	int fds = 0;
+	DIR *d = opendir("/proc/self/fd");
+	if (d) {
+		while (readdir(d)) fds++;
+		closedir(d);
+	}
+	return fds;
+}
+
+int resident_size()
+{
+	int sz, res = 0;
+	FILE *fp = fopen("/proc/self/statm", "r");
+	if (fp) {
+		int p = fscanf(fp, "%d", &sz);
+		if (p) p += fscanf(fp, "%d", &res);
+		fclose(fp);
+	}
+	return res;
 }
 
 void string_lower(char *s)
@@ -659,8 +761,11 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len)
 	hexlify(output, (unsigned char *)output1, 32);
 }
 
+void sha256_hash_hex(const char *input, char *output, unsigned int len)
+{
+	char output1[32];
 
-
-
-
+	sha256_hash(input, output1, len);
+	hexlify(output, (unsigned char *)output1, 32);
+}
 

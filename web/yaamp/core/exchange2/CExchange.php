@@ -39,7 +39,7 @@ class CExchange
 			// add to our db if not there already
 		}
 
-		$list = getdbolist('db_orders', "market='$this->marketname'");
+		$list = getdbolist('db_orders', "market='{$this->marketname}'");
 		foreach($list as $db_order)
 		{
 			$found = false;
@@ -59,7 +59,7 @@ class CExchange
 			}
 		}
 
-		$savebalance = getdbosql('db_balances', "name='cryptsy'");
+		$savebalance = getdbosql('db_balances', "name='{$this->marketname}'");
 		$savebalance->balance = 0;
 
 		$this->balances = $this->loadBalances();
@@ -98,6 +98,8 @@ class CExchange
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
 
 class CExchangeCryptsy extends CExchange
 {
@@ -194,6 +196,5 @@ class CExchangeCryptsy extends CExchange
 
 };
 
-
-
+*/
 

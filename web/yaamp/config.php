@@ -7,6 +7,7 @@ return array(
 	'layout'=>'main',
 
 	'basePath'=>YAAMP_HTDOCS."/yaamp",
+	'extensionPath'=>YAAMP_HTDOCS.'/extensions',
 	'controllerPath'=>'yaamp/modules',
 	'viewPath'=>'yaamp/modules',
 	'layoutPath'=>'yaamp/ui',
@@ -16,11 +17,17 @@ return array(
 
 	'components'=>array(
 
+		// url() rules...
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'showScriptName'=>false,
-			'appendParams'=>false,
-			'caseSensitive'=>false,
+			'appendParams'=>true,
+			'caseSensitive'=>true,
+			'rules'=>array(
+				// prevent /explorer/id/<num>/p1/v1/... -> /explorer/<num>?params...
+				'/explorer/<id:\d+>' => array('/explorer', 'urlFormat'=>'get'),
+				'explorer/<id:\d+>' => array('explorer', 'urlFormat'=>'get'),
+			),
 		),
 
 		'assetManager'=>array(
@@ -57,6 +64,19 @@ return array(
 			'charset'=>'utf8',
 			'schemaCachingDuration'=>3600,
 		),
+
+		'cache'=>array(
+			'class'=>'CMemCache',
+			'keyPrefix'=>'',
+			'servers'=>array(
+				array(
+					'host'=>'127.0.0.1',
+					'port'=> 11211,
+					'weight'=> 60,
+				),
+			),
+		),
+
 	),
 
 

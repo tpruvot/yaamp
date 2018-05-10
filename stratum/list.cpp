@@ -5,21 +5,21 @@
 
 void CommonLock(pthread_mutex_t *mutex)
 {
-#ifdef _LIST_DEBUG_
-	int i=0;
-	for(; i<10; i++)
-	{
-		int res = pthread_mutex_trylock(mutex);
-		if(res == 0) break;
+	if (g_debuglog_list) {
+		int i=0;
+		for(; i<10; i++)
+		{
+			int res = pthread_mutex_trylock(mutex);
+			if(res == 0) break;
 
-		usleep(100*YAAMP_MS);
+			usleep(100*YAAMP_MS);
+		}
+
+		if(i == 10)
+			debuglog("failed mutex2 %x <<----------------\n", mutex);
+	} else {
+		pthread_mutex_lock(mutex);
 	}
-
-	if(i == 10)
-		debuglog("failed mutex2 %x <<----------------\n", mutex);
-#else
-	pthread_mutex_lock(mutex);
-#endif
 }
 
 void CommonUnlock(pthread_mutex_t *mutex)
@@ -43,21 +43,21 @@ CommonList::~CommonList()
 
 void CommonList::Enter()
 {
-#ifdef _LIST_DEBUG_
-	int i=0;
-	for(; i<10; i++)
-	{
-		int res = pthread_mutex_trylock(&mutex);
-		if(res == 0) break;
+	if (g_debuglog_list) {
+		int i=0;
+		for(; i<10; i++)
+		{
+			int res = pthread_mutex_trylock(&mutex);
+			if(res == 0) break;
 
-		usleep(100*YAAMP_MS);
+			usleep(100*YAAMP_MS);
+		}
+
+		if(i == 10)
+			debuglog("failed mutex1 %x <<----------------\n", &mutex);
+	} else {
+		pthread_mutex_lock(&mutex);
 	}
-
-	if(i == 10)
-		debuglog("failed mutex1 %x <<----------------\n", &mutex);
-#else
-	pthread_mutex_lock(&mutex);
-#endif
 }
 
 void CommonList::Leave()

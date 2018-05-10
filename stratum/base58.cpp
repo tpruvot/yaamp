@@ -4,7 +4,6 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the standard MIT license.  See COPYING for more details.
  */
-
 #include <arpa/inet.h>
 
 #include <stdbool.h>
@@ -23,7 +22,8 @@ static const int8_t b58digits[] = {
 	47,48,49,50,51,52,53,54, 55,56,57,-1,-1,-1,-1,-1,
 };
 
-bool _blkmk_b58tobin(void *bin, size_t binsz, const char *b58, size_t b58sz) {
+static bool _blkmk_b58tobin(void *bin, size_t binsz, const char *b58, size_t b58sz)
+{
 	const unsigned char *b58u = (const unsigned char*)b58;
 	unsigned char *binu = (unsigned char *)bin;
 	size_t outisz = (binsz + 3) / 4;
@@ -85,15 +85,30 @@ bool _blkmk_b58tobin(void *bin, size_t binsz, const char *b58, size_t b58sz) {
 
 bool base58_decode(const char *input, char *output)
 {
-	unsigned char output_bin[25];
+	unsigned char output_bin[32] = { 0 };
+	bool b = _blkmk_b58tobin(output_bin, 26, input, 0);
+	output[0] = '\0';
 
-	bool b = _blkmk_b58tobin(output_bin, sizeof(output_bin), input, 0);
 	if(!b) return false;
 
-	output[0] = 0;
-	for(int i=1; i < 21; i++)
-      sprintf(output+strlen(output), "%02x", output_bin[i]);
+	for(int i=2; i < 22; i++)
+		sprintf(output+strlen(output), "%02x", output_bin[i]);
 
+	return true;
+}
+
+bool is_base58(char *input)
+{
+	// All alphanumeric characters except "0", "O", "I" and "l"
+	size_t i=0, len = strlen(input);
+	char *c = input;
+	while (i < len) {
+		bool isdigit = (c[i] >= '1' && c[i] <= '9');
+		bool isalpha = (c[i] >= 'a' && c[i] <= 'z') || (c[i] >= 'A' && c[i] <= 'Z');
+		if (!isdigit && !isalpha) return false;
+		if (c[i] == 'I' || c[i] == 'O' || c[i] == 'l') return false;
+		i++;
+	}
 	return true;
 }
 

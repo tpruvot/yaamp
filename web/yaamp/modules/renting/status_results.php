@@ -90,7 +90,7 @@ foreach($algos as $item)
 echo "</table>";
 
 echo "<p style='font-size: .8em'>
-		&nbsp;* values in mBTC/Mh/day (mBTC/Gh/day for sha256)<br>
+		&nbsp;* values in mBTC/MH/day (GH/day for sha and blake algos)<br>
 		&nbsp;** only hashpower with extranonce.subscribe or reconnect support can be rented<br>
 		</p>";
 

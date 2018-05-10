@@ -1,13 +1,16 @@
 <?php
 
-$apikey = 'c9534a11-0e4e-4d00-be64-a00e34cd927a';
-$apiid = '7215';
+$apikey = NICEHASH_API_KEY;
+$apiid = NICEHASH_API_ID;
 
-$res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
+if (!YAAMP_USE_NICEHASH_API) die();
+
+$res = fetch_url("https://api.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
 $a = json_decode($res);
 $balance = $a->result->balance_confirmed;
+$balance_pending = $a->result->balance_pending;
 
-echo "balance $balance<br>";
+echo "balance $balance - (pending: $balance_pending)<br>";
 
 echo "<br><table class='dataGrid'>";
 echo "<thead>";
@@ -22,7 +25,6 @@ echo "<th>Speed</th>";
 echo "<th>Last Dec</th>";
 echo "<th>Workers</th>";
 echo "<th>Accepted</th>";
-echo "<th>Rejected</th>";
 echo "<th></th>";
 echo "</tr>";
 echo "</thead><tbody>";
@@ -56,13 +58,12 @@ foreach($list as $nicehash)
 
 	if(!$nicehash->workers && !$nicehash->accepted && !$nicehash->rejected)
 	{
-		echo "<td colspan=3></td>";
+		echo "<td colspan=2></td>";
 	}
 	else
 	{
 		echo "<td>$nicehash->workers</td>";
 		echo "<td>$nicehash->accepted</td>";
-		echo "<td>$nicehash->rejected</td>";
 	}
 
 	if($nicehash->active)

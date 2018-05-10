@@ -144,3 +144,55 @@ function remove0x($string)
 	return $string;
 }
 
+// version is used for multi algo coins
+function versionToAlgo($coin, $version)
+{
+	// could be filled by block json (chain analysis)
+	$algos['MYR'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'myr-gr', 3=>'skein', 4=>'qubit', 5=>'yescrypt'
+	);
+	$algos['DGB'] = array(
+		0=>'scrypt', 1=>'sha256', 2=>'myr-gr', 3=>'skein', 4=>'qubit'
+	);
+	$algos['AUR'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'myr-gr', 3=>'skein', 4=>'qubit'
+	);
+	$algos['DGC'] = array(
+		0=>'scrypt', 1=>'sha256', 2=>'x11'
+	);
+	$algos['J'] = array(
+		2 =>'sha256', 3=>'x11', 4=>'x13', 5=>'x15', 6=>'scrypt',
+		7 =>'nist5',  8 =>'myr-gr', 9=>'penta', 10=>'whirlpool',
+		11=>'luffa',  12=>'keccak', 13=>'quark', 15=>'bastion'
+	);
+	$algos['GCH'] = array(
+		0=>'x12', 1=>'x11', 2=>'x13', 3=>'sha256', 4=>'blake2s'
+	);
+	$algos['RICHX'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'myr-gr', 3=>'skein', 4=>'qubit'
+	);
+	$algos['SFR'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'myr-gr', 3=>'x11', 4=>'blake'
+	);
+	$algos['UIS'] = array(
+		0=>'lyra2v2', 1=>'skein', 2=>'qubit', 3=>'yescrypt', 4=>'x11'
+	);
+	$algos['XVG'] = array(
+		0=>'scrypt', 1=>'scrypt', 2=>'myr-gr', 3=>'x17', 4=>'blake2s', 10=>'lyra2v2',
+	);
+	$algos['ARG'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'lyra2v2', 3=>'myr-gr', 4=>'argon2d', 5=>'yescrypt',
+	);
+	$symbol = $coin->symbol;
+	if (!empty($coin->symbol2)) $symbol = $coin->symbol2;
+
+	if ($symbol == 'J')
+		return arraySafeVal($algos[$symbol], $version, '');
+	else if($symbol == 'GCH')
+		return arraySafeVal($algos[$symbol], ($version - 9), '');
+	else if($symbol == 'XVG')
+		return arraySafeVal($algos[$symbol], ($version >> 11), 'scrypt');
+	else if (isset($algos[$symbol]))
+		return arraySafeVal($algos[$symbol], ($version >> 9) & 7, '');
+	return false;
+}

@@ -8,7 +8,10 @@ struct YAAMP_RPC
 
 	char host[1024];
 	char credential[1024];
+	char cert[1024];
 
+	int ssl;
+	int curl;
 	int sock;
 	int id;
 
@@ -16,6 +19,8 @@ struct YAAMP_RPC
 	char buffer[YAAMP_SMALLBUFSIZE];
 
 	pthread_mutex_t mutex;
+
+	void* CURL;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,3 +35,6 @@ int rpc_flush(YAAMP_RPC *rpc);
 
 json_value *rpc_call(YAAMP_RPC *rpc, char const *method, char const *params=NULL);
 
+json_value *rpc_curl_call(YAAMP_RPC *rpc, char const *method, char const *params);
+void rpc_curl_get_lasterr(char* buffer, int buflen);
+void rpc_curl_close(YAAMP_RPC *rpc);

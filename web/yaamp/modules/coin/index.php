@@ -1,30 +1,52 @@
 <?php
 
-//echo "<a href='/coin/create'>Add a coin</a>";
-echo '<br>';
+JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
 
-showTableSorter('maintable', '{headers: {0: {sorter: false}}}');
-echo "<thead>";
+echo <<<end
+<div align="right" style="margin-bottom: 6px;">
+<input class="search" type="search" data-column="all" style="width: 140px;" placeholder="Search..." />
+</div>
+<style type="text/css">
+tr.ssrow.filtered { display: none; }
+.page .footer { clear: both; width: auto; margin-top: 16px; }
+</style>
+end;
 
-echo "<tr>";
-echo "<th width=30></th>";
-echo "<th>Name</th>";
-echo "<th>Symbol</th>";
-echo "<th>Algo</th>";
-echo "<th>Status</th>";
-echo "<th>Version</th>";
-echo "<th>Created</th>";
-//echo "<th>Difficulty</th>";
-echo "<th>Height</th>";
-echo "<th>Message</th>";
-echo "<th>Links</th>";
-echo "</tr>";
-echo "</thead><tbody>";
+showTableSorter('maintable', "{
+	tableClass: 'dataGrid',
+	textExtraction: {
+		6: function(node, table, n) { return $(node).attr('data'); }
+	},
+	widgets: ['zebra','filter'],
+	widgetOptions: {
+		filter_external: '.search',
+		filter_columnFilters: false,
+		filter_childRows : true,
+		filter_ignoreCase: true
+	}
+}");
+
+echo <<<end
+<thead><tr>
+<th data-sorter="" width="30"></th>
+<th data-sorter="text">Name</th>
+<th data-sorter="text">Symbol</th>
+<th data-sorter="text">Algo</th>
+<th data-sorter="text">Status</th>
+<th data-sorter="text">Version</th>
+<th data-sorter="numeric">Created</th>
+<th data-sorter="numeric">Height</th>
+<th data-sorter="text">Message</th>
+<th data-sorter="">Links</th>
+</tr></thead>
+<tbody>
+end;
 
 $total_active = 0;
 $total_installed = 0;
 
-$coins = getdbolist('db_coins', "1 order by id desc");
+$coins = getdbolist('db_coins', "1 ORDER BY created DESC");
 foreach($coins as $coin)
 {
 //	if($coin->symbol == 'BTC') continue;
@@ -34,12 +56,12 @@ foreach($coins as $coin)
 	$coin->errors = substr($coin->errors, 0, 30);
 	$coin->version = substr($coin->version, 0, 20);
 	$difficulty = Itoa2($coin->difficulty, 3);
-	$d = datetoa2($coin->created);
+	$created = datetoa2($coin->created);
 
-	echo "<tr class='ssrow' title='$coin->specifications'>";
-	echo "<td><img src='$coin->image' width=18></td>";
+	echo '<tr class="ssrow">';
+	echo '<td><img src="'.$coin->image.'" width="18"></td>';
 
-	echo "<td><b><a href='/coin/update?id=$coin->id'>$coin->name</a></b></td>";
+	echo '<td><b><a href="/coin/update?id='.$coin->id.'">'.$coin->name.'</a></b></td>';
 
 	if($this->admin)
 		echo "<td><b><a href='/site/update?id=$coin->id'>$coin->symbol</a></b></td>";
@@ -58,10 +80,10 @@ foreach($coins as $coin)
 		echo "<td></td>";
 
 	echo "<td>$coin->version</td>";
-	echo "<td>$d ago</td>";
+	echo '<td data="'.$coin->created.'">'.$created.'</td>';
 
 //	echo "<td align=right>$difficulty</td>";
-	echo "<td align=right>$coin->block_height</td>";
+	echo '<td align="center">'.$coin->block_height.'</td>';
 
 	echo "<td>$coin->errors</td>";
 	echo "<td>";
@@ -83,30 +105,7 @@ foreach($coins as $coin)
 	$list2 = getdbolist('db_markets', "coinid=$coin->id");
 	foreach($list2 as $market)
 	{
-		$url = '';
-		$lowsymbol = strtolower($coin->symbol);
-
-		if($market->name == 'cryptsy')
-			$url = "https://www.cryptsy.com/markets/view/{$coin->symbol}_BTC";
-
-		else if($market->name == 'bittrex')
-			$url = "https://bittrex.com/Market/Index?MarketName=BTC-$coin->symbol";
-
-		else if($market->name == 'mintpal')
-			$url = "https://www.mintpal.com/market/$coin->symbol/BTC";
-
-		else if($market->name == 'poloniex')
-			$url = "https://poloniex.com/exchange/btc_$coin->symbol";
-
-		else if($market->name == 'c-cex')
-			$url = "https://c-cex.com/?p=$lowsymbol-btc";
-
-		else if($market->name == 'bleutrade')
-			$url = "https://bleutrade.com/exchange/$coin->symbol/BTC";
-
-		else if($market->name == 'yobit')
-			$url = "https://yobit.net/en/trade/$coin->symbol/BTC";
-
+		$url = getMarketUrl($coin, $market->name);
 		echo "<a href='$url' target=_blank>$market->name</a> ";
 	}
 
@@ -116,19 +115,19 @@ foreach($coins as $coin)
 }
 
 echo "</tbody>";
+echo "<tfoot>";
 
 $total = count($coins);
 
-echo "<tr class='ssrow'>";
-echo "<td></td>";
-echo "<td colspan=10><b>$total coins, $total_installed installed, $total_active running</b></td>";
+echo '<tr class="ssrow sfooter">';
+echo '<th></th>';
+echo '<th colspan="9">';
+echo "<b>$total coins, $total_installed installed, $total_active running</b>";
+echo '<br/><br/><a href="/coin/create">Add a new coin</a>';
+echo '</th>';
 echo "</tr>";
 
+echo '</tfoot>';
 echo "</table>";
 
 echo "<br><br><br><br><br>";
-echo "<br><br><br><br><br>";
-
-
-
-
