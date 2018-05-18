@@ -9,19 +9,35 @@ function WriteBoxHeader($title)
 
 $showrental = (bool) YAAMP_RENTAL;
 
-$algo = user()->getState('yaamp-algo');
+// Ability to pass ?algo=all or ?algo=x16s,neoscrypt from URL
+$algo_from_query_param = getparam('algo');
+
+if($algo_from_query_param) {
+	// Query param is set
+	if($algo_from_query_param != 'all') {
+		$r_algo = array_map('trim', explode(',', $algo_from_query_param));
+		$r_algo = preg_replace('/[^A-Za-z0-9\-]/', '', $r_algo);
+	}
+
+} else {
+	// Filter out algo from user's preferences
+	$algo_from_user_pref = user()->getState('yaamp-algo');
+	if($algo_from_user_pref != 'all') {
+		$r_algo = array($algo_from_user_pref);
+	}
+}
 
 $count = getparam('count');
 $count = $count? $count: 50;
 
-WriteBoxHeader("Last $count Blocks ($algo)");
+$algo_header = isset($r_algo) ? implode(',', $r_algo) : 'any algo';
+WriteBoxHeader("Last $count Blocks ($algo_header)");
 
 $criteria = new CDbCriteria();
 $criteria->condition = "t.category NOT IN ('stake','generated')";
 $criteria->condition .= " AND IFNULL(coin.visible,1)=1"; // ifnull for rental
-if($algo != 'all') {
-	$criteria->condition .= " AND t.algo=:algo";
-	$criteria->params = array(':algo'=>$algo);
+if(isset($r_algo)) {
+        $criteria->addInCondition('t.algo', $r_algo);
 }
 $criteria->limit = $count;
 $criteria->order = 't.time DESC';
