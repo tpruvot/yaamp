@@ -82,6 +82,7 @@ function yaamp_algo_mBTC_factor($algo)
 	case 'keccak':
 	case 'keccakc':
 	case 'lbry':
+	case 'quark':
 	case 'vanilla':
 		return 1000;
 	default:
