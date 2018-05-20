@@ -20,3 +20,9 @@ web/assets/
 *.orig
 .idea/*
 web/yaamp/.idea/
+stratum/algos/Lyra2z.c
+stratum/algos/Lyra2z.h
+web/images/coin-FLAX.png
+web/images/coin-FLAX.png
+stratum/algos/Lyra2z.h
+stratum/algos/Lyra2z.c

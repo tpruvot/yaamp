@@ -131,7 +131,7 @@ function BackendWatchMarkets($marketname=NULL)
 			$mh->save();
 		}
 
-		if ($coin->rpcencoding == 'DCR') {
+		if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') {
 			// hack to store the locked balance history as a "stake" market
 			$remote = new WalletRPC($coin);
 			$stake = 0.; //(double) $remote->getbalance('*',0,'locked');

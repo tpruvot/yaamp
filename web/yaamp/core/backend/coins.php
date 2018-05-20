@@ -87,7 +87,7 @@ function BackendCoinsUpdate()
 
 		if(empty($coin->master_wallet))
 		{
-			if ($coin->rpcencoding == 'DCR' && empty($coin->account)) $coin->account = 'default';
+			if (($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') && empty($coin->account)) $coin->account = 'default';
 			$coin->master_wallet = $remote->getaccountaddress($coin->account);
 		}
 
@@ -135,6 +135,9 @@ function BackendCoinsUpdate()
 			if($template && isset($template['coinbasevalue']))
 			{
 				$coin->reward = $template['coinbasevalue']/100000000*$coin->reward_mul;
+				
+				if($coin->symbol == 'XMX' && isset($template['developerfee_amount'])) // Required changes from Version 1.1.2 Xuma Daemon.
+					$coin->reward -= $template['developerfee_amount']/100000000;
 
 				if($coin->symbol == 'TAC' && isset($template['_V2']))
 					$coin->charity_amount = $template['_V2']/100000000;
@@ -214,7 +217,7 @@ function BackendCoinsUpdate()
 				}
 			}
 
-			else if ($coin->rpcencoding == 'DCR')
+			else if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR')
 			{
 				$wi = $remote->walletinfo();
 				$coin->auto_ready = ($coin->connections > 0 && arraySafeVal($wi,"daemonconnected"));

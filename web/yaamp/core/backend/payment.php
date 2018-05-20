@@ -54,7 +54,7 @@ function BackendCoinPayments($coin)
 	$users = getdbolist('db_accounts', "balance>$min_payout AND coinid={$coin->id} ORDER BY balance DESC");
 
 	// todo: enhance/detect payout_max from normal sendmany error
-	if($coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || !empty($coin->payout_max))
+	if($coin->symbol == 'DSR' || $coin->symbol == 'DIN' || $coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || !empty($coin->payout_max))
 	{
 		foreach($users as $user)
 		{
@@ -254,7 +254,7 @@ function BackendCoinPayments($coin)
 			}
 			if ($amount_failed > 0.0) {
 				debuglog("Found failed payment(s) for {$user->username}, $amount_failed {$coin->symbol}!");
-				if ($coin->rpcencoding == 'DCR') {
+				if ($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') {
 					$data = $remote->validateaddress($user->username);
 					if (!$data['isvalid']) {
 						debuglog("Found bad address {$user->username}!! ($amount_failed {$coin->symbol})");

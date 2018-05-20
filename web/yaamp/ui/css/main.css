@@ -9,6 +9,7 @@ body
 {
 	font: normal 10pt Arial,Helvetica,sans-serif;
 	background-color: white;
+	background: url(/images/base/noise-grey.png);
 	color: #444;
 	text-align: left;
 	margin: 0;
@@ -89,12 +90,9 @@ hr
 	right: 0px;
 	left: 0px;
 	z-index: 8;
-	height: 40px;
-	color: #aaa;
-
-	background-image: url(/images/base/top_header.png);
-	background-repeat: repeat-x;
-	
+	height:45px;
+	margin: 5px 5px 5px;
+    border-radius: 5px;
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .25);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, .25);
 }
@@ -103,22 +101,18 @@ hr
 {
 	font-size: 1.1em;
 	font-weight: bold;
-	padding: 10px;
+	padding: 15px;
 }
 
 .page .tabmenu-inner a
 {
 	text-decoration: none;
-	padding: 10px;
-	color: #aaa;
+	padding: 14px;
 }
 
 .page .tabmenu-inner .selected
 {
-	color: #eee;
-	border: 1px solid #181818;
-	background-image: url(/images/base/top_header_selected.png);
-	background-repeat: repeat-x;
+	background: #2468b5;
 }
 
 /* ---------------------------------------------- */
@@ -138,7 +132,7 @@ hr
 
 .page .content-inner
 {
-	padding: 10px;
+	padding: 25px;
 }
 
 /* ---------------------------------------------- */
@@ -165,13 +159,14 @@ hr
 {
 	border: 1px solid #e8e8e8;
 	border-radius: 5px;
+	background:#fff;
 }
 
 .main-left-title
 {
-	padding: 8px;
-	background-color: #e5e5e5;
 	font-weight: bold;
+	padding: 10px;
+	border-radius: 5px 5px 0px 0px;
 }
 
 .main-left-inner
@@ -225,3 +220,16 @@ hr
 	color: blue;
 }
 
+.page .tabmenu-out,.main-left-title {
+	background: #408de4;
+}
+
+.page .tabmenu-inner a,.page .tabmenu-out,.main-left-title {
+	color:#fff;
+} 
+
+
+.coininfo img {
+    max-width: 16px;
+    padding-right: 5px;
+}

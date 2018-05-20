@@ -28,18 +28,42 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600)." hours";
 <!--  -->
 
 <div class="main-left-box">
-<div class="main-left-title">YII MINING POOLS</div>
+<div class="main-left-title">Power Mining Pool</div>
 <div class="main-left-inner">
 
 <ul>
 
-<li>YiiMP is a pool management solution based on the Yii Framework.</li>
-<li>This fork was based on the yaamp source code and is now an open source project.</li>
-<li>No registration is required, we do payouts in the currency you mine. Use your wallet address as the username.</li>
+<li>Welcome to Powermining.pw. This pool is based on YiiMP and its a pool management solution based on the Yii Framework.</li>
+<li> - This pool intends to ensure privacy and decentralization is highly prioritized, <b>no need for any registrations</b>!</li>
+<li> - The pool is based in Europe, with servers located in france, germany and poland.</li>
+<li> - High availability solution with DDoS protection and Nicehash support.</li>
 <li>&nbsp;</li>
 <li>Payouts are made automatically every <?= $payout_freq ?> for all balances above <b><?= $min_payout ?></b>, or <b><?= $min_sunday ?></b> on Sunday.</li>
 <li>For some coins, there is an initial delay before the first payout, please wait at least 6 hours before asking for support.</li>
 <li>Blocks are distributed proportionally among valid submitted shares.</li>
+
+<br/>
+
+</ul>
+</div></div>
+<br/>
+
+<!--  -->
+	
+<!--  -->
+
+<div class="main-left-box">
+<div class="main-left-title">Support</div>
+<div class="main-left-inner">
+
+<ul>
+
+<li>Pool owner is cod3gen, if there are any issues, get in touch directly via following channels:</li>
+<li> - Discord Channel: <a href="https://discord.gg/qSV6b9d">https://discord.gg/qSV6b9d</a></li>
+<li> - Until we have a proper support page active, you may get in touch at contactpowerm ATT gmail.com.</li>
+<li>&nbsp;</li>
+<li>Request for adding new coins may be added on our Discord server.</li>
+<li><a href="https://twitter.com/PowerminingPw">Follow us on Twitter</a></li>
 
 <br/>
 
@@ -63,10 +87,13 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600)." hours";
 <?php if (YAAMP_ALLOW_EXCHANGE): ?>
 <li>&lt;WALLET_ADDRESS&gt; can be one of any currency we mine or a BTC address.</li>
 <?php else: ?>
-<li>&lt;WALLET_ADDRESS&gt; should be valid for the currency you mine. <b>DO NOT USE a BTC address here, the auto exchange is disabled</b>!</li>
+<li>&lt;WALLET_ADDRESS&gt; should be valid for the currency you mine. <b>ONLY wallet address of the coin you mine, auto exchange is currently disabled!</b></li>
 <?php endif; ?>
 <li>As optional password, you can use <b>-p c=&lt;SYMBOL&gt;</b> if yiimp does not set the currency correctly on the Wallet page.</li>
-<li>See the "Pool Status" area on the right for PORT numbers. Algorithms without associated coins are disabled.</li>
+<li>See the "Pool Status" area on the right for PORT numbers. Move mouse over portnumber to get complete stratum server address.</li>
+<li>Other options -p &lt;<b>OPTION</b> &gt;:</li>
+<li>- &lt; stats &gt; will allow ccminer and other supported miners to send their stats for bench.</li>
+<li>- &lt; d=DIFF &gt; allows you to change difficulty for mining. If you have a high rejected rate, you can try to change diff by this command.</li>
 
 <br>
 
@@ -101,9 +128,10 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600)." hours";
 
 <!--  -->
 
-<a class="twitter-timeline" href="https://twitter.com/hashtag/YAAMP" data-widget-id="617405893039292417" data-chrome="transparent" height="450px" data-tweet-limit="3" data-aria-polite="polite">Tweets about #YAAMP</a>
+<a class="twitter-timeline" href="https://twitter.com/hashtag/PowerminingPw" data-widget-id="987998982025695232" data-chrome="transparent" height="450px" data-tweet-limit="3" data-aria-polite="polite">Recent Tweets from Power Mining</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
+          
+	
 </td><td valign=top>
 
 <!--  -->

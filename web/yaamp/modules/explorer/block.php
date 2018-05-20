@@ -255,7 +255,7 @@ foreach($block['tx'] as $txhash)
 	}
 }
 
-if ($coin->rpcencoding == 'DCR' && isset($block['stx'])) {
+if (($coin->rpcencoding == 'DCR' || $coin->symbol == 'DCR') && isset($block['stx'])) {
 
 	echo '<tr><th class="section" colspan="6">';
 	echo 'Stake';

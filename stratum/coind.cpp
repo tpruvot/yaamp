@@ -167,7 +167,7 @@ void coind_init(YAAMP_COIND *coind)
 	strcpy(account, coind->account);
 	if(!strcmp(coind->rpcencoding, "DCR")) {
 		coind->usegetwork = true;
-		//sprintf(account, "default");
+		sprintf(account, "default");
 	}
 
 	bool valid = coind_validate_address(coind);
