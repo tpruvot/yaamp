@@ -1,26 +1,20 @@
+<?php
+echo getAdminSideBarLinks();
 
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user?symbol=BTC'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
+$coin_id = getiparam('id');
+if ($coin_id) {
+	$coin = getdbo('db_coins', $coin_id);
+	$this->pageTitle = 'Earnings - '.$coin->symbol;
+}
+
+JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
+
+?>
 
 <div id='main_results'></div>
 
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-
-<script>
-
-$(function()
-{
-	main_refresh();
-});
+<script type="text/javascript">
 
 var main_delay=60000;
 var main_timeout;
@@ -38,7 +32,9 @@ function main_error()
 
 function main_refresh()
 {
-	var url = "/site/earning_results";
+	var url = '/site/earning_results?id=<?= $coin_id ?>';
+	var minh = $(window).height() - 150;
+	$('#main_results').css({'min-height': minh + 'px'});
 
 	clearTimeout(main_timeout);
 	$.get(url, '', main_ready).error(main_error);
@@ -46,5 +42,6 @@ function main_refresh()
 
 </script>
 
+<?php
 
-
+JavascriptReady("main_refresh();");

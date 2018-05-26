@@ -1,17 +1,35 @@
 <?php
 
-$remote = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport);
+if (!$coin) $this->goback();
 
-echo "<table class='dataGrid2'>";
+$this->pageTitle = $coin->name." block explorer";
 
-echo "<thead>";
-echo "<tr>";
-echo "<th>Transaction Hash</th>";
-echo "<th>Value</th>";
-echo "<th>From (amount)</th>";
-echo "<th>To (amount)</th>";
-echo "</tr>";
-echo "</thead>";
+$remote = new WalletRPC($coin);
+
+echo <<<END
+<script type="text/javascript">
+$(function() {
+	$('#favicon').remove();
+	$('head').append('<link href="{$coin->image}" id="favicon" rel="shortcut icon">');
+});
+</script>
+
+<style type="text/css">
+span.monospace { font-family: monospace; }
+.main-text-input { margin-top: 4px; margin-bottom: 4px; }
+</style>
+
+<table class="dataGrid2">
+<thead>
+<tr>
+<th>Transaction Hash</th>
+<th>Value</th>
+<th>From</th>
+<th>To (amount)</th>
+</tr>
+</thead>
+<tbody>
+END;
 
 $tx = $remote->getrawtransaction($txhash, 1);
 if(!$tx) continue;
@@ -20,10 +38,12 @@ $valuetx = 0;
 foreach($tx['vout'] as $vout)
 	$valuetx += $vout['value'];
 
-echo "<tr class='ssrow'>";
+$coinUrl = $this->createUrl('/explorer', array('id'=>$coin->id));
 
-echo "<td><span style='font-family: monospace;'><a href='/explorer?id=$coin->id&txid={$tx['txid']}'>{$tx['txid']}</a></span></td>";
-echo "<td>$valuetx</td>";
+echo '<tr class="ssrow">';
+
+echo '<td><span class="monospace">'.CHtml::link($tx['txid'], $coinUrl.'txid='.$tx['txid']).'</a></span></td>';
+echo '<td>'.$valuetx.'</td>';
 
 echo "<td>";
 foreach($tx['vin'] as $vin)
@@ -40,7 +60,7 @@ foreach($tx['vout'] as $vout)
 	$value = $vout['value'];
 
 	if(isset($vout['scriptPubKey']['addresses'][0]))
-		echo "<span style='font-family: monospace;'>{$vout['scriptPubKey']['addresses'][0]}</span> ($value)";
+		echo '<span class="monospace">'.$vout['scriptPubKey']['addresses'][0]."</span> ($value)";
 	else
 		echo "($value)";
 
@@ -48,15 +68,16 @@ foreach($tx['vout'] as $vout)
 }
 echo "</td>";
 
-echo "</tr>";
-
+echo "</tr></tbody>";
 echo "</table>";
 
+$actionUrl = $coin->visible ? '/explorer/'.$coin->symbol : '/explorer/search?id='.$coin->id;
+
 echo <<<end
-<form action="/explorer" method="get" style="padding: 10px; width: 200px;">
-<input type="hidden" name="id" value="$coin->id">
-<input type="text" name="height" class="main-text-input" placeholder="block height">
-<input type="submit" value="Submit" class="main-submit-button" >
+<form action="{$actionUrl}" method="POST" style="padding: 10px;">
+<input type="text" name="height" class="main-text-input" placeholder="block height" style="width: 80px;">
+<input type="text" name="txid" class="main-text-input" placeholder="tx hash" style="width: 450px; margin: 4px;">
+<input type="submit" value="Search" class="main-submit-button" >
 </form>
 end;
 

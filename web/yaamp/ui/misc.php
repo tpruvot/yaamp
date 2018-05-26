@@ -4,16 +4,18 @@ function showFlashMessage()
 {
 	if(user()->hasFlash('message'))
 	{
-		echo "<div style='color: green;'><br>";
+		echo '<div class="ui-widget">';
+		echo '<div class="ui-state-highlight ui-corner-all" style="color: green; padding: 8px; margin-bottom: 8px;">';
 		echo user()->getFlash('message');
-		echo "</div>";
+		echo '</div></div>';
 	}
 
 	if(user()->hasFlash('error'))
 	{
-		echo "<div style='color: red;'><br>";
+		echo '<div class="ui-widget">';
+		echo '<div class="ui-state-error ui-corner-all" style="padding: 8px; margin-bottom: 8px;">';
 		echo user()->getFlash('error');
-		echo "</div>";
+		echo '</div></div>';
 	}
 }
 

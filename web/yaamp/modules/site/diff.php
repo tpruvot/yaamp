@@ -1,17 +1,17 @@
 <br>
 
 <div class="main-left-box">
-<div class="main-left-title">YAAMP DIFFICULTY</div>
+<div class="main-left-title">YIIMP STRATUM DIFFICULTY</div>
 <div class="main-left-inner">
 
-<p style="width: 700px;">By default, yammp will adjust the difficulty of your miner automatically over time until
+<p style="width: 700px;">By default, yiimp will adjust the difficulty of your miner automatically over time until
 you have from 5 to 15 submits per minute. It's a good trade off between bandwidth and accuracy.</p>
 
 <p style="width: 700px;">You can also set a fixed custom difficulty using the password parameter. For example,
 if you want to set the difficulty to 64, you would use:</p>
 
 <pre class="main-left-box" style='padding: 3px; font-size: .9em; background-color: #ffffee; font-family: monospace;'>
--o stratum+tcp://yiimp.ccminer.org:3433 -u wallet_adress -p d=64
+-o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:3433 -u wallet_adress -p d=64
 </pre>
 
 <p style="width: 700px;">Here are the accepted values for the custom diff:</p>
@@ -27,10 +27,7 @@ if you want to set the difficulty to 64, you would use:</p>
 
 <br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
 
-<script>
-
-
-</script>
 
 

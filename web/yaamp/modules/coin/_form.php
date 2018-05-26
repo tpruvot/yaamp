@@ -35,12 +35,6 @@ if(!$coin->installed)
 	echo CUFHtml::closeCtrlHolder();
 }
 
-echo CUFHtml::openActiveCtrlHolder($coin, 'errors');
-echo CUFHtml::activeLabelEx($coin,'errors');
-echo CUFHtml::activeTextField($coin, 'errors');
-echo "<p class='formHint2'></p>";
-echo CUFHtml::closeCtrlHolder();
-
 echo CUFHtml::openActiveCtrlHolder($coin, 'link_bitcointalk');
 echo CUFHtml::activeLabelEx($coin, 'link_bitcointalk');
 echo CUFHtml::activeTextField($coin, 'link_bitcointalk');
@@ -50,6 +44,12 @@ echo CUFHtml::closeCtrlHolder();
 echo CUFHtml::openActiveCtrlHolder($coin, 'link_github');
 echo CUFHtml::activeLabelEx($coin, 'link_github');
 echo CUFHtml::activeTextField($coin, 'link_github');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_site');
+echo CUFHtml::activeLabelEx($coin, 'link_site');
+echo CUFHtml::activeTextField($coin, 'link_site');
 echo "<p class='formHint2'></p>";
 echo CUFHtml::closeCtrlHolder();
 

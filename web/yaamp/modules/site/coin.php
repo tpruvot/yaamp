@@ -1,46 +1,36 @@
-
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user?symbol=BTC'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
-<br>
-
 <?php
 
-$coin = getdbo('db_coins', $_GET['id']);
-$remote = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport);
+$id = getiparam('id');
+$coin = getdbo('db_coins', $id);
+if (!$coin) {
+	$this->goback();
+}
+
+$this->pageTitle = 'Wallet - '.$coin->symbol;
+
+// force a refresh after 10mn to prevent memory leaks in chrome
+app()->clientScript->registerMetaTag('600', null, 'refresh');
+
+if (!empty($coin->algo) && $coin->algo != 'PoS')
+	user()->setState('yaamp-algo', $coin->algo);
+
+$remote = new WalletRPC($coin);
 $info = $remote->getinfo();
 
-echo "<br><a href='/site/update?id=$coin->id'><b>COIN PROPERTIES</b></a>";
-echo " || <a href='/coin/update?id=$coin->id'><b>EXTRA</b></a>";
+$sellamount = $coin->balance;
+//if ($info) $sellamount = floatval($sellamount) - arraySafeVal($info, "paytxfee") * 3;
 
-if($info)
-	echo " || <a href='/explorer?id=$coin->id'><b>EXPLORER</b></a>";
+echo getAdminSideBarLinks().'<br/><br/>';
+echo getAdminWalletLinks($coin, $info, 'wallet');
 
-if(!$info && $coin->enable)
-	echo "<br><a href='/site/stopcoin?id=$coin->id'><b>STOP COIND</b></a>";
+$maxrows = arraySafeVal($_REQUEST,'rows', 500);
+$since = arraySafeVal($_REQUEST,'since', time() - (7*24*3600)); // one week
 
-if($coin->auto_ready)
-	echo "<br><a href='/site/unsetauto?id=$coin->id'><b>UNSET AUTO</b></a>";
-else
-	echo "<br><a href='/site/setauto?id=$coin->id'><b>SET AUTO</b></a>";
+echo '<div id="main_actions">';
 
-echo "<br>";
+app()->clientScript->registerCoreScript('jquery.ui'); // dialog
 
-if(!empty($coin->link_bitcointalk))
-	echo "<a href='$coin->link_bitcointalk' target=_blank>forum</a> ";
-
-if(!empty($coin->link_github))
-	echo "<a href='$coin->link_github' target=_blank>git</a> ";
-
-echo "<a href='http://google.com/search?q=$coin->name%20$coin->symbol%20bitcointalk' target=_blank>google</a> ";
-
-echo "<br><div id='main_results'></div>";
-
+/* 
 echo "<br><a href='/site/makeconfigfile?id=$coin->id'><b>MAKE CONFIG & START</b></a>";
 
 if($info)
@@ -48,8 +38,8 @@ if($info)
 	echo "<br><a href='/site/restartcoin?id=$coin->id'><b>RESTART COIND</b></a>";
 	echo "<br><a href='/site/stopcoin?id=$coin->id'><b>STOP COIND</b></a>";
 
-//	if(isset($info['balance']) && $info['balance'] && !empty($coin->deposit_address))
-//		echo "<br><a href='javascript:showSellAmountDialog()'><b>SEND BALANCE TO</b></a> - $coin->deposit_address";
+	if(isset($info['balance']) && $info['balance'] && !empty($coin->deposit_address))
+		echo "<br><a href='javascript:showSellAmountDialog()'><b>SEND BALANCE TO</b></a> - $coin->deposit_address";
 }
 else
 {
@@ -60,19 +50,41 @@ else
 		echo "<br><a href='javascript:uninstall_coin();'><b>UNINSTALL COIN</b></a><br>";
 }
 
-echo "<br><a href='/site/clearearnings?id=$coin->id'><b>CLEAR EARNINGS</b></a>";
-echo "<br><a href='/site/deleteearnings?id=$coin->id'><b>DELETE EARNINGS</b></a>";
-echo "<br><a href='/site/payuserscoin?id=$coin->id'><b>DO PAYMENTS</b></a>";
-//echo "<br><a href='/site/checkblocks?id=$coin->id'><b>CHECK FOR NEW BLOCKS</b></a>";
-
+*/
 echo <<<END
 
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
+<br/><a class="red" href="/site/deleteearnings?id={$coin->id}"><b>DELETE EARNINGS</b></a>
+<br/><a href="/site/clearearnings?id={$coin->id}"><b>CLEAR EARNINGS</b></a>
+<br/><a href="/site/checkblocks?id={$coin->id}"><b>UPDATE BLOCKS</b></a>
+<br/><a href="/site/payuserscoin?id={$coin->id}"><b>DO PAYMENTS</b></a>
+<br/>
+</div>
 
-<script>
+<style type="text/css">
+table.dataGrid a.red, table.dataGrid a.red:visited, a.red { color: darkred; }
+div#main_actions {
+	position: absolute; top: 60px; right: 16px; width: 280px; text-align: right;
+}
+div#markets {
+	overflow-x: hidden; overflow-y: scroll; max-height: 156px;
+}
+div#transactions {
+	overflow-x: hidden; overflow-y: scroll; min-height: 200px; max-height: 360px;
+	margin-bottom: 8px;
+}
+div#sums {
+	overflow-x: hidden; overflow-y: scroll; min-height: 250px; max-height: 600px;
+	width: 380px; float: left; margin-top: 16px; margin-bottom: 8px; margin-right: 16px;
+}
+.page .footer { clear: both; width: auto; margin-top: 16px; }
+tr.ssrow.bestmarket { background-color: #dfd; }
+tr.ssrow.disabled { background-color: #fdd; color: darkred; }
+tr.ssrow.orphan { color: darkred; }
+</style>
+
+<div id="main_results"></div>
+
+<script type="text/javascript">
 
 function uninstall_coin()
 {
@@ -82,17 +94,21 @@ function uninstall_coin()
 	window.location.href = '/site/uninstallcoin?id=$coin->id';
 }
 
-$(function()
-{
-	main_refresh();
-});
-
 var main_delay=30000;
 var main_timeout;
+
+function main_refresh()
+{
+	var url = "/site/coin_results?id={$id}&rows={$maxrows}&since={$since}";
+
+	clearTimeout(main_timeout);
+	$.get(url, '', main_ready).error(main_error);
+}
 
 function main_ready(data)
 {
 	$('#main_results').html(data);
+	$(window).trigger('resize'); // will draw graph
 	main_timeout = setTimeout(main_refresh, main_delay);
 }
 
@@ -101,45 +117,48 @@ function main_error()
 	main_timeout = setTimeout(main_refresh, main_delay*2);
 }
 
-function main_refresh()
+function showSellAmountDialog(marketname, address, marketid, bookmarkid)
 {
-	var url = "/site/coin_results?id={$_GET['id']}";
-
-	clearTimeout(main_timeout);
-	$.get(url, '', main_ready).error(main_error);
-}
-
-function showSellAmountDialog(marketid)
-{
+	$("#dlgaddr").html(address);
 	$("#sell-amount-dialog").dialog(
 	{
     	autoOpen: true,
 		width: 400,
 		height: 240,
 		modal: true,
-		title: 'Sell $coin->symbol to market '+marketid,
+		title: 'Send $coin->symbol to '+marketname,
 
 		buttons:
 		{
-			"Sell": function()
+			"Send / Sell": function()
 			{
 				amount = $('#input_sell_amount').val();
-				window.location.href = '/market/sellto?id='+marketid+'&amount='+amount;
+				if (marketid > 0)
+					window.location.href = '/market/sellto?id='+marketid+'&amount='+amount;
+				else
+					window.location.href = '/site/bookmarkSend?id='+bookmarkid+'&amount='+amount;
 			},
 		}
 	});
+	return false;
 }
 
 </script>
 
-<div id="sell-amount-dialog" style='display: none;'>
+<div id="sell-amount-dialog" style="display: none;">
 <br>
-Address: xxxxxxxxxxxx<br><br>
-Amount: <input type=text id='input_sell_amount' value='$coin->balance'>
+Address: <span id="dlgaddr">xxxxxxxxxxxx</span><br><br>
+Amount: <input type=text id="input_sell_amount" value="$sellamount">
 <br>
 </div>
 
 END;
 
+JavascriptReady("main_refresh();");
 
+if ($coin->watch) {
+	$this->renderPartial('coin_market_graph', array('coin'=>$coin));
+	JavascriptReady("$(window).resize(graph_resized);");
+}
 
+//////////////////////////////////////////////////////////////////////////////////////

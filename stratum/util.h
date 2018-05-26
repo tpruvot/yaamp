@@ -58,17 +58,23 @@ bool yaamp_error(char const *message);
 const char *header_value(const char *data, const char *search, char *value);
 
 void initlog(const char *algo);
+void closelogs();
 
 void debuglog(const char *format, ...);
 void stratumlog(const char *format, ...);
+void stratumlogdate(const char *format, ...);
 void clientlog(YAAMP_CLIENT *client, const char *format, ...);
+void rejectlog(const char *format, ...);
 
 //////////////////////////////////////////////////////////////////////////
 
 vector<string> merkle_steps(vector<string> input);
 string merkle_with_first(vector<string> steps, string f);
 
+//////////////////////////////////////////////////////////////////////////
+
 bool base58_decode(const char *input, char *output);
+bool is_base58(char *input);
 
 void base64_encode(char *base64, const char *normal);
 void base64_decode(char *normal, const char *base64);
@@ -80,6 +86,8 @@ void ser_string_be2(const char *input, char *output, int len);
 
 void string_be(const char *input, char *output);
 void string_be1(char *s);
+
+bool ishexa(char *hex, int len);
 
 void hexlify(char *hex, const unsigned char *bin, int len);
 void binlify(unsigned char *bin, const char *hex);
@@ -95,6 +103,10 @@ double target_to_diff(uint64_t target);
 uint64_t get_hash_difficulty(unsigned char *input);
 
 long long current_timestamp();
+long long current_timestamp_dms();
+
+int opened_files();
+int resident_size();
 
 void string_lower(char *s);
 void string_upper(char *s);
@@ -121,7 +133,7 @@ static inline uint16_t le16dec(const void *pp)
 }
 #endif
 
-
-
-
-
+static inline uint32_t bswap32(uint32_t x) {
+	__asm__ __volatile__ ("bswapl %0" : "=r" (x) : "0" (x));
+	return x;
+}
