@@ -11,29 +11,20 @@ return array(
 	'basePath'=>YAAMP_HTDOCS."/yaamp",
 
 	'preload'=>array('log'),
-	'import'=>array('application.components.*'),
+
+	// autoloading model and component classes
+	'import'=>array(
+		'application.components.*',
+		'application.commands.*',
+		'application.models.*',
+		'application.extensions.*',
+	),
 
 	'components'=>array(
 
 		'request' => array(
 			'hostInfo' => 'http://'.$_SERVER["HTTP_HOST"],
 			'baseUrl' => '',
-		),
-
-		// autoloading model and component classes
-		'import'=>array(
-			'application.components.*',
-			'application.commands.*',
-			//'application.commands.shell.*',
-			'application.models.*',
-			'application.extensions.*',
-		),
-
-
-		'urlManager'=>array(
-			'urlFormat'=>'path',
-			'showScriptName'=>false,
-			'appendParams'=>false,
 		),
 
 		'assetManager'=>array(
@@ -55,11 +46,6 @@ return array(
 			),
 		),
 
-		'user'=>array(
-			'allowAutoLogin'=>true,
-			'loginUrl'=>array('site/login'),
-		),
-
 		'db'=>array(
 			'class'=>'CDbConnection',
 			'connectionString'=>"mysql:host=".YAAMP_DBHOST.";dbname=".YAAMP_DBNAME,
@@ -71,12 +57,20 @@ return array(
 			'charset'=>'utf8',
 			'schemaCachingDuration'=>3600,
 		),
+
+		'cache'=>array(
+			'class'=>'CMemCache',
+			'keyPrefix'=>'',
+			'servers'=>array(
+				array(
+					'host'=>'127.0.0.1',
+					'port'=> 11211,
+					'weight'=> 60,
+				),
+			),
+		),
+
 	),
 
-
 );
-
-
-
-
 

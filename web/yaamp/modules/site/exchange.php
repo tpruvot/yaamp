@@ -1,12 +1,6 @@
-
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user?symbol=BTC'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
+<?php
+echo getAdminSideBarLinks();
+?>
 
 <div id='main_results'></div>
 

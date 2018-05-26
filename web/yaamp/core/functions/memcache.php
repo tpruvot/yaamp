@@ -15,51 +15,60 @@ class YaampMemcache
 		return memcache_get($this->memcache, $key);
 	}
 
-	public function set($key, $value, $t=30)
+	public function set($key, $value, $t=30, $options=0)
 	{
-		memcache_set($this->memcache, $key, $value, 0, $t);
+		memcache_set($this->memcache, $key, $value, $options, $t);
 	}
 
 	////////////////////////////////////////////////////////////////
 
-	public function get_database_count($key, $query, $params=array())
-	{
-
-	}
-
-	public function get_database_scalar($key, $query, $params=array())
+	public function get_database_scalar($key, $query, $params=array(), $t=30)
 	{
 		$value = $this->get($key);
-		if($value === false)
-		{
+		if($value === false) {
 			$value = dboscalar($query, $params);
-			$this->set($key, $value);
+			$this->set($key, $value, $t);
 		}
-
 		return $value;
 	}
 
-	public function get_database_count_ex($key, $table, $query, $params=array())
+	public function get_database_column($key, $query, $params=array(), $t=30)
 	{
 		$value = $this->get($key);
-		if($value === false)
-		{
+		if($value === false) {
+			$value = dbocolumn($query, $params);
+			$this->set($key, $value, $t);
+		}
+		return $value;
+	}
+
+	public function get_database_count_ex($key, $table, $query, $params=array(), $t=30)
+	{
+		$value = $this->get($key);
+		if($value === false) {
 			$value = getdbocount($table, $query, $params);
-			$this->set($key, $value);
+			$this->set($key, $value, $t);
 		}
-
 		return $value;
 	}
 
-	public function get_database_row($key, $query, $params=array())
+	public function get_database_list($key, $query, $params=array(), $t=30)
 	{
 		$value = $this->get($key);
-		if($value === false)
-		{
-			$value = dborow($query, $params);
-			$this->set($key, $value);
+		if($value === false) {
+			$value = dbolist($query, $params);
+			$this->set($key, $value, $t, MEMCACHE_COMPRESSED);
 		}
+		return $value;
+	}
 
+	public function get_database_row($key, $query, $params=array(), $t=30)
+	{
+		$value = $this->get($key);
+		if($value === false) {
+			$value = dborow($query, $params);
+			$this->set($key, $value, $t);
+		}
 		return $value;
 	}
 
@@ -78,8 +87,6 @@ class YaampMemcache
 		$a[$name] = $count+1;
 		memcache_set($this->memcache, 'url-map', $a);
 	}
-};
-
-
+}
 
 

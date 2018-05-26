@@ -3,8 +3,9 @@
 if(php_sapi_name() != "cli") return;
 
 require_once('serverconfig.php');
+require_once('yaamp/defaultconfig.php');
 
-require_once('framework-1.0.8/yii.php');
+require_once('framework/yii.php');
 require_once('yaamp/include.php');
 
 $app = Yii::createWebApplication('yaamp/config.php');

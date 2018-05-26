@@ -1,17 +1,8 @@
 <?php
 
-echo <<<end
+echo getAdminSideBarLinks();
 
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
-<a href='/site/monsters'>Big Miners</a>&nbsp;
-<a href='/site/emptymarkets'>EmptyMarket</a>&nbsp;
+echo <<<end
 
 <div id='main_results'></div>
 

@@ -10,13 +10,19 @@
 		return ret; \
 	}
 
-bool job_assign_client(YAAMP_JOB *job, YAAMP_CLIENT *client, double maxhash)
+static bool job_assign_client(YAAMP_JOB *job, YAAMP_CLIENT *client, double maxhash)
 {
 	RETURN_ON_CONDITION(client->deleted, true);
 	RETURN_ON_CONDITION(client->jobid_next, true);
 	RETURN_ON_CONDITION(client->jobid_locked && client->jobid_locked != job->id, true);
 	RETURN_ON_CONDITION(client_find_job_history(client, job->id), true);
 	RETURN_ON_CONDITION(maxhash > 0 && job->speed + client->speed > maxhash, true);
+
+	if(!g_autoexchange && maxhash >= 0. && client->coinid != job->coind->id) {
+		//debuglog("prevent client %c on %s, not the right coin\n",
+		//	client->username[0], job->coind->symbol);
+		return true;
+	}
 
 	if(job->remote)
 	{
@@ -83,6 +89,13 @@ bool job_assign_client(YAAMP_JOB *job, YAAMP_CLIENT *client, double maxhash)
 		strcpy(client->extranonce1, client->extranonce1_default);
 		client->extranonce2size = client->extranonce2size_default;
 
+		// decred uses an extradata field in block header, 2 first uint32 are set by the miner
+		if (g_current_algo->name && !strcmp(g_current_algo->name,"decred")) {
+			memset(client->extranonce1, '0', sizeof(client->extranonce1));
+			memcpy(&client->extranonce1[16], client->extranonce1_default, 8);
+			client->extranonce1[24] = '\0';
+		}
+
 		client->difficulty_remote = 0;
 		client->jobid_locked = 0;
 	}
@@ -127,6 +140,8 @@ bool job_assign_client(YAAMP_JOB *job, YAAMP_CLIENT *client, double maxhash)
 
 void job_assign_clients(YAAMP_JOB *job, double maxhash)
 {
+	if (!job) return;
+
 	job->speed = 0;
 	job->count = 0;
 
@@ -176,6 +191,7 @@ void job_assign_clients(YAAMP_JOB *job, double maxhash)
 
 void job_assign_clients_left(double factor)
 {
+	bool b;
 	for(CLI li = g_list_coind.first; li; li = li->next)
 	{
 		if(!job_has_free_client()) return;
@@ -190,9 +206,19 @@ void job_assign_clients_left(double factor)
 		for(CLI li = g_list_client.first; li; li = li->next)
 		{
 			YAAMP_CLIENT *client = (YAAMP_CLIENT *)li->data;
+			if (!g_autoexchange) {
+				if (client->coinid == coind->id)
+					factor = 100.;
+				else
+					factor = 0.;
+			}
 
-			bool b = job_assign_client(coind->job, client, nethash*factor);
-			if(!b) break;
+			//debuglog("%s %s factor %f nethash %.3f\n", coind->symbol, client->username, factor, nethash);
+
+			if (factor > 0.) {
+				b = job_assign_client(coind->job, client, nethash*factor);
+				if(!b) break;
+			}
 		}
 
 		g_list_client.Leave();
@@ -207,7 +233,7 @@ pthread_cond_t g_job_cond;
 void *job_thread(void *p)
 {
 	CommonLock(&g_job_mutex);
-	while(1)
+	while(!g_exiting)
 	{
 		job_update();
 		pthread_cond_wait(&g_job_cond, &g_job_mutex);

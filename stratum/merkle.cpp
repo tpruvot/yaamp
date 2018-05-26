@@ -53,7 +53,7 @@ string merkle_with_first(vector<string> steps, string f)
 		sha256_double_hash_hex(bin, out, YAAMP_HASHLEN_BIN*2);
 
 		f = out;
-    }
+	}
 
 	return f;
 }

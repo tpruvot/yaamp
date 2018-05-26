@@ -2,17 +2,69 @@
 
 function controller()
 {
+	// console app has no controller
+	if (app() instanceof CConsoleApplication)
+		return app();
+
 	return app()->getController();
 }
 
-function getparam($p)
+function cache()
 {
-	return isset($_REQUEST[$p])? $_REQUEST[$p]: '';
+	if (app() instanceof CConsoleApplication)
+		return app()->cache;
+
+	return app()->getController()->memcache;
 }
 
-function getiparam($p)
+function objSafeVal($obj,$key,$default=NULL)
 {
-	return isset($_REQUEST[$p])? intval($_REQUEST[$p]): 0;
+	if (is_object($obj) && property_exists($obj,$key))
+		return $obj->$key;
+	elseif (is_array($obj))
+		return arraySafeVal($obj,$key,$default);
+	return $default;
+}
+
+function arraySafeVal($arr,$key,$default=NULL)
+{
+	if (is_array($arr) && isset($arr[$key]))
+		return $arr[$key];
+	elseif (is_object($arr))
+		return objSafeVal($arr,$key,$default);
+	return $default;
+}
+
+function getparam($p,$default='')
+{
+	return isset($_REQUEST[$p]) ? $_REQUEST[$p] : $default;
+}
+
+function gethexparam($p,$default='')
+{
+	$str = getparam($p, NULL);
+	$hex = (is_string($str) && ctype_xdigit($str)) ? $str : $default;
+	return $hex;
+}
+
+function getiparam($p,$default=0)
+{
+	// workaround for yii default /route/<id> ....
+	if ($p == 'id') {
+		$id = isset($_REQUEST[$p]) ? $_REQUEST[$p] : $default;
+		if (!$id) {
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$id = array_pop($url);
+		}
+		return (int) $id;
+	}
+	return isset($_REQUEST[$p]) ? intval($_REQUEST[$p]) : $default;
+}
+
+function getalgoparam()
+{
+	$algo = strip_tags(substr(getparam('algo'), 0, 32));
+	return $algo;
 }
 
 //////////////////////////////////////////////////////
@@ -308,6 +360,7 @@ class RecursiveDOMIterator implements RecursiveIterator
 		return $this->_nodeList->item($this->_position);
 	}
 }
+
 
 
 

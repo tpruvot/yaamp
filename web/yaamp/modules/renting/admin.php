@@ -130,7 +130,7 @@ foreach($list as $job)
 	echo "<td>$job->renterid</td>";
 	echo "<td>$job->id</td>";
 	echo "<td><a href='/renting?address=$renter->address'>$renter->address</a></td>";
-	echo "<td>$job->algo</td>";
+	echo "<td><a href='/site/gomining?algo=$job->algo'>$job->algo</td>";
 	echo "<td>$job->host:$job->port</td>";
 	echo "<td>$job->price</td>";
 	echo "<td>$speed</td>";

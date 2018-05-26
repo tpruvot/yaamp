@@ -1,0 +1,9 @@
+package: github.com/tpruvot/yiimp/blocknotify-dcr
+import:
+- package: github.com/decred/dcrd
+  subpackages:
+  - wire
+- package: github.com/decred/dcrjson
+# - package: github.com/decred/dcrrpcclient
+- package: github.com/decred/dcrutil
+

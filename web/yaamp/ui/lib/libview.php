@@ -50,7 +50,10 @@ function getTextTitle($text)
 
 function showTableSorter($id, $options='')
 {
-	JavascriptReady("$('#{$id}').tablesorter({$options});");
+	JavascriptReady("
+		$('#{$id}').tablesorter({$options});
+		$('.tablesorter-header').not('.sorter-false').css('cursor', 'pointer');"
+	);
 	echo "<table id='$id' class='dataGrid2'>";
 }
 

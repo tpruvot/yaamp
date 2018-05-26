@@ -13,6 +13,9 @@ $this->widget('UniForm');
 
 $address = getparam('address');
 if($address == 0) $address = '';
+if (!empty($address) && preg_match('/[^A-Za-z0-9]/', $address)) {
+	die;
+}
 
 echo <<<end
 
@@ -57,7 +60,7 @@ then be allowed to rent hashpower to use on third party pools.</p>
 
 end;
 
-$recents = isset($_COOKIE['deposits'])? unserialize($_COOKIE['deposits']): array();
+$recents = isset($_COOKIE['deposits'])? explode("|", $_COOKIE['deposits']): array();
 
 if(controller()->admin || sizeof($recents) < 10)
 	echo "<input type=button value='Register' class='main-submit-button' onclick='javascript:deposit_create()' >";
