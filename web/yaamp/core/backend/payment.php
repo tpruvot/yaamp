@@ -54,7 +54,7 @@ function BackendCoinPayments($coin)
 	$users = getdbolist('db_accounts', "balance>$min_payout AND coinid={$coin->id} ORDER BY balance DESC");
 
 	// todo: enhance/detect payout_max from normal sendmany error
-	if($coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || !empty($coin->payout_max))
+	if($coin->symbol == 'BOD' || $coin->symbol == 'DIME' || $coin->symbol == 'BTCRY' || $coin->symbol == 'XMN' || !empty($coin->payout_max))
 	{
 		foreach($users as $user)
 		{
