@@ -1,6 +1,6 @@
 <?php
 
-$renter = getrenterparam(getparam('address'));
+$renter = getrenterparam(''.getparam('address'));
 if(!$renter) return;
 
 echo "<div class='main-left-box'>";
@@ -32,7 +32,9 @@ foreach($list as $job)
 	$title_percent = '';
 	if($hashrate_bad)
 	{
-		$percent = round($hashrate_bad/$hashrate*100, 1).'%';
+		$percent = 100;
+		if ($hashrate)
+			$percent = round($hashrate_bad/$hashrate * 100, 1).'%';
 		$hashrate_bad = Itoa2($hashrate_bad).'h/s';
 
 		$title_percent = "Rejected $hashrate_bad ($percent)";
@@ -119,7 +121,7 @@ echo "<p style='font-size: .8em'>
 
 echo "<p style='font-size: .8em'>
 		&nbsp;* approximate from the last 5 minutes submitted shares<br>
-		&nbsp;** price in mBTC/Mh/day (mBTC/Gh/day for sha256)<br>
+		&nbsp;** price in mBTC/MH/day (GH/day for sha and blake algos)<br>
 		</p>";
 
 echo "<br>";

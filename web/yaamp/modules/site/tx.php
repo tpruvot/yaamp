@@ -5,7 +5,7 @@ require dirname(__FILE__).'/../../ui/lib/pageheader.php';
 $user = getuserparam(getparam('address'));
 if(!$user) return;
 
-$this->pageTitle = "$user->username | yiimp";
+$this->pageTitle = $user->username.' | '.YAAMP_SITE_NAME;
 
 $bitcoin = getdbosql('db_coins', "symbol='BTC'");
 
@@ -13,9 +13,9 @@ echo "<div class='main-left-box'>";
 echo "<div class='main-left-title'>Transactions to $user->username</div>";
 echo "<div class='main-left-inner'>";
 
-$list = getdbolist('db_payouts', "account_id=$user->id order by time desc");
+$list = getdbolist('db_payouts', "account_id={$user->id} ORDER BY time DESC");
 
-echo "<table  class='dataGrid2'>";
+echo '<table class="dataGrid2">';
 
 echo "<thead>";
 echo "<tr>";
@@ -25,6 +25,8 @@ echo "<th align=right>Amount</th>";
 echo "<th>Tx</th>";
 echo "</tr>";
 echo "</thead>";
+
+$coin = ($user->coinid == $bitcoin->id) ? $bitcoin : getdbo('db_coins', $user->coinid);
 
 $total = 0;
 foreach($list as $payout)
@@ -38,10 +40,8 @@ foreach($list as $payout)
 
 	echo "<td align=right><b>$amount</b></td>";
 
-	if($user->coinid == $bitcoin->id)
-		echo "<td style='font-family: monospace;'><a href='https://blockchain.info/tx/$payout->tx' target=_blank>$payout->tx</a></td>";
-	else
-		echo "<td style='font-family: monospace;'><a href='/explorer?id=$user->coinid&txid=$payout->tx' target=_blank>$payout->tx</a></td>";
+	$url = $coin->createExplorerLink($payout->tx, array('txid'=>$payout->tx), array('target'=>'_blank'));
+	echo '<td style="font-family: monospace;">'.$url.'</td>';
 
 	echo "</tr>";
 	$total += $payout->amount;

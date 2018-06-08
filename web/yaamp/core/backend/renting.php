@@ -24,7 +24,8 @@ function BackendRentingUpdate()
 		$rent = dboscalar("select rent from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$submit->algo));
 		$amount = $rent * $submit->difficulty / 20116.56761169;
 
-		if($submit->algo == 'sha256') $amount /= 1000;
+		$factor = yaamp_algo_mBTC_factor($submit->algo); // 1000 for sha256
+		$amount /= $factor;
 
 		$submit->amount = $amount - $amount*YAAMP_FEES_RENTING/100;
 		$submit->status = 1;
@@ -111,6 +112,10 @@ function BackendRentingPayout()
 
 			$earning->amount = $amount * $hash_power / $total_hash_power;
 			if(!$user->no_fees) $earning->amount = take_yaamp_fee($earning->amount, $algo);
+			if(!empty($user->donation)) {
+				$earning->amount = take_yaamp_fee($earning->amount, $algo, $user->donation);
+				if ($earning->amount <= 0) continue;
+			}
 
 			$earning->save();
 
@@ -119,7 +124,7 @@ function BackendRentingPayout()
 
 		//	$value = yaamp_convert_amount_user($coin, $earning->amount, $user);
 
-			$user->last_login = time();
+			$user->last_earning = time();
 			$user->balance += $value;
 			$user->save();
 		}
@@ -141,7 +146,7 @@ function BackendUpdateDeposit()
 	$btc = getdbosql('db_coins', "symbol='BTC'");
 	if(!$btc) return;
 
-	$remote = new Bitcoin($btc->rpcuser, $btc->rpcpasswd, $btc->rpchost, $btc->rpcport);
+	$remote = new WalletRPC($btc);
 
 	$info = $remote->getinfo();
 	if(!$info) return;
@@ -221,7 +226,7 @@ function BackendUpdateDeposit()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	$fees = 0.0001;
+	$fees = YAAMP_TXFEE_RENTING_WD; // 0.002
 
 	$list = getdbolist('db_rentertxs', "type='withdraw' and tx='scheduled'");
 	foreach($list as $tx)

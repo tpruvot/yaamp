@@ -1,43 +1,55 @@
-
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user?symbol=BTC'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
-<a href='/site/monsters'>Big Miners</a>&nbsp;
-<a href='/site/emptymarkets'>EmptyMarket</a>&nbsp;
-
 <?php
 
-echo "<a href='/site/monsters'>refresh</a><br>";
+echo getAdminSideBarLinks();
 
-echo "<br><table class='dataGrid'>";
-echo "<thead>";
-echo "<tr>";
-echo "<th></th>";
-echo "<th></th>";
-echo "<th>Wallet</th>";
-echo "<th></th>";
-echo "<th>Last</th>";
-echo "<th>Blocks</th>";
-echo "<th>Balance</th>";
-echo "<th>Total Paid</th>";
-echo "<th>Miners</th>";
-echo "<th>Shares</th>";
-echo "<th></th>";
-echo "<th></th>";
-echo "</tr>";
-echo "</thead><tbody>";
+echo <<<end
+<div align="right" style="margin-top: -14px; margin-bottom: 6px;">
+<input class="search" type="search" data-column="all" style="width: 140px;" placeholder="Search..." />
+</div>
+<style type="text/css">
+tr.ssrow.filtered { display: none; }
+</style>
+end;
+
+showTableSorter('maintable', "{
+	tableClass: 'dataGrid',
+	headers: { 1: { sorter: false} },
+	widgets: ['zebra','filter'],
+	widgetOptions: {
+		filter_external: '.search',
+		filter_columnFilters: false,
+		filter_childRows : true,
+		filter_ignoreCase: true
+	}
+}");
+
+echo <<<end
+<thead>
+<tr>
+<th>UID</th>
+<th></th>
+<th>Coin</th>
+<th>Address</th>
+<th></th>
+<th>Last</th>
+<th>Blocks</th>
+<th>Balance</th>
+<th>Total Paid</th>
+<th>Miners</th>
+<th>Shares</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+end;
 
 function showUser($userid, $what)
 {
 	$user = getdbo('db_accounts', $userid);
 	if(!$user) return;
 
-	$d = datetoa2($user->last_login);
+	$d = datetoa2($user->last_earning);
 	$balance = bitcoinvaluetoa($user->balance);
 	$paid = dboscalar("select sum(amount) from payouts where account_id=$user->id");
 	$paid = bitcoinvaluetoa($paid);
@@ -52,13 +64,16 @@ function showUser($userid, $what)
 
 	echo "<tr class='ssrow'>";
 
-	if($coin)
-		echo "<td><img src='$coin->image' width=16> $coin->symbol</td>";
-	else
-		echo "<td></td>";
+	echo "<td width=24>$user->id</td>";
 
-	echo "<td>$user->id</td>";
-	echo "<td><a href='/site?address=$user->username'>$user->username</a></td>";
+	if(!$coin)
+		echo '<td width=60 colspan="2"></td>';
+	else {
+		$coinlink = CHtml::link($coin->symbol, '/site/coin?id='.$coin->id);
+		echo '<td width=16><img src="'.$coin->image.'" width="16"></td><td width=48><b>'.$coinlink.'</b></td>';
+	}
+
+	echo "<td><a href='/site?address=$user->username'><b>$user->username</a></b></td>";
 	echo "<td>$what</td>";
 	echo "<td>$d</td>";
 

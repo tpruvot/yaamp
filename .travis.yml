@@ -1,0 +1,5 @@
+language: cpp
+script:
+  - (cd blocknotify && make)
+  - (cd stratum/iniparser && make)
+  - (cd stratum && make)

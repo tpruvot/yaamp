@@ -226,6 +226,11 @@ void sph_blake256_close(void *cc, void *dst);
 void sph_blake256_addbits_and_close(
 	void *cc, unsigned ub, unsigned n, void *dst);
 
+/**
+ * Added for compat with both blake/blakecoin algos
+ */
+void sph_blake256_set_rounds(int rounds);
+
 #if SPH_64
 
 /**

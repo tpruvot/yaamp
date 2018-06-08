@@ -42,13 +42,13 @@ echo <<<end
 
 function page_refresh()
 {
-	pool_current_refresh();
 	miners_refresh();
+	pool_current_refresh();
 }
 
 function select_algo(algo)
 {
-	window.location.href = '/site/algo?algo='+algo;
+	window.location.href = '/site/algo?algo='+algo+'&r=/site/miners';
 }
 
 ////////////////////////////////////////////////////

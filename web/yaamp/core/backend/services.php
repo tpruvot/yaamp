@@ -1,8 +1,12 @@
 <?php
 
+/* NiceHash Stuff */
 function BackendUpdateServices()
 {
 //	debuglog(__FUNCTION__);
+
+	if (YAAMP_USE_NICEHASH_API != true)
+		return;
 
 	$table = array(
 		0=>'scrypt',
@@ -18,11 +22,26 @@ function BackendUpdateServices()
 		10=>'whirlx',
 		11=>'qubit',
 		12=>'quark',
-
-		111=>'c11',
+		// 13=>'Axiom',
+		14=>'lyra2v2', // 14 = Lyra2REv2
+		// 15=>'ScryptJaneNf16', // 15 = ScryptJaneNf16
+		16=>'blakecoin', // 16 = Blake256r8
+		// 17=>'Blake256r14',
+		// 18=>'Blake256r8vnl',
+		// 19=>'Hodl',
+		// 20=>'DaggerHashimoto',
+		// 21=>'Decred',
+		// 22=>'CryptoNight',
+		23=>'lbry',
+		24=>'equihash',
+		// 25=>'Pascal',
+		26=>'sib', // X11Gost
+		// 27=>'Sia',
+		28=>'blake2s',
+		29=>'skunk',
 	);
 
-	$res = fetch_url('https://www.nicehash.com/api?method=stats.global.current');
+	$res = fetch_url('https://api.nicehash.com/api?method=stats.global.current');
 	if(!$res) return;
 
 	$a = json_decode($res);
@@ -72,7 +91,6 @@ function BackendUpdateServices()
 
 			$renter->custom_balance += $stat->balance;
 			$renter->custom_accept += $stat->accepted_speed*1000000000;
-			$renter->custom_reject += $stat->rejected_speed*1000000000;
 		}
 
 		$renter->save();
@@ -81,16 +99,18 @@ function BackendUpdateServices()
 	///////////////////////////////////////////////////////////////////////////
 
 	// renting from nicehash
-	if(!YAAMP_PRODUCTION) return;
-return;
+	if (YAAMP_USE_NICEHASH_API != true)
+		return;
 
-	$apikey = 'c9534a11-0e4e-4d00-be64-a00e34cd927a';
-	$apiid = '7215';
+	$apikey = NICEHASH_API_KEY;
+	$apiid = NICEHASH_API_ID;
 
-	$deposit = '1C23KmLeCaQSLLyKVykHEUse1R7jRDv9j9';
-	$amount = '0.01';
+	$deposit = NICEHASH_DEPOSIT;
+	$amount = NICEHASH_DEPOSIT_AMOUNT;
 
-	$res = fetch_url("https://www.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
+	$res = fetch_url("https://api.nicehash.com/api?method=balance&id=$apiid&key=$apikey");
+	debuglog($res);
+
 	$a = json_decode($res);
 	$balance = $a->result->balance_confirmed;
 
@@ -108,7 +128,7 @@ return;
 		{
 			if($nicehash->orderid)
 			{
-				$res = fetch_url("https://www.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&algo=$i&order=$nicehash->orderid");
+				$res = fetch_url("https://api.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$nicehash->orderid");
 				debuglog($res);
 
 				$nicehash->orderid = null;
@@ -129,7 +149,7 @@ return;
 		$maxprice = $price*0.9;
 		$cancelprice = $price*1.1;
 
-		$res = fetch_url("https://www.nicehash.com/api?method=orders.get&my&id=$apiid&key=$apikey&algo=$i");
+		$res = fetch_url("https://api.nicehash.com/api?method=orders.get&my&id=$apiid&key=$apikey&location=0&algo=$i");
 		if(!$res) break;
 
 		$a = json_decode($res);
@@ -138,7 +158,7 @@ return;
 			if($balance < $amount) continue;
 			$port = getAlgoPort($algo);
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.create&id=$apiid&key=$apikey&algo=$i&amount=$amount&price=$setprice&limit=0&pool_host=yaamp.com&pool_port=$port&pool_user=$deposit&pool_pass=xx");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.create&id=$apiid&key=$apikey&location=0&algo=$i&amount=$amount&price=$setprice&limit=0&pool_host=yaamp.com&pool_port=$port&pool_user=$deposit&pool_pass=xx");
 			debuglog($res);
 
 			$nicehash->last_decrease = time();
@@ -156,13 +176,12 @@ return;
 		$nicehash->price = $order->price;
 		$nicehash->speed = $order->limit_speed;
 		$nicehash->accepted = $order->accepted_speed;
-		$nicehash->rejected = $order->rejected_speed;
 
 		if($order->price > $cancelprice && $order->workers > 0)
 		{
 			debuglog("* cancel order $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&algo=$i&order=$order->id");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.remove&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
 			debuglog($res);
 		}
 
@@ -170,7 +189,7 @@ return;
 		{
 			debuglog("* decrease speed $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&algo=$i&order=$order->id&limit=0.05");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0.05");
 			debuglog($res);
 		}
 
@@ -178,7 +197,7 @@ return;
 		{
 			debuglog("* decrease price $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.price.decrease&id=$apiid&key=$apikey&algo=$i&order=$order->id");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.price.decrease&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id");
 			debuglog($res);
 
 			$nicehash->last_decrease = time();
@@ -188,7 +207,7 @@ return;
 		{
 			debuglog("* increase price $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.price&id=$apiid&key=$apikey&algo=$i&order=$order->id&price=$setprice");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.price&id=$apiid&key=$apikey&algo=$i&location=0&order=$order->id&price=$setprice");
 			debuglog($res);
 		}
 
@@ -196,7 +215,15 @@ return;
 		{
 			debuglog("* increase speed $algo");
 
-			$res = fetch_url("https://www.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&algo=$i&order=$order->id&limit=0");
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.set.limit&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&limit=0");
+			debuglog($res);
+		}
+
+		else if($order->btc_avail < 0.00075000)
+		{
+			debuglog("* refilling order $order->id");
+
+			$res = fetch_url("https://api.nicehash.com/api?method=orders.refill&id=$apiid&key=$apikey&location=0&algo=$i&order=$order->id&amount=0.01");
 			debuglog($res);
 		}
 

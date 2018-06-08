@@ -3,6 +3,7 @@
 if(php_sapi_name() != "cli") return;
 
 require_once('serverconfig.php');
+require_once('yaamp/defaultconfig.php');
 require_once('yaamp/core/core.php');
 require_once('yaamp/ui/lib/lib.php');
 
@@ -13,7 +14,7 @@ defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 
 defined('YII_DEBUG') or define('YII_DEBUG',true);
 
-require_once('framework-1.0.8'.'/yii.php');
+require_once('framework'.'/yii.php');
 
 if(isset($config))
 {

@@ -21,6 +21,7 @@ class db_blocks extends CActiveRecord
 	public function relations()
 	{
 		return array(
+			'coin' => array(self::BELONGS_TO, 'db_coins', 'coin_id', 'alias'=>'coin'),
 		);
 	}
 
