@@ -224,7 +224,7 @@ function getAlgoPort($algo)
 		'x16r'		=> 3636,
 		'x16s'		=> 3663,
 		'x17'		=> 3737,
-		'aergo'     => 3691,
+		'aergo'         => 3691,
 		'xevan'		=> 3739,
 		'hmq1725'	=> 3747,
 		'nist5'		=> 3833,
