@@ -219,7 +219,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	}
 
 	// 2 txs are required on these coins, one for foundation (dev fees)
-	if(coind->charity_percent)
+	if(coind->charity_percent && !coind->hasmasternodes)
 	{
 		char script_payee[1024];
 		char charity_payee[256] = { 0 };
@@ -301,6 +301,20 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			debuglog("%s is using old masternodes rpc keys\n", coind->symbol);
 			return;
 		}
+		if(coind->charity_percent) {
+            		char charity_payee[256] = { 0 };
+            		const char *payee = json_get_string(json_result, "payee");
+            		if (payee) snprintf(charity_payee, 255, "%s", payee);
+            		else sprintf(charity_payee, "%s", coind->charity_address);
+            		if (strlen(charity_payee) == 0)
+                		stratumlog("ERROR %s has no charity_address set!\n", coind->name);
+            		json_int_t charity_amount = (available * coind->charity_percent) / 100;
+            		npayees++;
+            		available -= charity_amount;
+            		coind->charity_amount = charity_amount;
+            		base58_decode(charity_payee, script_payee);
+           		job_pack_tx(coind, script_dests, charity_amount, script_payee);
+        	}
 		if(superblocks_enabled && superblock) {
 			for(int i = 0; i < superblock->u.array.length; i++) {
 				const char *payee = json_get_string(superblock->u.array.values[i], "payee");
