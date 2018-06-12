@@ -22,6 +22,9 @@ function bittrex_api_query($method, $params='')
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array("apisign:$sign"));
+	if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')){
+		curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+	}
 
 	$execResult = curl_exec($ch);
 	$obj = json_decode($execResult);
