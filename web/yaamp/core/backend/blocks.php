@@ -98,6 +98,16 @@ function BackendBlockFind1($coinid = NULL)
 		}
 		if(!$coin->enable) continue;
 		if($coin->rpcencoding == 'DCR' && !$coin->auto_ready) continue;
+			
+		$dblock = getdbosql('db_blocks', "coin_id=:coinid AND blockhash=:hash AND height=:height AND id!=:blockid",
+			array(':coinid'=>$coin->id, ':hash'=>$db_block->blockhash, ':height'=>$db_block->height, ':blockid'=>$db_block->id)
+		);
+		
+		if($dblock) {
+			debuglog("warning: Doubled {$coin->symbol} block found for block height {$db_block->height}!");
+			$db_block->delete();
+			continue;
+		}
 
 		$db_block->category = 'orphan';
 		$remote = new WalletRPC($coin);
