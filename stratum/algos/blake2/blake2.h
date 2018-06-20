@@ -1,3 +1,20 @@
+/*
+ * Argon2 reference source code package - reference C implementations
+ *
+ * Copyright 2015
+ * Daniel Dinu, Dmitry Khovratovich, Jean-Philippe Aumasson, and Samuel Neves
+ *
+ * You may use this work under the terms of a Creative Commons CC0 1.0
+ * License/Waiver or the Apache Public License 2.0, at your option. The terms of
+ * these licenses can be found at:
+ *
+ * - CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
+ * - Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * You should have received a copy of both of these licenses along with this
+ * software. If not, they may be obtained at the above URLs.
+ */
+
 #ifndef PORTABLE_BLAKE2_H
 #define PORTABLE_BLAKE2_H
 
@@ -37,10 +54,10 @@ typedef struct __blake2b_state {
     uint64_t h[8];
     uint64_t t[2];
     uint64_t f[2];
+    uint8_t buf[BLAKE2B_BLOCKBYTES];
     unsigned buflen;
     unsigned outlen;
     uint8_t last_node;
-    uint8_t buf[BLAKE2B_BLOCKBYTES];
 } blake2b_state;
 
 /* Ensure param structs have not been wrongly padded */
@@ -57,17 +74,15 @@ int blake2b_init_key(blake2b_state *S, size_t outlen, const void *key,
                      size_t keylen);
 int blake2b_init_param(blake2b_state *S, const blake2b_param *P);
 int blake2b_update(blake2b_state *S, const void *in, size_t inlen);
-void my_blake2b_update(blake2b_state *S, const void *in, size_t inlen);
 int blake2b_final(blake2b_state *S, void *out, size_t outlen);
 
 /* Simple API */
-int blake2b(void *out, const void *in, const void *key, size_t keylen);
+int blake2b(void *out, size_t outlen, const void *in, size_t inlen,
+            const void *key, size_t keylen);
 
 /* Argon2 Team - Begin Code */
-int blake2b_long(void *out, const void *in);
+int blake2b_long(void *out, size_t outlen, const void *in, size_t inlen);
 /* Argon2 Team - End Code */
-/* Miouyouyou */
-void blake2b_too(void *out, const void *in);
 
 #if defined(__cplusplus)
 }
