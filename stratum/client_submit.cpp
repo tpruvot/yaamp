@@ -351,12 +351,11 @@ static bool ntime_valid_range(const char ntimehex[])
 
 static bool valid_string_params(json_value *json_params)
 {
-	bool valid = true;
 	for(int p=0; p < json_params->u.array.length; p++) {
 		if (!json_is_string(json_params->u.array.values[p]))
 			return false;
 	}
-	return valid;
+	return true;
 }
 
 bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
