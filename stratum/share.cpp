@@ -261,8 +261,10 @@ bool block_confirm(int coinid, const char *blockhash)
 			}
 			const char *h1 = json_get_string(json_res, "pow_hash"); // DGB, MYR, J
 			const char *h2 = json_get_string(json_res, "mined_hash"); // XVG
+			const char *h3 = json_get_string(json_res, "phash"); // XSH
 			if (h1) snprintf(hash, 161, "%s", h1);
 			else if (h2) snprintf(hash, 161, "%s", h2);
+			else if (h3) snprintf(hash, 161, "%s", h3);
 			//debuglog("%s: getblock %s -> pow %s\n", __func__, blockhash, hash);
 			json_value_free(json);
 			break;
