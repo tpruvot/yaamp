@@ -236,14 +236,13 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 				++npayees;
 		}
 
-		//treasury 5% @ 10 SECI per block
-		json_int_t charity_amount = 50000000;
+		//mainnet
+        	json_int_t charity_amount = 50000000;
+        	sprintf(coind->charity_address, "3FMmX2S8yknSZ4NsxtxbQwQkgvbe81R5kR");
+
 		//testnet
-		//sprintf(coind->charity_address, "TESTNETADDRESS");
-		switch (templ->height % 4) {
-			case 0: sprintf(coind->charity_address, "3FMmX2S8yknSZ4NsxtxbQwQkgvbe81R5kR");
-			break;
-		}
+        	//json_int_t charity_amount = 50000000;
+        	//sprintf(coind->charity_address, "93ASJtDuVYVdKXemH9BrtSMscznvsp9stD");
 		++npayees;
 		available -= charity_amount;
 		base58_decode(coind->charity_address, script_payee);
