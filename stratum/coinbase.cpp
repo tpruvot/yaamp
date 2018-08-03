@@ -320,6 +320,12 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
             		base58_decode(charity_payee, script_payee);
            		job_pack_tx(coind, script_dests, charity_amount, script_payee);
         	}
+		// smart contracts balance refund, same format as DASH superblocks
+		json_value* screfund = json_get_array(json_result, "screfund");
+		if(screfund && screfund->u.array.length) {
+			superblocks_enabled = true;
+			superblock = screfund;
+		}
 		if(superblocks_enabled && superblock) {
 			for(int i = 0; i < superblock->u.array.length; i++) {
 				const char *payee = json_get_string(superblock->u.array.values[i], "payee");
@@ -359,6 +365,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		job_pack_tx(coind, templ->coinb2, available, NULL);
 		strcat(templ->coinb2, "00000000"); // locktime
 		coind->reward = (double)available/100000000*coind->reward_mul;
+		//debuglog("%s total %u available %u\n", coind->symbol, templ->value, available);
 		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
