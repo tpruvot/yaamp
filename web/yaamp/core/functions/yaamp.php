@@ -68,6 +68,7 @@ function yaamp_get_algos()
 		'yescryptR32',
 		'whirlpool',
 		'zr5',
+        'cryptonight',
 	);
 }
 
@@ -191,6 +192,7 @@ function getAlgoColors($algo)
 		'vanilla'	=> '#f0f0f0',
 		'velvet'	=> '#aac0cc',
 		'vitalium'	=> '#f0b0a0',
+        'cryptonight'	=> '#f0b0a0',
 		'whirlpool'	=> '#d0e0e0',
 		'yescrypt'	=> '#e0d0e0',
 		'yescryptR16'	=> '#e2d0e2',
@@ -275,7 +277,8 @@ function getAlgoPort($algo)
 		'polytimos'	=> 8463,
 		'skunk'		=> 8433,
 		'tribus'	=> 8533,
-	        'a5a'   	=> 8633,
+	    'a5a'   	=> 8633,
+        'cryptonight' => 8733,
 	);
 
 	global $configCustomPorts;
