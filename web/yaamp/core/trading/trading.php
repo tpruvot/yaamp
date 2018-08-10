@@ -90,7 +90,10 @@ function runExchange($exchangeName=false)
 				doBittrexTrading(true);
 				updateBittrexMarkets();
 				break;
-
+			case 'bitz':
+				updateBitzMarkets();
+				break;
+				
 			case 'cexio':
 				getCexIoBalances();
 				break;
