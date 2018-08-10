@@ -15,6 +15,7 @@ function strip_data($data)
 
 require_once("bitstamp.php");
 require_once("bittrex.php");
+require_once("bitz.php");
 require_once("bleutrade.php");
 require_once("ccexapi.php");
 require_once("cexio.php");
@@ -82,6 +83,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://www.binance.com/trade.html?symbol={$symbol}_{$base}";
 	else if($market == 'bittrex')
 		$url = "https://bittrex.com/Market/Index?MarketName={$base}-{$symbol}";
+	else if($market == 'bitz')
+		$url = "https://www.bit-z.com/trade/{$symbol}_{$base}";
 	else if($market == 'poloniex')
 		$url = "https://poloniex.com/exchange#{$lowbase}_{$lowsymbol}";
 	else if($market == 'bleutrade')
