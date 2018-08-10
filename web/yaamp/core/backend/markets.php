@@ -289,6 +289,42 @@ function updateBleutradeMarkets()
 
 }
 
+ /////////////////////////////////////////////////////////////////////////////////////////////
+
+function updateBitzMarkets($force = false)
+{
+        $exchange = 'bitz';
+        if (exchange_get($exchange, 'disabled')) return;
+
+        $markets = bitz_api_query('tickerall');
+
+        foreach($markets as $c => $ticker)
+        {
+                $pairs = explode('_', $c);
+                $symbol = strtoupper(reset($pairs)); $base = end($pairs);
+                if($symbol == 'BTC' || $base != 'btc') continue;
+
+                if (market_get($exchange, $symbol, "disabled")) {
+                        $market->disabled = 1;
+                        $market->message = 'disabled from settings';
+                }
+                $coin = getdbosql('db_coins', "symbol='{$symbol}'");
+                if(!$coin) continue;
+                if(!$coin->installed && !$coin->watch) continue;
+                $market = getdbosql('db_markets', "coinid={$coin->id} and name='{$exchange}'");
+
+                if(!$market) continue;
+                $price2 = ($ticker->buy + $ticker->sell)/2;
+                $market->price2 = AverageIncrement($market->price2, $price2);
+                $market->price = AverageIncrement($market->price, $ticker->buy);
+                $market->pricetime = time();
+                $market->priority = -1;
+                $market->txfee = 0.2; // trade pct
+                $market->save();
+                // debuglog("$exchange: update $symbol: {$market->price} {$market->price2}");
+        }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 function updateCryptoBridgeMarkets($force = false)
