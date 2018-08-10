@@ -84,7 +84,7 @@ function getMarketUrl($coin, $marketName)
 	else if($market == 'bittrex')
 		$url = "https://bittrex.com/Market/Index?MarketName={$base}-{$symbol}";
 	else if($market == 'bitz')
-		$url = "https://www.bit-z.com/trade/{$symbol}_{$base}";
+		$url = "https://www.bit-z.com/exchange/{$symbol}_{$base}";
 	else if($market == 'poloniex')
 		$url = "https://poloniex.com/exchange#{$lowbase}_{$lowsymbol}";
 	else if($market == 'bleutrade')
