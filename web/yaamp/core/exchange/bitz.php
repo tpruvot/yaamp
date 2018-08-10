@@ -1,10 +1,11 @@
 <?php
-// see https://www.bit-z.com/api.html
-// https://www.bit-z.com/api_v1/ticker?coin=mzc_btc
-// https://www.bit-z.com/api_v1/tickerall
+// see https://apidoc.bit-z.com/en/Demo/PHP.html
+// https://apiv2.bitz.com/Market/ticker?symbol=ltc_btc
+// https://apiv2.bitz.com/Market/tickerall
+
 function bitz_api_query($method, $params='', $returnType='object')
 {
-        $url = "https://www.bit-z.com/api_v1/$method/";
+        $url = "https://apiv2.bitz.com/Market/$method/";
         if (!empty($params))
                 $url .= "?$params";
         $ch = curl_init($url);
