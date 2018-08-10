@@ -5,24 +5,19 @@ JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.barRenderer.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
 
-//<a href='/site/memcached'>Memcache</a>&nbsp;
-//<a href='/site/eval'>Eval</a>&nbsp;
-//<a href='/renting/admin'>Jobs</a>&nbsp;
-?>
+JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
+JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
 
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user?symbol=BTC'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
-<a href='/site/monsters'>Monitor</a>&nbsp;
-<a href='/site/connections'>Conns</a>&nbsp;
-<a href='/site/emptymarkets'>EmptyMarket</a>&nbsp;
-<a href='/coin'>New</a>&nbsp;
+echo getAdminSideBarLinks();
+
+//<a href='/site/eval'>Eval</a>&nbsp;
+?>
+<a href='/site/memcached'>Memcache</a>&nbsp;
+<a href='/site/connections'>Connections</a>&nbsp;
+
+<?php if (YAAMP_RENTAL) : ?>
 <a href='/renting/admin'>Rental</a>&nbsp;
+<?php endif; ?>
 
 <div id='main_results'></div>
 
@@ -34,7 +29,7 @@ JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
 <br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br>
 
-<script>
+<script type="text/javascript">
 
 $(function()
 {

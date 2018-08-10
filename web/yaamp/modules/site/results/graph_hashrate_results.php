@@ -1,68 +1,43 @@
 <?php
 
+/* Graph shown in Pool Tab, Last 24 Hours algo hashrate */
+
 $percent = 16;
 $algo = user()->getState('yaamp-algo');
+$factor = yaamp_algo_mBTC_factor($algo); // 1000 sha (GH/s), 1 for normal MH/s
 
 $step = 15*60;
 $t = time() - 24*60*60;
-
-$stats = getdbolist('db_hashrate', "time>$t and algo=:algo order by time", array(':algo'=>$algo));
+$t = intval($t / $step) * $step;
+$stats = getdbolist('db_hashrate', "time >= $t AND algo=:algo ORDER BY time", array(':algo'=>$algo));
+$tfirst = empty($stats) ? $t : $stats[0]->time;
 $averages = array();
 
-echo '[[';
-
-for($i = 0; $i < 95-count($stats); $i++)
-{
+for($i = 0; $i < 95-count($stats); $i++) {
 	$d = date('Y-m-d H:i:s', $t);
-	echo "[\"$d\",0],";
-
 	$averages[] = array($d, 0);
 	$t += $step;
+	if ($t >= $tfirst) break;
 }
 
-foreach($stats as $i=>$n)
+foreach($stats as $n)
 {
-	$m = round($n->hashrate/1000000, 3);
-	if($i) echo ',';
+	$r = $n->hashrate/1000000;
+	$m = round($r / $factor, 3);
 
 	$d = date('Y-m-d H:i:s', $n->time);
-	echo "[\"$d\",$m]";
 
 	$averages[] = array($d, $m);
 }
 
-echo '],[';
+if ($averages[0][1] == 0) $averages[0][1] = $averages[1][1];
 
+$avg2 = array();
 $average = $averages[0][1];
-foreach($averages as $i=>$n)
-{
-	if($i) echo ',';
-
+foreach($averages as $n) {
 	$average = ($average*(100-$percent) + $n[1]*$percent) / 100;
 	$m = round($average, 3);
-
-	echo "[\"{$n[0]}\",$m]";
+	$avg2[] = array($n[0], $m);
 }
 
-// $a = 10;
-// foreach($averages as $i=>$n)
-// {
-// 	if($i < $a) continue;
-// 	if($i > $a) echo ',';
-
-// 	$average = 0;
-// 	for($j = $i-$a+1; $j<=$i; $j++)
-// 		$average += $averages[$j][1]/$a;
-
-// 	$m = round($average, 3);
-
-// 	echo "[\"{$n[0]}\",$m]";
-// }
-
-echo ']]';
-
-
-
-
-
-
+echo '['.json_encode($averages).",\n".json_encode($avg2).']';

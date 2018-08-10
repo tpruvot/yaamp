@@ -1,12 +1,25 @@
+<?php
+echo getAdminSideBarLinks();
 
-<a href='/site/common'>Summary</a>&nbsp;
-<a href='/site/admin'>Coins</a>&nbsp;
-<a href='/site/exchange'>Exchange</a>&nbsp;
-<a href='/site/user'>Users</a>&nbsp;
-<a href='/site/worker'>Workers</a>&nbsp;
-<a href='/site/version'>Version</a>&nbsp;
-<a href='/site/earning'>Earnings</a>&nbsp;
-<a href='/site/payments'>Payments</a>&nbsp;
+$algo = user()->getState('yaamp-algo');
+$algos = yaamp_get_algos();
+$algo_opts = '';
+foreach($algos as $a) {
+	if($a == $algo)
+		$algo_opts .= "<option value='$a' selected>$a</option>";
+	else
+		$algo_opts .= "<option value='$a'>$a</option>";
+}
+if (!strstr($algo_opts, 'selected') && $this->admin) {
+	$algo_opts = "<option value=\"$algo\" selected>$algo</option>" . $algo_opts;
+}
+
+echo <<<end
+<div align="right" style="margin-top: -14px; margin-bottom: -6px; margin-right: 140px;">
+Select Algo: <select id="algo_select">$algo_opts</select>&nbsp;
+</div>
+end;
+?>
 
 <div id='main_results'></div>
 
@@ -38,11 +51,15 @@ function main_error()
 
 function main_refresh()
 {
-	var url = "/site/worker_results";
+	var url = '/site/worker_results?algo=' + $('#algo_select').val();
 
 	clearTimeout(main_timeout);
 	$.get(url, '', main_ready).error(main_error);
 }
+
+$('#algo_select').bind('change', function() {
+	main_refresh();
+});
 
 </script>
 

@@ -24,8 +24,15 @@ struct YAAMP_JOB_TEMPLATE
 	int created;
 	char flags[64];
 
-	char prevhash_hex[1024];
-	char prevhash_be[1024];
+	char prevhash_hex[512];
+	char prevhash_be[512];
+
+	char extradata_hex[512];
+	char extradata_be[512];
+
+	// todo: can use extra field
+	char claim_hex[128];
+	char claim_be[128];
 
 	int txcount;
 	char txmerkles[YAAMP_SMALLBUFSIZE];
@@ -44,6 +51,13 @@ struct YAAMP_JOB_TEMPLATE
 
 	char coinb1[4*1024];
 	char coinb2[4*1024];
+
+	char header[256];
+
+	bool has_segwit_txs;
+
+	bool has_filtered_txs;
+	int filtered_txs_fee;
 
 	int auxs_size;
 	YAAMP_COIND_AUX *auxs[MAX_AUXS];
@@ -73,7 +87,12 @@ public:
 inline void job_delete(YAAMP_OBJECT *object)
 {
 	YAAMP_JOB *job = (YAAMP_JOB *)object;
-	delete job->templ;
+	if (!job) return;
+	if (job->templ && job->templ->txcount) {
+		job->templ->txsteps.clear();
+		job->templ->txdata.clear();
+	}
+	if (job->templ) delete job->templ;
 	delete job;
 }
 

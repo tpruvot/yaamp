@@ -21,7 +21,7 @@ class CoinController extends CommonController
 
 		if(isset($_POST['db_coins']))
 		{
-			$coin->attributes = $_POST['db_coins'];
+			$coin->setAttributes($_POST['db_coins'], false);
 			if($coin->save())
 				$this->redirect(array('index'));
 		}
@@ -36,7 +36,7 @@ class CoinController extends CommonController
 
 		if(isset($_POST['db_coins']))
 		{
-			$coin->attributes = $_POST['db_coins'];
+			$coin->setAttributes($_POST['db_coins'], false);
 			if($coin->save())
 				$this->redirect(array('index'));
 		}

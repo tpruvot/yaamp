@@ -1,13 +1,18 @@
 <?php
 
-function BackendClearEarnings()
+function BackendClearEarnings($coinid = NULL)
 {
 //	debuglog(__FUNCTION__);
 
-	$delay = time() - 150*60;
-	$total_cleared = 0;
+	if (YAAMP_ALLOW_EXCHANGE)
+		$delay = time() - (int) YAAMP_PAYMENTS_FREQ;
+	else
+		$delay = time() - (YAAMP_PAYMENTS_FREQ / 2);
+	$total_cleared = 0.0;
 
-	$list = getdbolist('db_earnings', "status=1 and mature_time<$delay");
+	$sqlFilter = $coinid ? " AND coinid=".intval($coinid) : '';
+
+	$list = getdbolist('db_earnings', "status=1 AND mature_time<$delay $sqlFilter");
 	foreach($list as $earning)
 	{
 		$user = getdbo('db_accounts', $earning->userid);
@@ -33,6 +38,9 @@ function BackendClearEarnings()
 // 		$value = $earning->amount * $coin->price / ($refcoin? $refcoin->price: 1);
 
 		$value = yaamp_convert_amount_user($coin, $earning->amount, $user);
+
+		if($user->coinid == 6 && !YAAMP_ALLOW_EXCHANGE)
+			continue;
 
 		$user->balance += $value;
 		$user->save();

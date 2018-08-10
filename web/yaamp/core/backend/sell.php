@@ -14,7 +14,7 @@ function sellCoinToExchange($coin)
 {
 	if($coin->dontsell) return;
 
-	$remote = new Bitcoin($coin->rpcuser, $coin->rpcpasswd, $coin->rpchost, $coin->rpcport);
+	$remote = new WalletRPC($coin);
 
 	$info = $remote->getinfo();
 	if(!$info || !$info['balance']) return false;
@@ -38,7 +38,7 @@ function sellCoinToExchange($coin)
 	$market = getBestMarket($coin);
 	if(!$market) return;
 
-	if(!$coin->sellonbid && $market->lastsent != null && $market->lastsent > $market->lasttraded)
+	if($market->lastsent != null && $market->lastsent > $market->lasttraded)
 	{
 //		debuglog("*** not sending $coin->name to $market->name. last tx is late ***");
 		return;
@@ -77,9 +77,6 @@ function sellCoinToExchange($coin)
 	$amount = round($amount, 8);
 //	debuglog("sending $amount $coin->symbol to $marketname, $deposit_address");
 
-	$market->lastsent = time();
-	$market->save();
-
 //	sleep(1);
 
 	$tx = $remote->sendtoaddress($deposit_address, $amount);
@@ -87,9 +84,7 @@ function sellCoinToExchange($coin)
 	{
 	//	debuglog($remote->error);
 
-		if($coin->symbol == 'MUE')
-			$amount = min($amount, 5000);
-		else if($coin->symbol == 'DIME')
+		if($coin->symbol == 'DIME')
 			$amount = min($amount, 10000000);
 		else if($coin->symbol == 'CNOTE')
 			$amount = min($amount, 10000);
@@ -108,6 +103,12 @@ function sellCoinToExchange($coin)
 			debuglog($remote->error);
 			return;
 		}
+	}
+	
+	if($tx)
+	{
+		$market->lastsent = time();
+		$market->save();
 	}
 
 	$exchange = new db_exchange;

@@ -18,6 +18,7 @@ public:
 	bool newcoind;
 
 	YAAMP_RPC rpc;
+	char rpcencoding[32];
 
 //	pthread_t thread;
 	pthread_mutex_t mutex;
@@ -26,11 +27,15 @@ public:
 //	bool closing;
 
 	char name[1024];
-	char symbol[1024];
+	char symbol[256];
+	char symbol2[256];
+	char algo[256];
 	char wallet[1024];
+	char account[256];
 
 	char pubkey[1024];
 	char script_pubkey[1024];
+	bool p2sh_address;
 
 	bool pos;
 	bool hassubmitblock;
@@ -43,6 +48,7 @@ public:
 	bool enable;
 	bool auto_ready;
 	bool newblock;
+	char lastnotifyhash[192];
 
 	int height;
 	double difficulty;
@@ -58,7 +64,15 @@ public:
 	YAAMP_COIND_AUX aux;
 
 	int notreportingcounter;
+	bool usegetwork;
 	bool usememorypool;
+	bool hasmasternodes;
+	bool oldmasternodes;
+	bool multialgos; // pow_hash field (or mined_hash)
+
+	bool usesegwit;
+	char commitment[128];
+	char witness_magic[16];
 
 	YAAMP_JOB *job;
 //	YAAMP_JOB_TEMPLATE *templ;
@@ -87,10 +101,12 @@ bool coind_submit(YAAMP_COIND *coind, const char *block);
 bool coind_submitgetauxblock(YAAMP_COIND *coind, const char *hash, const char *block);
 
 void coind_init(YAAMP_COIND *coind);
+void coind_terminate(YAAMP_COIND *coind);
 //void coind_getauxblock(YAAMP_COIND *coind);
 
-void coind_create_job(YAAMP_COIND *coind, bool force=false);
+bool coind_create_job(YAAMP_COIND *coind, bool force=false);
 
+bool coind_validate_user_address(YAAMP_COIND *coind, char* const address);
 
 
 

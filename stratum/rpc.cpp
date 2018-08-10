@@ -11,6 +11,7 @@ bool rpc_connected(YAAMP_RPC *rpc)
 bool rpc_connect(YAAMP_RPC *rpc)
 {
 	rpc_close(rpc);
+	if(g_exiting) return false;
 
 	struct hostent *ent = gethostbyname(rpc->host);
 	if(!ent) return false;
@@ -36,9 +37,9 @@ bool rpc_connect(YAAMP_RPC *rpc)
 	rpc->id = 0;
 	rpc->bufpos = 0;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("connected to %s:%d\n", rpc->host, rpc->port);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("connected to %s:%d\n", rpc->host, rpc->port);
+	}
 
 	return true;
 }
@@ -51,9 +52,9 @@ void rpc_close(YAAMP_RPC *rpc)
 	close(rpc->sock);
 	rpc->sock = 0;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("disconnected from %s:%d\n", rpc->host, rpc->port);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("disconnected from %s:%d\n", rpc->host, rpc->port);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -65,9 +66,9 @@ int rpc_send_raw(YAAMP_RPC *rpc, const char *buffer, int bytes)
 	int res = send(rpc->sock, buffer, bytes, MSG_NOSIGNAL);
 	if(res <= 0) return res;
 
-#ifdef RPC_DEBUGLOG_
-	debuglog("sending >%s<\n", buffer);
-#endif
+	if (g_debuglog_rpc) {
+		debuglog("sending >%s<\n", buffer);
+	}
 
 	return res;
 }
@@ -96,7 +97,7 @@ int rpc_send(YAAMP_RPC *rpc, const char *format, ...)
 {
 	if(!rpc_connected(rpc)) return -1;
 
-	char buffer[YAAMP_SMALLBUFSIZE];
+	char buffer[YAAMP_SMALLBUFSIZE] = { 0 };
 	va_list args;
 
 	va_start(args, format);
@@ -119,6 +120,7 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 {
 	CommonLock(&rpc->mutex);
 
+	// HTTP 1.1 accepts chunked data, and keep the connection
 	rpc_send(rpc, "POST / HTTP/1.1\r\n");
 	rpc_send(rpc, "Authorization: Basic %s\r\n", rpc->credential);
 	rpc_send(rpc, "Host: %s:%d\n", rpc->host, rpc->port);
@@ -141,15 +143,14 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 	}
 
 	int bufpos = 0;
-	char buffer[YAAMP_SMALLBUFSIZE];
+	char buffer[YAAMP_SMALLBUFSIZE] = { 0 };
 
-	while(1)
+	while(!g_exiting)
 	{
 		int bytes = recv(rpc->sock, buffer+bufpos, YAAMP_SMALLBUFSIZE-bufpos-1, 0);
-#ifdef RPC_DEBUGLOG_
-		debuglog("got %s\n", buffer+bufpos);
-#endif
-
+		if (g_debuglog_rpc) {
+			debuglog("got %s\n", buffer+bufpos);
+		}
 		if(bytes <= 0)
 		{
 			debuglog("ERROR: recv1, %d, %d, %s, %s\n", bytes, errno, data, buffer);
@@ -178,12 +179,28 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 
 	char tmp[1024];
 
+	header_value(buffer, "Transfer-Encoding:", tmp);
+	if (!strcmp(tmp, "chunked")) {
+#ifdef HAVE_CURL
+		if (!rpc->curl) debuglog("%s chunked transfer detected, switching to curl!\n",
+			rpc->coind->symbol);
+		rpc->curl = 1;
+#endif
+		CommonUnlock(&rpc->mutex);
+		rpc_connect(rpc);
+		return NULL;
+	}
+
 	int datalen = atoi(header_value(buffer, "Content-Length:", tmp));
 	if(!datalen)
 	{
+		debuglog("ERROR: rpc No Content-Length header!\n");
 		CommonUnlock(&rpc->mutex);
 		return NULL;
 	}
+
+	p = strstr(buffer, "\r\n\r\n");
+	bufpos = strlen(p+4);
 
 	char *databuf = (char *)malloc(datalen+1);
 	if(!databuf)
@@ -192,8 +209,6 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 		return NULL;
 	}
 
-	p = strstr(buffer, "\r\n\r\n");
-	bufpos = strlen(p+4);
 	memcpy(databuf, p+4, bufpos+1);
 
 	while(bufpos < datalen)
@@ -229,6 +244,11 @@ json_value *rpc_call(YAAMP_RPC *rpc, char const *method, char const *params)
 {
 //	debuglog("rpc_call :%d %s\n", rpc->port, method);
 
+#ifdef HAVE_CURL
+	if (rpc->ssl || rpc->curl)
+		return rpc_curl_call(rpc, method, params);
+#endif
+
 	int s1 = current_timestamp();
 	if(!rpc_connected(rpc)) return NULL;
 
@@ -248,9 +268,12 @@ json_value *rpc_call(YAAMP_RPC *rpc, char const *method, char const *params)
 	if(!buffer) return NULL;
 
 	json_value *json = json_parse(buffer, strlen(buffer));
+	if(!json) {
+		debuglog("invalid json: %s", buffer);
+		free(buffer);
+		return NULL;
+	}
 	free(buffer);
-
-	if(!json) return NULL;
 
 	int s2 = current_timestamp();
 	if(s2-s1 > 2000)

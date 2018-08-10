@@ -1,11 +1,18 @@
 <?php
 
+function round_difficulty($diff)
+{
+	// only keep 8/9 significant numbers
+	$sigdigits = 8;
+	return round($diff, (int) ceil(0 - log10($diff)) + $sigdigits);
+}
+
 function target_to_diff($target)
 {
 	if(!$target) return 0;
 
-	$d = 0x0000ffff00000000/$target;
-	return $d;
+	$d = (double) 0x0000ffff00000000/$target;
+	return round_difficulty($d);
 }
 
 function decode_compact($input)
@@ -29,6 +36,22 @@ function decode_compact($input)
 
 	$v = 0x0000ffff00000000/$d;
 	return $v;
+}
+
+function hash_to_difficulty($coin, $hash)
+{
+	$target = (double) 0.;
+	$bin = pack('H*', $hash);
+	// direct 'P' (uint64) type requires PHP 5.6.3
+	$bytes = unpack('C*', $bin);
+	// 00000000660556fdc8eabd080369...;
+	// zeros on the left, and we ignore the 2 first bytes (0000)
+	$oft = 2 + 1; // $bytes keys start at offset 1
+	for ($i=0; $i<8; $i++) {
+		$target += $bytes[$oft+$i] << ((7-$i)*8);
+	}
+
+	return target_to_diff($target);
 }
 
 function htoi($s)
@@ -66,6 +89,8 @@ function htoi($s)
 	return $val;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 function GetMonthString($n)
 {
 	$timestamp = mktime(0, 0, 0, $n, 1, 2005);
@@ -79,7 +104,7 @@ function bitcoinvaluetoa($v)
 
 function mbitcoinvaluetoa($v)
 {
-	return sprintf('%.4f', round($v, 4, PHP_ROUND_HALF_DOWN));
+	return sprintf('%.5f', round($v, 5, PHP_ROUND_HALF_DOWN));
 }
 
 function altcoinvaluetoa($v)
@@ -87,9 +112,28 @@ function altcoinvaluetoa($v)
 	return sprintf('%.6f', round($v, 6, PHP_ROUND_HALF_DOWN));
 }
 
+function percentvaluetoa($v)
+{
+	return sprintf('%.3f', round($v, 3, PHP_ROUND_HALF_DOWN));
+}
+
+function timestampfromstr($str)
+{
+	if (strpos("$str", ':')) {
+		$dt = DateTime::createFromFormat('Y-m-d H:i:s e', $str);
+		if (is_object($dt))
+			return $dt->getTimestamp();
+	}
+	return 0;
+}
+
 function datetoa($d)
 {
-	if(!$d) return '';
+	if (strpos($d, ':')) {
+		$d = timestampfromstr($d);
+	}
+
+	if(empty($d)) return '';
 
 	$t = wp_mktime($d);
 	$e = time() - $t;
@@ -119,7 +163,11 @@ function datetoa($d)
 
 function datetoa2($d)
 {
-	if(!$d) return '';
+	if (strpos($d, ':')) {
+		$d = timestampfromstr($d);
+	}
+
+	if(empty($d)) return '';
 
 	$table = array(
 					 // limit         divider
@@ -184,6 +232,8 @@ function sectoa2($i)
 	return $res;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 function Itoa($i)
 {
 	$s = '';
@@ -203,13 +253,13 @@ function Itoa2($i, $precision=1)
 {
 	$s = '';
 	if($i >= 1000*1000*1000*1000*1000)
-		$s = round(floatval($i)/1000/1000/1000/1000/1000, $precision) ." p";
+		$s = round(floatval($i)/1000/1000/1000/1000/1000, $precision) ." P";
 	else if($i >= 1000*1000*1000*1000)
-		$s = round(floatval($i)/1000/1000/1000/1000, $precision) ." t";
+		$s = round(floatval($i)/1000/1000/1000/1000, $precision) ." T";
 	else if($i >= 1000*1000*1000)
-		$s = round(floatval($i)/1000/1000/1000, $precision) ." g";
+		$s = round(floatval($i)/1000/1000/1000, $precision) ." G";
 	else if($i >= 1000*1000)
-		$s = round(floatval($i)/1000/1000, $precision) ." m";
+		$s = round(floatval($i)/1000/1000, $precision) ." M";
 	else if($i >= 1000)
 		$s = round(floatval($i)/1000, $precision) ." k";
 	else
@@ -292,5 +342,17 @@ function formatText($text)
 	return $text;
 }
 
-
-
+function formatWalletVersion($coin)
+{
+	$version = substr($coin->version, 0, 20);
+	if (is_numeric($version)) {
+		$decver = sprintf("%08d", 0 + $version);
+		$version = intval(substr($decver, 0, 2)).'.'.intval(substr($decver, 2, 2)).
+			'.'.intval(substr($decver, 4, 2));
+		if (intval(substr($decver, 6)))
+			$version .= '.'.intval(substr($decver, 6));
+	} else {
+		$version = ltrim($version, 'v');
+	}
+	return $version;
+}

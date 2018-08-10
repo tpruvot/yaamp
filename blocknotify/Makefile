@@ -18,7 +18,7 @@ all: $(SOURCES) $(OUTPUT)
 
 install: all
 	strip -s $(OUTPUT)
-	cp $(OUTPUT) /usr/local/bin/
+	mv $(OUTPUT) ../bin/
 
 clean:
 	rm -f *.o

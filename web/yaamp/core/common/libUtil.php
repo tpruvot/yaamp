@@ -41,7 +41,7 @@ function getuserparam($address)
 {
 	if(empty($address)) return null;
 
-	$address = substr($address, 0, 34);
+	$address = trim(substr($address, 0, 35));
 	$user = getdbosql('db_accounts', "username=:ad", array(':ad'=>$address));
 
 	return $user;
@@ -51,7 +51,7 @@ function getrenterparam($address)
 {
 	if(empty($address)) return null;
 
-	$address = substr($address, 0, 34);
+	$address = trim(substr($address, 0, 35));
 	$renter = getdbosql('db_renters', "address=:ad", array(':ad'=>$address));
 
 	return $renter;
@@ -120,6 +120,12 @@ function debuglog($string, $level=2)
 	$now = now();
 	if(!is_dir(YAAMP_LOGS)) mkdir(YAAMP_LOGS);
 	error_log("[$now] $string\n", 3, YAAMP_LOGS."/debug.log");
+}
+
+function echolog($string, $level=2)
+{
+	$now = now();
+	echo "[$now] $string\n";
 }
 
 function rentallog($string)

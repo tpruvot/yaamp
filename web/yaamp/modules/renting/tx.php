@@ -2,7 +2,7 @@
 
 require dirname(__FILE__).'/../../ui/lib/pageheader.php';
 
-$renter = getrenterparam(getparam('address'));
+$renter = getrenterparam(''.getparam('address'));
 if(!$renter) return;
 
 $this->pageTitle = "$renter->address | yiimp";
@@ -24,7 +24,7 @@ echo "</thead><tbody>";
 $btc = getdbosql('db_coins', "symbol='BTC'");
 if(!$btc) return;
 
-$remote = new Bitcoin($btc->rpcuser, $btc->rpcpasswd, $btc->rpchost, $btc->rpcport);
+$remote = new WalletRPC($btc);
 $ts = $remote->listtransactions(yaamp_renter_account($renter), 10);
 
 $res_array = array();
