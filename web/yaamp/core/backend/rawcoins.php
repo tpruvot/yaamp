@@ -37,17 +37,17 @@ function updateRawcoins()
 	}
 
 	if (!exchange_get('bitz', 'disabled')) {
-                $list = bitz_api_query('tickerall');
+		$list = bitz_api_query('tickerall');
 
-                        dborun("UPDATE markets SET deleted=true WHERE name='bitz'");
-                        foreach($list as $c => $ticker) {
-                                $e = explode('_', $c);
-                                if (strtoupper($e[1]) !== 'BTC')
-                                        continue;
-                                $symbol = strtoupper($e[0]);
-                                updateRawCoin('bitz', $symbol);
-                        }
-        }
+			dborun("UPDATE markets SET deleted=true WHERE name='bitz'");
+			foreach($list as $c => $ticker) {
+				$e = explode('_', $c);
+				if (strtoupper($e[1]) !== 'BTC')
+					continue;
+				$symbol = strtoupper($e[0]);
+				updateRawCoin('bitz', $symbol);
+			}
+	}
 	
 	if (!exchange_get('bleutrade', 'disabled')) {
 		$list = bleutrade_api_query('public/getcurrencies');
@@ -190,7 +190,7 @@ function updateRawcoins()
 			}
 		}
 	}
-	
+
 	if (!exchange_get('hitbtc', 'disabled')) {
 		$list = hitbtc_api_query('symbols');
 		if(is_object($list) && isset($list->symbols) && is_array($list->symbols))
