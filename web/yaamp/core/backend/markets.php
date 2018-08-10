@@ -314,9 +314,9 @@ function updateBitzMarkets($force = false)
 		$market = getdbosql('db_markets', "coinid={$coin->id} and name='{$exchange}'");
 
 		if(!$market) continue;
-		$price2 = ($ticker->buy + $ticker->sell)/2;
+		$price2 = ($ticker->bidPrice + $ticker->askPrice)/2;
 		$market->price2 = AverageIncrement($market->price2, $price2);
-		$market->price = AverageIncrement($market->price, $ticker->buy);
+		$market->price = AverageIncrement($market->price, $ticker->bidPrice);
 		$market->pricetime = time();
 		$market->priority = -1;
 		$market->txfee = 0.2; // trade pct
