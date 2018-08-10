@@ -11,6 +11,7 @@ function BackendPricesUpdate()
 	settings_prefetch_all();
 
 	updateBittrexMarkets();
+	updateBitzMarkets();
 	updatePoloniexMarkets();
 	updateBleutradeMarkets();
 	updateCryptoBridgeMarkets();
