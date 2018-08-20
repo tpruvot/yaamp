@@ -290,8 +290,9 @@ class ApiController extends CommonController
 			echo ",\"payouts\": ";
 			echo "[";
 			$list = getdbolist('db_payouts', "account_id={$user->id} AND (!ISNULL(tx) AND completed=1) ORDER BY time DESC");
-			foreach($list as $payout)
+			foreach($list as $j => payout)
 			{
+				if($j) echo ", ";
 				echo "{";
 				echo "\"time\": \"$payout->time\",";
 				echo "\"amount\": \"$payout->amount\",";
