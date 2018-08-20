@@ -284,6 +284,23 @@ class ApiController extends CommonController
 		}
 
 		echo "]";
+
+		if(YAAMP_API_PAYOUTS)
+		{
+			echo ",\"payouts\": ";
+			echo "[";
+			$list = getdbolist('db_payouts', "account_id={$user->id} AND (!ISNULL(tx) AND completed=1) ORDER BY time DESC");
+			foreach($list as $payout)
+			{
+				echo "{";
+				echo "\"time\": \"$payout->time\",";
+				echo "\"amount\": \"$payout->amount\",";
+				echo "\"tx\": \"$payout->tx\"";
+				echo "}";
+			}
+			echo "]";
+		}
+
 		echo "}";
 	}
 
