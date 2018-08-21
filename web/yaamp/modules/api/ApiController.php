@@ -291,7 +291,7 @@ class ApiController extends CommonController
 			if (empty($json_payouts)) {
 				$json_payouts = ",\"payouts\": ";
 				$json_payouts .= "[";
-				$list = getdbolist('db_payouts', "account_id={$user->id} AND completed>0 AND tx IS NOT NULL ORDER BY time DESC");
+				$list = getdbolist('db_payouts', "account_id={$user->id} AND completed>0 AND tx IS NOT NULL AND time >= ".(time()+YAAMP_API_PAYOUTS_PERIOD)." ORDER BY time DESC");
 				foreach($list as $j => payout)
 				{
 					if($j) $json_payouts .= ", ";
