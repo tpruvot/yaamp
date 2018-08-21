@@ -72,3 +72,13 @@ if (!defined('NICEHASH_DEPOSIT_AMOUNT')) define('NICEHASH_DEPOSIT_AMOUNT','0.01'
 // cli stuff
 if (!defined('YIIMP_CLI_ALLOW_TXS')) define('YIIMP_CLI_ALLOW_TXS', false);
 
+// Lightning Network
+if (!defined('LN_ENABLED')) define('LN_ENABLED', false);
+if (!defined('LN_ENABLED')) define('LN_MY_BTC_ADDRESS', '');
+if (!defined('LN_ENABLED')) define('LN_MY_LN_ADDRESS', '');
+if (!defined('LN_ENABLED')) define('LN_MY_IP', '');
+if (!defined('LN_ENABLED')) define('LN_MY_PORT', '9735');
+if (!defined('LN_ENABLED')) define('LN_FRACTION', 7); // Fraction of main BTC wallet to fund channels
+if (!defined('LN_ENABLED')) define('LN_MIN_PAY', 3000);
+if (!defined('LN_ENABLED')) define('LN_MIN_PAY', 10000);
+
