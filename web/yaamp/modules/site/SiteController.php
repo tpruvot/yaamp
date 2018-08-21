@@ -1192,4 +1192,8 @@ class SiteController extends CommonController
 		setcookie('mainbtc', '1', time()+60*60*24, '/');
 	}
 
+	public function actionLn()
+        {
+                $this->render('/site/ln');
+        }
 }
