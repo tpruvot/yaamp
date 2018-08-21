@@ -287,19 +287,24 @@ class ApiController extends CommonController
 
 		if(YAAMP_API_PAYOUTS)
 		{
-			echo ",\"payouts\": ";
-			echo "[";
-			$list = getdbolist('db_payouts', "account_id={$user->id} AND completed>0 AND tx IS NOT NULL ORDER BY time DESC");
-			foreach($list as $j => payout)
-			{
-				if($j) echo ", ";
-				echo "{";
-				echo "\"time\": \"$payout->time\",";
-				echo "\"amount\": \"$payout->amount\",";
-				echo "\"tx\": \"$payout->tx\"";
-				echo "}";
+			$json_payouts = controller()->memcache->get("api_payouts-$user->id");
+			if (empty($json_payouts)) {
+				$json_payouts = ",\"payouts\": ";
+				$json_payouts .= "[";
+				$list = getdbolist('db_payouts', "account_id={$user->id} AND completed>0 AND tx IS NOT NULL ORDER BY time DESC");
+				foreach($list as $j => payout)
+				{
+					if($j) $json_payouts .= ", ";
+					$json_payouts .= "{";
+					$json_payouts .= "\"time\": \"$payout->time\",";
+					$json_payouts .= "\"amount\": \"$payout->amount\",";
+					$json_payouts .= "\"tx\": \"$payout->tx\"";
+					$json_payouts .= "}";
+				}
+				$json_payouts .= "]";
+				controller()->memcache->set("api_payouts-$user->id", $json_payouts, 60, MEMCACHE_COMPRESSED);
 			}
-			echo "]";
+			echo str_replace("},","},\n", $json_payouts);
 		}
 
 		echo "}";
