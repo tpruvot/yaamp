@@ -544,7 +544,7 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 //		share_diff = share_diff / g_current_algo->diff_multiplier;
 //	}
 
-	if (g_debuglog_hash) {
+	if (!g_debuglog_hash) {
 		// only log a few...
 		if (share_diff > (client->difficulty_actual * 16))
 			debuglog("submit %s (uid %d) %d, %s, %s, %s, %.3f/%.3f\n", client->sock->ip, client->userid,
