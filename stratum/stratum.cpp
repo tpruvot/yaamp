@@ -170,6 +170,7 @@ YAAMP_ALGO g_algos[] =
 	{"lbry", lbry_hash, 0x100, 0, 0},
 	{"luffa", luffa_hash, 1, 0, 0},
 	{"penta", penta_hash, 1, 0, 0},
+	{"rainforest", rainforest_hash, 0x100, 0, 0},
 	{"skein2", skein2_hash, 1, 0, 0},
 	{"yescrypt", yescrypt_hash, 0x10000, 0, 0},
 	{"yescryptR16", yescryptR16_hash, 0x10000, 0, 0 },
