@@ -215,7 +215,7 @@ echo '<p style="font-size: .8em; margin-top: 0; padding-left: 4px;">';
 echo '* approximate from current exchange rates<br/>';
 if ($refcoin->symbol == 'BTC') {
 	$usd = number_format($mining->usdbtc, 2, '.', ' ');
-	echo '** bitstamp <b>$usd</b> USD/BTC';
+	echo '** bitstamp <b>'.$usd.'</b> USD/BTC';
 }
 echo '</p>';
 

@@ -36,6 +36,19 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('bitz', 'disabled')) {
+		$list = bitz_api_query('tickerall');
+
+			dborun("UPDATE markets SET deleted=true WHERE name='bitz'");
+			foreach($list as $c => $ticker) {
+				$e = explode('_', $c);
+				if (strtoupper($e[1]) !== 'BTC')
+					continue;
+				$symbol = strtoupper($e[0]);
+				updateRawCoin('bitz', $symbol);
+			}
+	}
+
 	if (!exchange_get('bleutrade', 'disabled')) {
 		$list = bleutrade_api_query('public/getcurrencies');
 		if(isset($list->result) && !empty($list->result))
@@ -417,7 +430,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 			}
 		}
 
-		if (in_array($marketname, array('nova','askcoin','binance','coinexchange','coinsmarkets','cryptobridge','hitbtc'))) {
+		if (in_array($marketname, array('nova','askcoin','binance','bitz','coinexchange','coinsmarkets','cryptobridge','hitbtc'))) {
 			// don't polute too much the db with new coins, its better from exchanges with labels
 			return;
 		}

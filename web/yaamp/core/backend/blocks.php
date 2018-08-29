@@ -190,6 +190,10 @@ function BackendBlocksUpdate($coinid = NULL)
 			continue;
 		}
 
+		if (!$coin->auto_ready || ($coin->target_height && $coin->target_height > $coin->block_height)) {
+			continue;
+		}
+
 		$remote = new WalletRPC($coin);
 		if(empty($block->txhash))
 		{

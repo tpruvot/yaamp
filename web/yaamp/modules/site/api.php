@@ -45,9 +45,19 @@ result:
 		"accepted": 82463372.083,
 		"rejected": 0
 	}]
+<?php if (YAAMP_API_PAYOUTS) : ?>
+	,"payouts":[{
+		"time": 1529860641,
+		"amount": "0.001",
+		"tx": "transaction_id_of_the_payout"
+	}]
+<?php endif; ?>
 }
 </pre>
-
+<?php
+if (YAAMP_API_PAYOUTS)
+	echo "Payouts of the last ".(YAAMP_API_PAYOUTS_PERIOD / 3600)." hours are displayed, please use a block explorer to see all payouts.";
+?>
 <p><b>Pool Status</b></p>
 
 request:
