@@ -55,7 +55,7 @@ class WalletRPC {
 
 	function __call($method, $params)
 	{
-		if (stripos($method, "dump") !== false) {
+		if (stripos($method, "dump") !== false || stripos($method, "backupwallet") !== false) {
 			$this->error = "$method not authorized!";
 			debuglog("$method rpc method is not authorized!");
 			return false;
