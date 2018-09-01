@@ -8,3 +8,5 @@ CREATE TABLE `invoices` (
   `status` varchar(80) DEFAULT NULL,
   `exectime` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `workers` ADD `work` DOUBLE NOT NULL DEFAULT '0.0' AFTER `algo`;
