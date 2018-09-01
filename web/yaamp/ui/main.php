@@ -120,6 +120,10 @@ function showPageHeader()
 
 		if (YAAMP_USE_NICEHASH_API)
 			showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
+		
+		if (LN_ENABLED)
+			showItemHeader(controller()->id=='ln', '/site/ln', 'LN');
+		
 	}
 
 	echo '<span style="float: right;">';
