@@ -85,6 +85,10 @@ if (!define('YAAMP_LN_WORKERS')) define('YAAMP_LN_WORKERS', false);
 if (!define('YAAMP_LN_FACTOR')) define('YAAMP_LN_FACTOR', 0.8);
 
 if (!isset($configLNGamePlayers)) $configLNGamePlayers = array (
+        /*
+        // testnet:
         'testnet.millionbitcoinhomepage.net' => array('023bcc1daeb7c85208991e993a2eacf86f7d9584a6dc33291bbe5e19c986a31568', '51.15.250.152', '9735'),
         'yalls.org' => array('02212d3ec887188b284dbb7b2e6eb40629a6e14fb049673f22d2a0aa05f902090e', '54.236.55.50', '9735'),
-        'testnet.satoshis.place' => array('02dd4cef0192611bc34cd1c3a0a7eb0f381e7229aa3309ae961a7fc0076b4d2bb6', '35.198.136.5', '9735'));
+        'testnet.satoshis.place' => array('02dd4cef0192611bc34cd1c3a0a7eb0f381e7229aa3309ae961a7fc0076b4d2bb6', '35.198.136.5', '9735')
+        */
+        );
