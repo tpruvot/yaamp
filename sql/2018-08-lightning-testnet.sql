@@ -1,5 +1,6 @@
 CREATE TABLE `invoices` (
   `id` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
   `bolt11` varchar(1000) NOT NULL,
   `amount` int(11) NOT NULL,
   `paid` int(11) NOT NULL,
