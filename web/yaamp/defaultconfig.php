@@ -81,6 +81,8 @@ if (!defined('LN_MY_PORT')) define('LN_MY_PORT', '9735');
 if (!defined('LN_FRACTION')) define('LN_FRACTION', 7); // Fraction of main BTC wallet to fund channels
 if (!defined('LN_MIN_PAY')) define('LN_MIN_PAY', 3000);
 if (!defined('LN_MAIN_NODE')) define('LN_MAIN_NODE', '');
+if (!define('YAAMP_LN_WORKERS')) define('YAAMP_LN_WORKERS', false);
+if (!define('YAAMP_LN_FACTOR')) define('YAAMP_LN_FACTOR', 0.8);
 
 if (!isset($configLNGamePlayers)) $configLNGamePlayers = array (
         'testnet.millionbitcoinhomepage.net' => array('023bcc1daeb7c85208991e993a2eacf86f7d9584a6dc33291bbe5e19c986a31568', '51.15.250.152', '9735'),
