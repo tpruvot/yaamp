@@ -125,12 +125,16 @@ function showPageHeader()
 	echo '<span style="float: right;">';
 
 	$mining = getdbosql('db_mining');
-	$nextpayment = date('H:i T', $mining->last_payout+YAAMP_PAYMENTS_FREQ);
+	$nextpayment = date('H:i T', $mining->last_payout+YAAMP_PAYMENTS_FREQ); // $nextpayment = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ) . ' UTC (US)';
+	// define('UTCEUR', 7200);
+	// $nextpaymentEUR = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ+UTCEUR); // . ' UTC+2 (EUR)';
 	$eta = ($mining->last_payout+YAAMP_PAYMENTS_FREQ) - time();
 	$eta_mn = 'in '.round($eta / 60).' minutes';
 
 	echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.'</span>';
-
+	// echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' / '.$nextpaymentEUR.'</span>';
+	// echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' UTC (US) / '.$nextpaymentEUR.' UTC+2 (EUR)</span>';
+	
 	echo "</div>";
 	echo "</div>";
 }
