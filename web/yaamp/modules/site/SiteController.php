@@ -1194,7 +1194,7 @@ class SiteController extends CommonController
 
 	public function actionLn()
         {
-		if(LN_ENABLED == false || !$this->admin) return;
+		if(LN_ENABLED == false || (YAAMP_LN_NET == 'MAINET' && !$this->admin)) return;
                 $this->render('/site/ln');
         }
 }
