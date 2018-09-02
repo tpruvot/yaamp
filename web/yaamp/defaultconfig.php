@@ -79,7 +79,7 @@ if (!defined('LN_MY_LN_ADDRESS')) define('LN_MY_LN_ADDRESS', '');
 if (!defined('LN_MY_IP')) define('LN_MY_IP', '');
 if (!defined('LN_MY_PORT')) define('LN_MY_PORT', '9735');
 if (!defined('LN_FRACTION')) define('LN_FRACTION', 7); // Fraction of main BTC wallet to fund channels
-if (!defined('LN_MIN_PAY')) define('LN_MIN_PAY', 3000);
+if (!defined('LN_MIN_PAY')) define('LN_MIN_PAY', 1000); // min payout in satoshis
 if (!defined('LN_MAIN_NODE')) define('LN_MAIN_NODE', '');
 if (!define('YAAMP_LN_NET')) define('YAAMP_LN_NET', 'TESTNET'); // TESTNET or MAINET
 if (!define('YAAMP_LN_WORKERS')) define('YAAMP_LN_WORKERS', false);
