@@ -39,15 +39,7 @@ class CronjobController extends CommonController
 		}
 	}
 
-        public function actionRunStartLightning()
-        {
-              debuglog(__METHOD__);
-                set_time_limit(0);
-                 $output = shell_exec('lightningd --bitcoin-rpcconnect=192.168.10.35 --bitcoin-rpcuser=bitcoin --bitcoin-rpcpassword=Test');
-                $output = json_decode($output);
-                debuglog($output);
-        }
-
+	
         public function actionRunLightning()
         {
               debuglog(__METHOD__);
