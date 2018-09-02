@@ -121,11 +121,11 @@ function showPageHeader()
 		if (YAAMP_USE_NICEHASH_API)
 			showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
 		
-		if (YAAMP_LN_ENABLED)
+		if (LN_ENABLED)
 			showItemHeader(controller()->id=='ln', '/site/ln', 'LN');
 	}
 	
-	if (YAAMP_LN_ENABLED && YAAMP_LN_NET == 'TESTNET' && !controller()->admin)
+	if (LN_ENABLED && YAAMP_LN_NET == 'TESTNET' && !controller()->admin)
 		showItemHeader(controller()->id=='ln', '/site/ln', 'LN (testnet)');
 	
 	echo '<span style="float: right;">';
