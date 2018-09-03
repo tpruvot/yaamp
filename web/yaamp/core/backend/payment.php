@@ -114,7 +114,7 @@ function BackendCoinPayments($coin)
 	{
 		$total_to_pay += round($user->balance, 8);
 		$addresses[$user->username] = round($user->balance, 8);
-		if ($coin->symbol=='BTC' && LN_ENABLED == true && YAAMP_LN_WORKERS == true)	{
+		if ($coin->symbol==LN_COIN && LN_ENABLED == true && YAAMP_LN_WORKERS == true)	{
 			$ln_works = getdbolist('db_workers', "work > 0 AND worker <> '' AND userid=".$user->id);
 			foreach($ln_works as $ln_work)	{
 				if (is_ln_invoice($ln_work->worker))	{
