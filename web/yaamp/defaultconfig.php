@@ -76,6 +76,7 @@ if (!defined('YIIMP_CLI_ALLOW_TXS')) define('YIIMP_CLI_ALLOW_TXS', false);
 if (!defined('LN_ENABLED')) define('LN_ENABLED', false);
 if (!defined('LN_MY_BTC_ADDRESS')) define('LN_MY_BTC_ADDRESS', '');
 if (!defined('LN_MY_LN_ADDRESS')) define('LN_MY_LN_ADDRESS', '');
+if (!defined('LN_COIN')) define('LN_COIN', 'BTC');
 if (!defined('LN_MY_IP')) define('LN_MY_IP', '');
 if (!defined('LN_MY_PORT')) define('LN_MY_PORT', '9735');
 if (!defined('LN_FRACTION')) define('LN_FRACTION', 7); // Fraction of main BTC wallet to fund channels
