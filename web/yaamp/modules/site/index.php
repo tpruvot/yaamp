@@ -75,6 +75,7 @@ if (YAAMP_LN_WORKERS == true)	{
 	?>the workername to send the invoice. Example:
 	<p class="main-left-box" style='padding: 3px; font-size: .8em; background-color: #ffffee; font-family: monospace;'>
 	-o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:&lt;PORT&gt; -u &lt;WALLET_ADDRESS&gt;.&lt;invoice&gt; [-p &lt;OPTIONS&gt;]</p>
+	Lightning Network invoices can be generated from a LN wallet or directly on a merchant's website (<a href="http://lightningnetworkstores.com/">List of merchants (mainet)</a>, <a href="http://lightningnetworkstores.com/testnet">List of merchants (testnet)</a>).
 	<?php
 	}
 endif; ?>
