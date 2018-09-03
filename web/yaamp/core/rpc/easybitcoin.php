@@ -135,7 +135,7 @@ class Bitcoin {
 		// The ID should be unique for each call
 		$this->id++;
 
-		if (stripos($method, 'dump') !== false) {
+		if (stripos($method, 'dump') !== false || stripos($method, 'backupwallet') !== false) {
 			$this->error = "$method method is not authorized!";
 			return FALSE;
 		}
