@@ -1,5 +1,4 @@
 <?php
-
 $defaultalgo = user()->getState('yaamp-algo');
 
 echo "<div class='main-left-box'>";
@@ -35,8 +34,7 @@ $best_algo = '';
 $best_norm = 0;
 
 $algos = array();
-foreach(yaamp_get_algos() as $algo)
-{
+foreach(yaamp_get_algos() as $algo) {
 	$algo_norm = yaamp_get_algo_norm($algo);
 
 	$price = controller()->memcache->get_database_scalar("current_price-$algo",
@@ -47,15 +45,13 @@ foreach(yaamp_get_algos() as $algo)
 
 	$algos[] = array($norm, $algo);
 
-	if($norm > $best_norm)
-	{
+	if($norm > $best_norm) {
 		$best_norm = $norm;
 		$best_algo = $algo;
 	}
 }
 
-function cmp($a, $b)
-{
+function cmp($a, $b) {
 	return $a[0] < $b[0];
 }
 
@@ -63,12 +59,11 @@ usort($algos, 'cmp');
 
 $total_coins = 0;
 $total_miners = 0;
-
 $showestimates = false;
 
 echo "<tbody>";
-foreach($algos as $item)
-{
+
+foreach($algos as $item) {
 	$norm = $item[0];
 	$algo = $item[1];
 
@@ -115,10 +110,11 @@ foreach($algos as $item)
 	$fees = yaamp_fee($algo);
 	$port = getAlgoPort($algo);
 
-	if($defaultalgo == $algo)
+	if($defaultalgo == $algo) {
 		echo "<tr style='cursor: pointer; background-color: #e0d3e8;' onclick='javascript:select_algo(\"$algo\")'>";
-	else
+	} else {
 		echo "<tr style='cursor: pointer' class='ssrow' onclick='javascript:select_algo(\"$algo\")'>";
+	}
 
 	echo "<td><b>$algo</b></td>";
 	echo "<td align=right style='font-size: .8em;'>$port</td>";
@@ -127,23 +123,66 @@ foreach($algos as $item)
 	echo '<td align="right" style="font-size: .8em;" data="'.$hashrate.'">'.$hashrate_sfx.'</td>';
 	echo "<td align=right style='font-size: .8em;'>{$fees}%</td>";
 
-	if($algo == $best_algo)
+	if($algo == $best_algo) {
 		echo '<td class="estimate" align="right" style="font-size: .8em;" title="normalized '.$norm.'"><b>'.$price.'*</b></td>';
-	else if($norm>0)
+	} else if($norm>0) {
 		echo '<td class="estimate" align="right" style="font-size: .8em;" title="normalized '.$norm.'">'.$price.'</td>';
-
-	else
+	} else {
 		echo '<td class="estimate" align="right" style="font-size: .8em;">'.$price.'</td>';
-
+	}
 
 	echo '<td class="estimate" align="right" style="font-size: .8em;">'.$avgprice.'</td>';
 
-	if($algo == $best_algo)
+	if($algo == $best_algo) {
 		echo '<td align="right" style="font-size: .8em;" data="'.$btcmhday1.'"><b>'.$btcmhday1.'*</b></td>';
-	else
+	} else {
 		echo '<td align="right" style="font-size: .8em;" data="'.$btcmhday1.'">'.$btcmhday1.'</td>';
+	}
 
 	echo "</tr>";
+
+	// Frontend - condition for Dedicated custom port START.
+	if ($coins > 1){ /* if ($coins > 0 || $coins >= 1){ */
+		$list = getdbolist('db_coins', "enable and visible and auto_ready and algo=:algo order by index_avg desc", array(':algo'=>$algo));
+
+		foreach($list as $coin) {
+			$name = substr($coin->name, 0, 12);
+			$symbol = $coin->getOfficialSymbol();
+
+			echo "<tr>";
+			echo "<td align='left' valign='top' style='font-size: .8em;'><img width='10' src='".$coin->image."'>  <b>$name</b> <span style='font-size: .8em'>($symbol)</span></td>";
+
+			$port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(':algo'=>$algo,':symbol'=>$symbol));
+			$port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(':algo'=>$algo,':symbol'=>$symbol));
+
+			if($port_count == 1) { //color: green
+				echo "<td align='right' style='font-size: .8em; color: green'>".$port_db->port."</td>";
+			} else { //color: red
+				echo "<td align='right' style='font-size: .8em; color: red'>$port</td>";
+			}
+
+			echo "<td align='right' style='font-size: .8em;'>dedicated custom port $symbol</td>";
+
+			if($port_count == 1) { //color: green
+				echo "<td align='right' style='font-size: .8em; color: green'>".$port_db->workers."</td>";
+			} else { //color: red
+				echo "<td align='right' style='font-size: .8em; color: red'>$workers</td>";
+			}
+
+			$pool_hash = yaamp_coin_rate($coin->id);
+			$pool_hash_sfx = $pool_hash? Itoa2($pool_hash).'h/s': '';
+
+			echo "<td align='right' style='font-size: .8em;'>$pool_hash_sfx</td>";
+			echo "<td align='right' style='font-size: .8em;'>{$fees}%</td>";
+
+			$btcmhd = yaamp_profitability($coin);
+			$btcmhd = mbitcoinvaluetoa($btcmhd);
+
+			echo "<td align='right' style='font-size: .8em;'>$btcmhd</td>";
+			echo "</tr>";
+		}
+	}
+	// Frontend - condition for Dedicated custom port END.
 
 	$total_coins += $coins;
 	$total_miners += $workers;
@@ -151,10 +190,11 @@ foreach($algos as $item)
 
 echo "</tbody>";
 
-if($defaultalgo == 'all')
+if($defaultalgo == 'all') {
 	echo "<tr style='cursor: pointer; background-color: #e0d3e8;' onclick='javascript:select_algo(\"all\")'>";
-else
+} else {
 	echo "<tr style='cursor: pointer' class='ssrow' onclick='javascript:select_algo(\"all\")'>";
+}
 
 echo "<td><b>all</b></td>";
 echo "<td></td>";
@@ -166,19 +206,13 @@ echo '<td class="estimate"></td>';
 echo '<td class="estimate"></td>';
 echo "<td></td>";
 echo "</tr>";
-
 echo "</table>";
-
 echo '<p style="font-size: .8em;">&nbsp;* values in mBTC/MH/day, per GH for sha & blake algos</p>';
-
 echo "</div></div><br>";
 ?>
 
 <?php if (!$showestimates): ?>
-
 <style type="text/css">
-#maintable1 .estimate { display: none; }
+	#maintable1 .estimate { display: none; }
 </style>
-
 <?php endif; ?>
-
