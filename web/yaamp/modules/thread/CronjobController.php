@@ -42,123 +42,121 @@ class CronjobController extends CommonController
 	
         public function actionRunLightning()
         {
-              debuglog(__METHOD__);
-                set_time_limit(0);
+		debuglog(__METHOD__);
+		set_time_limit(0);
 
 //                $this->monitorApache();
 
-                $last_complete = memcache_get($this->memcache->memcache, "cronjob_ln_time_start");
+		$last_complete = memcache_get($this->memcache->memcache, "cronjob_ln_time_start");
 
-                // debuglog("Lightning turned on ?");
-                $output = shell_exec('sudo lightning-cli -J getinfo');
-                $output = json_decode($output);
+		// debuglog("Lightning turned on ?");
+		$output = shell_exec('sudo lightning-cli -J getinfo');
+		$output = json_decode($output);
 
-                $lightning = false;
-                foreach ($output as $key => $out)
-                        {
-                        if ($key == 'id')       {
-                                debuglog("[LN] 1. Lightning is turned ON: OK");
-                                debuglog("[LN] My LN id = $out");
-                                $lightning = true;
-                                }
-                        }
-		                if (!$lightning)
-                        debuglog("[LN] Error: Please run lightningd in a screen");
-                else    {
+		$lightning = false;
+		foreach ($output as $key => $out)
+			{
+			if ($key == 'id')       {
+				debuglog("[LN] 1. Lightning is turned ON: OK");
+				debuglog("[LN] My LN id = $out");
+				$lightning = true;
+				}
+			}
+			if (!$lightning)
+				debuglog("[LN] Error: Please run lightningd in a screen");
+			else    {
+				debuglog("[LN] 2. Check LN BTC address");
+				$outpute = shell_exec("sudo lightning-cli -J dev-listaddrs");
+				$output = json_decode($outpute);
+				//debuglog("ok");
+//				debuglog($outpute);
 
-
-                debuglog("[LN] 2. Check LN BTC address");
-                $outpute = shell_exec("sudo lightning-cli -J dev-listaddrs");
-                $output = json_decode($outpute);
-                //debuglog("ok");
-//              debuglog($outpute);
-
-                $found = false;
-                //if (isset($output->addresses))
-                foreach ($output->addresses as $out)        {
+				$found = false;
+				//if (isset($output->addresses))
+				foreach ($output->addresses as $out)        {
 //                      debuglog("in"); // value = ".$out["value"]." status = ".$out["status"]);
-                        if (LN_MY_BTC_ADDRESS == $out->p2sh)    {
-                                $found = true;
-                                debuglog("[LN] LN_MY_BTC_ADDRESS found and own : OK");
-                                break;
-                        }
-                }
-                if ($found == false)    {
-                        debuglog("[LN] Error: Please create a p2sh-segwit address using lightning-cli newaddr then fill LN_MY_BTC_ADDRESS");
-                }
-                else    {
+					if (LN_MY_BTC_ADDRESS == $out->p2sh)    {
+						$found = true;
+						debuglog("[LN] LN_MY_BTC_ADDRESS found and own : OK");
+						break;
+						}
+					}
+				if ($found == false)    {
+					debuglog("[LN] Error: Please create a p2sh-segwit address using lightning-cli newaddr then fill LN_MY_BTC_ADDRESS");
+					}
+				else    {
+					debuglog("[LN] 3. Check funds"); // TODO: Enhance the logic
 
-                debuglog("[LN] 3. Check funds");
-
-                $output = shell_exec("sudo lightning-cli -J listfunds");
-                $listfunds = json_decode($output);
+					$output = shell_exec("sudo lightning-cli -J listfunds");
+					$listfunds = json_decode($output);
 //              debuglog($output);
 
-                $ln_balance = 0;
+					$ln_balance = 0;
 
-                $found = false;
-                if (count($listfunds->outputs) > 0)
-                foreach ($listfunds->outputs as $out)        {
+					$found = false;
+					if (count($listfunds->outputs) > 0)
+					foreach ($listfunds->outputs as $out)        {
 //                      debuglog("in"); // value = ".$out["value"]." status = ".$out["status"]);
-                        if ($out->status == "unconfirmed" && $out->output == 1 && count($listfunds->channels) > 0)      {
-                                debuglog("[LN] Channel creation ongoing");
-                                $found = true;
-                        }
+					if ($out->status == "unconfirmed" && $out->output == 1 && count($listfunds->channels) > 0)      {
+						debuglog("[LN] Channel creation ongoing");
+						$found = true;
+						}
 			
-		                        if ($out->status == "confirmed" && $out->output == 1 && count($listfunds->channels) > 0 && $out->value > 100)      {
-                                $ln_balance = $out->value;
-                                debuglog("[LN] seems ok, to analyse later");
-                                $found = true;
-                        }
-                        if ("confirmed" == $out->status && 0 == $out->output && count($listfunds->channels) > 0)    {
-                                $ln_balance = $out->value;
-                                $found = true;
-                                debuglog("[LN] Initial funding onchain : OK");
-                                break;
-                        }
-                }
-                if ($found == false)    {
-                        debuglog("[LN] Error: Please perform a Bitcoin onchain transaction to ".LN_MY_BTC_ADDRESS);
-// testnet faucet : https://testnet.manu.backend.hamburg/faucet
-                }
-                else    {
+					if ($out->status == "confirmed" && $out->output == 1 && count($listfunds->channels) > 0 && $out->value > 100)      {
+						$ln_balance = $out->value;
+						debuglog("[LN] seems ok (logic to enhance)");
+						$found = true;
+						}
+					if ("confirmed" == $out->status && 0 == $out->output && count($listfunds->channels) > 0)    {
+						$ln_balance = $out->value;
+						$found = true;
+						debuglog("[LN] Initial funding onchain : OK");
+						break;
+						}
+					}
+					if ($found == false)    {
+						debuglog("[LN] Error: Please perform a Bitcoin onchain transaction to ".LN_MY_BTC_ADDRESS);
+						// testnet faucet : https://testnet.manu.backend.hamburg/faucet
+					}
+					else    {
 
-                debuglog("LN Balance (not in channels) = ".$ln_balance." sat = ".($ln_balance/100000000)." BTC");
+						debuglog("LN Balance (not in channels) = ".$ln_balance." sat = ".($ln_balance/100000000)." BTC");
 
-                debuglog("[LN] 4. Check connections");
+						debuglog("[LN] 4. Check connections");
 
-                $output = shell_exec('sudo lightning-cli -J listpeers');
-                $output = json_decode($output);
+						$output = shell_exec('sudo lightning-cli -J listpeers');
+						$output = json_decode($output);
 			
-		                global $configLNGamePlayers;
-                foreach ($configLNGamePlayers as $player)       {
-//debuglog($player[0]);
-                        $connected = false;
-                        foreach ($output->peers as $out)        {
-                                if ($out->id == $player[1])     {
-                                        debuglog("Connected to player OK");
-                                        $connected = true;
-                                        break;
-                                }
-                        }
-                        if ($connected == false)        {
-                                debuglog("Connect to player...");
-                                $ttt = 'sudo lightning-cli -J connect ' . $player[1] . ' ' . $player[2] . ' ' . $player[3]; // . "'";
-                                //debuglog("OK");
-                                debuglog($ttt);
+						global $configLNGamePlayers;
+						
+						foreach ($configLNGamePlayers as $player)       {
+							//debuglog($player[0]);
+							$connected = false;
+							foreach ($output->peers as $out)        {
+								if ($out->id == $player[1])     {
+									debuglog("Connected to player OK");
+									$connected = true;
+									break;
+								}
+							}
+							if ($connected == false)        {
+								debuglog("Connect to player...");
+								$ttt = 'sudo lightning-cli -J connect ' . $player[1] . ' ' . $player[2] . ' ' . $player[3]; // . "'";
+								//debuglog("OK");
+								debuglog($ttt);
 
-                                $output = shell_exec($ttt);
-                                debuglog($output);
-                                // todo: handle errors to avoid this peer (into memcache ?)
-                                // -1, "message" : "Connection establishment: Connection timed out
-                        }
-                }
+								$output = shell_exec($ttt);
+								debuglog($output);
+								// todo: handle errors to avoid this peer (into memcache ?)
+								// -1, "message" : "Connection establishment: Connection timed out
+							}
+						}
 
-                debuglog("[LN] 5. Check channels funds : cancelled !");
+						debuglog("[LN] 5. Check channels funds : cancelled !");
 
 //                $output = shell_exec('sudo lightning-cli -J list');
 //                $output = json_decode($output);
-                $found = true;
+						$found = true;
 /*                if (count($listfunds->channels) > 0)
                 foreach ($listfunds->channels as $out)        {
 //                      debuglog("in"); // value = ".$out["value"]." status = ".$out["status"]);
@@ -177,8 +175,8 @@ class CronjobController extends CommonController
                         }
                 }
 */
-                if ($found == false)    {
-                        debuglog("[LN] No channels credited: Channel credit with a fraction of the remaining funds");
+						if ($found == false)    {
+							debuglog("[LN] No channels credited: Channel credit with a fraction of the remaining funds");
                         //foreach ($configLNGamePlayers as $player)       {
                                 //  code : -32602    [message] => 'Funding satoshi must be <= 16777215'
 //                              $output = shell_exec('sudo lightning-cli -J fundchannel '.$out->id_peer. ' ' . min( 16777215, round($ln_balance / LN_FRACTION)));
@@ -186,9 +184,9 @@ class CronjobController extends CommonController
 //                              debuglog($output);
                         //}
 
-                }
-                else    {
-                        debuglog("[LN] 6. Channel open on LN : cancelled !");
+						}
+						else    {
+							debuglog("[LN] 6. Channel open on LN : cancelled !");
 /*
                         $outpute = shell_exec('sudo lightning-cli -J listpeers');
                         $output = json_decode($outpute);
@@ -221,18 +219,17 @@ class CronjobController extends CommonController
                         }
                         debuglog("channels chekcs ended");
 */
-                        if (true)       {
-                                debuglog("Payment will be done");
+							if (true)       {
+								debuglog("Payment will be done");
+								if (true) { // $ln_balance > LN_MIN_PAY)        {
 
-                                if (true) { // $ln_balance > LN_MIN_PAY)        {
-
-$db_bills = dbolist("SELECT bolt11 from invoices WHERE status='New' ORDER by id ASC");
-if (!$db_bills)  {
-        debuglog("Nothing to pay");
-        }
-else    {
-        debuglog("To pay");
-        foreach ($db_bills as $bill)    {
+									$db_bills = dbolist("SELECT bolt11 from invoices WHERE status='New' ORDER by id ASC");
+									if (!$db_bills)  {
+										debuglog("Nothing to pay");
+									}
+									else    {
+										debuglog("There are LN invoices to pay");
+										foreach ($db_bills as $bill)    {
 //              debuglog("Bill");
 //              break;
 //              }
@@ -245,65 +242,65 @@ else    {
 
 //              debuglog("before");
 //              debuglog($bill['bolt11']);
-                $oo = "sudo lightning-cli -J decodepay ".$bill['bolt11'];
-		                debuglog($oo);
-                $outpute = shell_exec($oo);
-                $output = json_decode($outpute);
-                debuglog($outpute);
-                if (isset($output->message) && $output->message == "Invalid bolt11: Bad bech32 string")   {
-                        // debuglog("clean invalid");
-                        dborun("UPDATE invoices SET status = 'Invalid' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Invoice with invalid bolt11");
-                        break;
-                        }
-                if (isset($output->description))        {
-                        dborun("UPDATE invoices SET description = '".addslashes(htmlentities($output->description))."' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Update description");
-                        }
-                if (isset($output->payee))  {
-                        dborun("UPDATE invoices SET shop = '".$output->payee."' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Update shop");
-                        }
-                if (isset($output->msatoshi))  {
-                        dborun("UPDATE invoices SET amount = '".$output->msatoshi."' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Update amount");
-                        }
+											$oo = "sudo lightning-cli -J decodepay ".$bill['bolt11'];
+											debuglog($oo);
+											$outpute = shell_exec($oo);
+											$output = json_decode($outpute);
+											debuglog($outpute);
+											if (isset($output->message) && $output->message == "Invalid bolt11: Bad bech32 string")   {
+												// debuglog("clean invalid");
+												dborun("UPDATE invoices SET status = 'Invalid' WHERE bolt11='".$bill['bolt11']."'");
+                        									debuglog("Invoice with invalid bolt11");
+                        									break;
+												}
+											if (isset($output->description))        {
+												dborun("UPDATE invoices SET description = '".addslashes(htmlentities($output->description))."' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Update description"); // TODO: add filter to prevent injections here
+												}
+											if (isset($output->payee))  {
+												dborun("UPDATE invoices SET shop = '".$output->payee."' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Update shop"); // TODO: add filter to prevent injections here
+												}
+											if (isset($output->msatoshi))  {
+												dborun("UPDATE invoices SET amount = '".$output->msatoshi."' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Update amount");
+												}
 
-                $oo = "sudo lightning-cli -J pay maxfeepercent=4 maxdelay=1200 bolt11=".$bill['bolt11'];
-                debuglog($oo);
-                $outpute = shell_exec($oo);
+											$oo = "sudo lightning-cli -J pay maxfeepercent=4 maxdelay=1200 bolt11=".$bill['bolt11'];
+											debuglog($oo);
+											$outpute = shell_exec($oo);
 //              debuglog("ok");
-                $output = json_decode($outpute);
-                debuglog($outpute);
-                if (isset($output->message) && $output->message == "Invoice expired")   {
-                        dborun("UPDATE invoices SET status = 'Expired' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Invoice expired");
-                        break;
-                        }
+											$output = json_decode($outpute);
+											debuglog($outpute);
+											if (isset($output->message) && $output->message == "Invoice expired")   {
+												dborun("UPDATE invoices SET status = 'Expired' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Invoice expired");
+												break;
+												}
 
-                if (isset($output->message) && $output->message == "Invalid bolt11: Bad bech32 string")   {
-                        // debuglog("clean invalid");
-                        dborun("UPDATE invoices SET status = 'Invalid' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Invoice with invalid bolt11");
-                        break;
-                        }
-		                if (isset($output->message) && (strpos($output->message == "max fee requested is")  !== false)) {
-                        // Fee 2001 is 1.352941% of payment 147900; max fee requested is
-                        // debuglog("clean invalid");
-                        dborun("UPDATE invoices SET status = 'maxfee' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Invoice with too much fee.");
-                        break;
-                        }
+											if (isset($output->message) && $output->message == "Invalid bolt11: Bad bech32 string")   {
+												// debuglog("clean invalid");
+												dborun("UPDATE invoices SET status = 'Invalid' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Invoice with invalid bolt11");
+												break;
+												}
+											if (isset($output->message) && (strpos($output->message == "max fee requested is")  !== false)) {
+												// Fee 2001 is 1.352941% of payment 147900; max fee requested is
+												// debuglog("clean invalid");
+												dborun("UPDATE invoices SET status = 'maxfee' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Invoice with too much fee.");
+												break;
+												}
 
-                if (isset($output->status) && $output->status == "complete")   {
-                        // debuglog("clean invalid");
-                        dborun("UPDATE invoices SET status = 'complete', exectime = '".time()."' WHERE bolt11='".$bill['bolt11']."'");
-                        debuglog("Bill paid ! :-)");
-                        if (isset($output->msatoshi_sent))      {
-                                dborun("UPDATE invoices SET paid = '".$output->msatoshi_sent."' WHERE bolt11='".$bill['bolt11']."'");
-                                }
-                        break;
-                        }
+											if (isset($output->status) && $output->status == "complete")   {
+												// debuglog("clean invalid");
+												dborun("UPDATE invoices SET status = 'complete', exectime = '".time()."' WHERE bolt11='".$bill['bolt11']."'");
+												debuglog("Bill paid ! :-)");
+												if (isset($output->msatoshi_sent))      {
+													dborun("UPDATE invoices SET paid = '".$output->msatoshi_sent."' WHERE bolt11='".$bill['bolt11']."'");
+													}
+													break;
+												}
 
 /*
 
@@ -332,22 +329,22 @@ else    {
                                                 debuglog("[LN] Bill: bad amount ".$output->msatoshi." ".(LN_MIN_PAY * 1000));
 
 */
-break;
-                }
-        }
+										break;
+									}
+								}
 
 
 //                                      $bill = file_get_contents("");
-                                }
-				                        }
+							}
+						}
                         //debuglog($outpute);
-                }
+                			}
 
                 //debuglog($output["id"]);
                 //debuglog("Refund channel if new payment occured");
 
-                }
-                }
+                		}
+                	}
                 }
 
                 memcache_set($this->memcache->memcache, "cronjob_ln_time_start", time());
