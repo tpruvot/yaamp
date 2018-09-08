@@ -6,7 +6,7 @@ function TradingSellCoins()
 {
 //	debuglog(__FUNCTION__);
 
-	$coins = getdbolist('db_coins', "enable and balance>0 and symbol!='BTC'");
+	$coins = getdbolist('db_coins', "enable=1 and balance>0 and symbol!='BTC'");
 	foreach($coins as $coin) sellCoinToExchange($coin);
 }
 
