@@ -176,7 +176,8 @@ YAAMP_ALGO g_algos[] =
 	{"yescryptR16", yescryptR16_hash, 0x10000, 0, 0 },
 	{"yescryptR32", yescryptR32_hash, 0x10000, 0, 0 },
 	{"zr5", zr5_hash, 1, 0, 0},
-
+	{"renesis", renesis_hash, 1, 0, 0},
+	{"geek", geek_hash, 1, 0, 0},
 	{"a5a", a5a_hash, 0x10000, 0, 0},
 	{"hive", hive_hash, 0x10000, 0, 0},
 	{"m7m", m7m_hash, 0x10000, 0, 0},
@@ -187,6 +188,9 @@ YAAMP_ALGO g_algos[] =
 	{"vitalium", vitalium_hash, 1, 0, 0},
 	{"aergo", aergo_hash, 1, 0, 0},
 
+	{"balloon", balloon_hash, 1, 0, 0},
+
+	
 	{"sha256t", sha256t_hash, 1, 0, 0}, // sha256 3x
 
 	{"sib", sib_hash, 1, 0, 0},

@@ -360,6 +360,10 @@ static bool valid_string_params(json_value *json_params)
 
 bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 {
+	 bool isBalloon = false;
+         if (strstr(g_current_algo->name,"balloon"))
+           isBalloon = true;
+
 	// submit(worker_name, jobid, extranonce2, ntime, nonce):
 	if(json_params->u.array.length<5 || !valid_string_params(json_params)) {
 		debuglog("%s - %s bad message\n", client->username, client->sock->ip);
@@ -499,6 +503,11 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 
 	// minimum hash diff begins with 0000, for all...
 	uint8_t pfx = submitvalues.hash_bin[30] | submitvalues.hash_bin[31];
+	
+	// except balloon
+        if(isBalloon)
+           pfx = (submitvalues.hash_bin[30] > 0x0b) | submitvalues.hash_bin[31];
+	   
 	if(pfx) {
 		if (g_debuglog_hash) {
 			debuglog("Possible %s error, hash starts with %02x%02x%02x%02x\n", g_current_algo->name,
@@ -508,18 +517,34 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 		client_submit_error(client, job, 25, "Invalid share", extranonce2, ntime, nonce);
 		return true;
 	}
-
-	uint64_t hash_int = get_hash_difficulty(submitvalues.hash_bin);
-	uint64_t user_target = diff_to_target(client->difficulty_actual);
+// bit dim, but so is measuring the diff this way
+    uint64_t user_target;
 	uint64_t coin_target = decode_compact(templ->nbits);
-	if (templ->nbits && !coin_target) coin_target = 0xFFFF000000000000ULL;
+	uint64_t hashcomb = * (uint64_t *) &submitvalues.hash_bin[24];
+	
+         // prevents overflow
+	if(!isBalloon) {
+                user_target = diff_to_target(client->difficulty_actual);
+        }
+        if(templ->nbits && !coin_target) coin_target = 0xFFFF000000000000ULL;
+         // due to balloon's lower diff
+        if (g_debuglog_hash && isBalloon) {
+                debuglog("hash %016lx \n", hashcomb);
+                debuglog("targ %016lx \n", sharetotarg(client->difficulty_actual));
+        }
+	if (g_debuglog_hash && !isBalloon) {
 
-	if (g_debuglog_hash) {
 		debuglog("%016llx actual\n", hash_int);
 		debuglog("%016llx target\n", user_target);
 		debuglog("%016llx coin\n", coin_target);
 	}
-	if(hash_int > user_target && hash_int > coin_target)
+	// due to balloon's lower diff
+        if(hashcomb > sharetotarg(client->difficulty_actual) && isBalloon) 
+        {
+                client_submit_error(client, job, 26, "Low difficulty share", extranonce2, ntime, nonce);
+                return true;
+        }
+	if(hash_int > user_target && hash_int > coin_target && !isBalloon)
 	{
 		client_submit_error(client, job, 26, "Low difficulty share", extranonce2, ntime, nonce);
 		return true;
