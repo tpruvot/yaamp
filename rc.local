@@ -52,7 +52,7 @@ screen -dmS lbry $STRATUM_DIR/run.sh lbry
 screen -dmS allium $STRATUM_DIR/run.sh allium
 #screen -dmS lyra2 $STRATUM_DIR/run.sh lyra2
 screen -dmS lyra2v2 $STRATUM_DIR/run.sh lyra2v2
-screen -dmS zero $STRATUM_DIR/run.sh lyra2z
+screen -dmS lyra2z $STRATUM_DIR/run.sh lyra2z
 
 screen -dmS blakecoin $STRATUM_DIR/run.sh blakecoin # blake 8
 screen -dmS blake $STRATUM_DIR/run.sh blake
@@ -76,4 +76,4 @@ screen -dmS m7m $STRATUM_DIR/run.sh m7m
 screen -dmS veltor $STRATUM_DIR/run.sh veltor
 screen -dmS velvet $STRATUM_DIR/run.sh velvet
 screen -dmS argon2 $STRATUM_DIR/run.sh argon2
-
+screen -dmS argon2d-dyn $STRATUM_DIR/run.sh argon2d-dyn
