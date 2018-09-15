@@ -5,8 +5,9 @@
 
 #include "sysendian.h"
 
+#include "argon2a.h"
 #include "ar2/argon2.h"
-#include "ar2/cores.h"
+#include "ar2/core.h"
 #include "ar2/ar2-scrypt-jane.h"
 
 #define _ALIGN(x) __attribute__ ((aligned(x)))
@@ -24,10 +25,10 @@ inline void argon_call(void *out, void *in, void *salt, int type)
 	context.pwd = (uint8_t *)in;
 	context.salt = (uint8_t *)salt;
 
-	argon2_core(&context, type);
+	argon2_ctx(&context, type);
 }
 
-void argon2_hash(const char* input, char* output, uint32_t len)
+void argon2a_hash(const char* input, char* output, uint32_t len)
 {
 	uint32_t _ALIGN(32) hashA[8], hashB[8];
 

@@ -38,7 +38,7 @@ function updateRawcoins()
 
 	if (!exchange_get('bitz', 'disabled')) {
 		$list = bitz_api_query('tickerall');
-
+		if (!empty($list)) {
 			dborun("UPDATE markets SET deleted=true WHERE name='bitz'");
 			foreach($list as $c => $ticker) {
 				$e = explode('_', $c);
@@ -47,6 +47,7 @@ function updateRawcoins()
 				$symbol = strtoupper($e[0]);
 				updateRawCoin('bitz', $symbol);
 			}
+		}
 	}
 
 	if (!exchange_get('bleutrade', 'disabled')) {
@@ -60,6 +61,19 @@ function updateRawcoins()
 					continue;
 				}
 				updateRawCoin('bleutrade', $currency->Currency, $currency->CurrencyLong);
+			}
+		}
+	}
+
+	if (!exchange_get('crex24', 'disabled')) {
+		$list = crex24_api_query('currencies');
+		if(is_array($list) && !empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='crex24'");
+			foreach ($list as $currency) {
+				$symbol = objSafeVal($currency, 'symbol');
+				$name = objSafeVal($currency, 'name');
+				if ($currency->isFiat || $currency->isDelisted) continue;
+				updateRawCoin('crex24', $symbol, $name);
 			}
 		}
 	}
@@ -436,7 +450,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('yobit','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('crex24','yobit','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {

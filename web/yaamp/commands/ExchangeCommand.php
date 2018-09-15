@@ -174,6 +174,11 @@ class ExchangeCommand extends CConsoleCommand
 			if (!is_array($balances)) echo "coinsmarkets error ".json_encode($balances)."\n";
 			else echo("coinsmarkets: ".json_encode($balances['return'])."\n");
 		}
+		if (!empty(EXCH_CREX24_KEY)) {
+			$balance = crex24_api_user('account/balance',array('currency'=>'BTC'));
+			if (!is_array($balance)) echo "crex24 error ".json_encode($balance)."\n";
+			else echo("crex24: ".json_encode($balance)."\n");
+		}
 		if (!empty(EXCH_CRYPTOPIA_KEY)) {
 			$balance = cryptopia_api_user('GetBalance',array("Currency"=>"BTC"));
 			if (!is_object($balance)) echo("cryptopia error ".json_encode($balance)."\n");

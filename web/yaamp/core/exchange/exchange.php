@@ -19,6 +19,7 @@ require_once("bitz.php");
 require_once("bleutrade.php");
 require_once("ccexapi.php");
 require_once("cexio.php");
+require_once("crex24.php");
 require_once("cryptobridge.php");
 require_once("gateio.php");
 require_once("graviex.php");
@@ -97,6 +98,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://www.coinexchange.io/market/{$symbol}/{$base}";
 	else if($market == 'coinsmarkets')
 		$url = "https://coinsmarkets.com/trade-{$base}-{$symbol}.htm";
+	else if($market == 'crex24')
+		$url = "https://crex24.com/exchange/{$symbol}-{$base}";
 	else if($market == 'cryptobridge')
 		$url = "https://wallet.crypto-bridge.org/market/BRIDGE.{$symbol}_BRIDGE.{$base}";
 	else if($market == 'cryptohub')
