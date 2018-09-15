@@ -123,7 +123,7 @@ There a lot of unused code in the php branch. Lot come from other projects I wor
 
 # yiimp - file tree
 
-	!!! /yiimp/ in Github repo => /var/ on VPS (after compiling yiimp) !!!
+	NOTE: /yiimp/ in Github repo => /var/ on VPS (after compiling yiimp)
 
 | Front-End |  |
 |:-----------|:-----------|
