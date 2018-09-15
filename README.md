@@ -137,7 +137,7 @@ There a lot of unused code in the php branch. Lot come from other projects I wor
 
 | coins and payment fix |  |
 |:-----------|:-----------|
-| yiimp/web/yaamp/core/backend/payment.php (l:57) | `|| $coin->symbol == '<coinSymbol>' || 	// note: (coinSymbol is different from coinAlgo).` |
+| yiimp/web/yaamp/core/backend/payment.php (l:57) | `|| $coin->symbol == '<coinSymbol>' ||  note: (coinSymbol is different from coinAlgo).` |
 | yiimp/stratum/algos (new file)  | `<algo>.h (copy from another exisitng to make easier)` |
 | yiimp/stratum/stratum.h (l:149) | `#include "algos/<algo>.h"` |
 | yiimp/web/yaamp/core/functions/yaamp.php | `function yaamp_get_algos; & function yaamp_algo_mBTC_factor; & function yaamp_get_algo_norm; & function getAlgoColors; & function getAlgoPort)` |
