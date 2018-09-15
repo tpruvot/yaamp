@@ -125,25 +125,24 @@ There a lot of unused code in the php branch. Lot come from other projects I wor
 
 !!! /yiimp/ in Github repo => /var/ on VPS (after compiling yiimp) !!!
 
-Front-End:
+| Front-End |  |
+|:-----------|:-----------|
+| Homepage | `yiimp/web/yaamp/modules/site/index.php` |
+| API | `yiimp/web/yaamp/modules/site/api.php` |
+| About us | `yiimp/web/yaamp/modules/site/about.php` |
+| Results | `yiimp/web/yaamp/modules/site/results` |
+| Dedicated custom ports (l:144) |  `if statement for Dedicated custom ports.` |
+| Next payment (l:128 & 134) | `yiimp/web/yaamp/ui/main.php` |
+| Images | `yiimp/web/images` |
 
-	page d'acceuil --> yiimp/web/yaamp/modules/site/index.php
-	api --> yiimp/web/yaamp/modules/site/api.php
-	A propos de nous --> yiimp/web/yaamp/modules/site/about.php
-	Results --> yiimp/web/yaamp/modules/site/results
-	Dedicated custom ports (l:144) --> if statement for Dedicated custom ports.
-	Next payment (l:128 & 134) --> yiimp/web/yaamp/ui/main.php
-	Images --> yiimp/web/images
-
-To add coins and payment fix:
-
-	yiimp/web/yaamp/core/backend/payment.php (l:57) --> || $coin->symbol == '<coinSymbol>' ||
-	// note: (coinSymbol is different from coinAlgo).
-	yiimp/stratum/algos (new file) --> <algo>.h (copy from another exisitng to make easier)
-	yiimp/stratum/stratum.h (l:149) --> #include "algos/<algo>.h"
-	yiimp/web/yaamp/core/functions/yaamp.php --> function yaamp_get_algos; & function yaamp_algo_mBTC_factor; & function yaamp_get_algo_norm; & function getAlgoColors; & function getAlgoPort)
-	sql/labels.json --> "<ticker>":"<coin>", (example: "ETN":"Electroneum",)
-	rc-old.local (l:18) --> screen -dmS <algo> /var/stratum/run.sh <algo/coin/ticker> (example: screen -dmS x11 /var/stratum/run.sh x11)
+| coins and payment fix |  |
+|:-----------|:-----------|
+| yiimp/web/yaamp/core/backend/payment.php (l:57) | `|| $coin->symbol == '<coinSymbol>' || 	// note: (coinSymbol is different from coinAlgo).` |
+| yiimp/stratum/algos (new file)  | `<algo>.h (copy from another exisitng to make easier)` |
+| yiimp/stratum/stratum.h (l:149) | `#include "algos/<algo>.h"` |
+| yiimp/web/yaamp/core/functions/yaamp.php | `function yaamp_get_algos; & function yaamp_algo_mBTC_factor; & function yaamp_get_algo_norm; & function getAlgoColors; & function getAlgoPort)` |
+| sql/labels.json |  `"<ticker>":"<coin>", (example: "ETN":"Electroneum",)` |
+| rc-old.local (l:18) | `screen -dmS <algo> /var/stratum/run.sh <algo/coin/ticker> (example: screen -dmS x11 /var/stratum/run.sh x11)` |
 
 
 Credits:
