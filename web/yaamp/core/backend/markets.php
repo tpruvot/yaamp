@@ -10,6 +10,7 @@ function BackendPricesUpdate()
 
 	settings_prefetch_all();
 
+	updateAnybitsMarkets();
 	updateBittrexMarkets();
 	updateBitzMarkets();
 	updatePoloniexMarkets();
@@ -219,6 +220,63 @@ function AverageIncrement($value1, $value2)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+function updateAnybitsMarkets()
+{
+	$exchange = 'anybits';
+	if (exchange_get($exchange, 'disabled')) return;
+
+ 	$list = getdbolist('db_markets', "name LIKE '$exchange%'");
+	if (empty($list)) return;
+
+	$data = anybits_api_query('ticker');
+
+ 	foreach($list as $market)
+	{
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+
+ 		$symbol = $coin->getOfficialSymbol();
+
+  		$sqlFilter = '';
+		if (!empty($market->base_coin)) {
+			$sqlFilter = "AND base_coin='{$market->base_coin}'";
+		}
+
+		$pair = $symbol . "_BTC";
+
+ 		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+		foreach ($data as $c => $ticker) {
+			if ($c === $pair) {
+//				if ($market->disabled < 9) {
+//					$nbm = (int) dboscalar("SELECT COUNT(id) FROM markets WHERE coinid={$coin->id} $sqlFilter");
+//					$market->disabled = ($ticker->buy_price < $ticker->sell_price/2) && ($nbm > 1);
+//				}
+
+		 		$price2 = ($ticker->lowestAsk + $ticker->highestBid)/2;
+				$market->price2 = AverageIncrement($market->price2, $price2);
+				$market->price = AverageIncrement($market->price, $ticker->highestBid);
+				$market->pricetime = time();
+				$market->save();
+		 		if (empty($coin->price) && $ticker->lowestAsk) {
+					$coin->price = $market->price;
+					$coin->price2 = $price2;
+					$coin->save();
+				}
+				//debuglog("$exchange: $symbol price updated to {$market->price}");
+				break;
+			}
+		}
+	}
+}
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
 function updateBleutradeMarkets()
 {
