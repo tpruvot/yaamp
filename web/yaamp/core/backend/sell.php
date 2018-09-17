@@ -40,6 +40,7 @@ function sellCoinToExchange($coin)
 
 	if($market->lastsent != null && $market->lastsent > $market->lasttraded)
 	{
+//		mail(YAAMP_ADMIN_EMAIL, "Late Transaction", "A previous transaction for $coin->name to $market->name has not been recieved.");
 //		debuglog("*** not sending $coin->name to $market->name. last tx is late ***");
 		return;
 	}
