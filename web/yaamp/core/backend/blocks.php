@@ -26,9 +26,9 @@ function BackendBlockNew($coin, $db_block)
 		if(!$user) continue;
 
 		$amount = $reward * $hash_power / $total_hash_power;
-		if(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo);
+		f(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo, -1, $user->username); //if(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo);
 		if(!empty($user->donation)) {
-			$amount = take_yaamp_fee($amount, $coin->algo, $user->donation);
+			$amount = take_yaamp_fee($amount, $coin->algo, $user->donation, $user->username); //$amount = take_yaamp_fee($amount, $coin->algo, $user->donation);
 			if ($amount <= 0) continue;
 		}
 
