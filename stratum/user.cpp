@@ -34,6 +34,20 @@ void db_check_coin_symbol(YAAMP_DB *db, char* symbol)
 	}
 }
 
+bool db_check_symbol(YAAMP_DB *db, char *symbol)
+{
+	db_query(db, "SELECT symbol,symbol2 FROM coins WHERE symbol='%s' OR symbol2='%s'", symbol, symbol);
+ 	MYSQL_RES *result = mysql_store_result(&db->mysql);
+	if(!result) return false;
+ 	MYSQL_ROW row = mysql_fetch_row(result);
+	if(!row) return false;
+ 	if(row[0]) {
+		strncpy(symbol, row[0], sizeof(symbol));
+		return true;
+	}
+ 	return false;
+}
+
 void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 {
 	db_clean_string(db, client->username);
