@@ -88,6 +88,9 @@ class PayoutCommand extends CConsoleCommand
 			echo "wallet $symbol not found!\n";
 			return 0;
 		}
+		
+		$DCR = ($coin->rpcencoding == 'DCR' || $coin->symbol2 == 'DCR' || $coin->symbol == 'DCR');
+		$DGB = ($coin->rpcencoding == 'DGB' || $coin->symbol2 == 'DGB' || $coin->symbol == 'DGB');
 
 		// failed payouts, generally related to bad wallet 'accounts' balances (VNL)
 		$dbPayouts = new db_payouts;
@@ -134,8 +137,8 @@ class PayoutCommand extends CConsoleCommand
 			return 0;
 
 		$remote = new WalletRPC($coin);
-		$account = '';
-		if ($coin->rpcencoding == 'DCR') $account = '*';
+		if ($DCR || $DGB) $account = '*';
+		else $account = '';
 		$rawtxs = $remote->listtransactions($account, 25000);
 
 		foreach ($ids as $uid => $user_addr)
