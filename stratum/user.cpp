@@ -91,6 +91,11 @@ void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client)
 			return;
 		}
 	}
+	
+	if(!db_check_symbol(db, symbol)) {
+		debuglog("Invalid coin symbol '%s' from '%s'\n", symbol, client->username);
+		return;
+	}
 
 	// debuglog("user %s %s gives %d %\n", client->username, symbol, gift);
 	db_query(db, "SELECT id, is_locked, logtraffic, coinid, donation FROM accounts WHERE username='%s'", client->username);
