@@ -4,7 +4,8 @@ $coin = getdbo('db_coins', getiparam('id'));
 if (!$coin) $this->goback();
 
 $PoS = ($coin->algo == 'PoS'); // or if 'stake' key is present in 'getinfo' method
-$DCR = ($coin->rpcencoding == 'DCR');
+$DCR = ($coin->rpcencoding == 'DCR' || $coin->getOfficialSymbol() == 'DCR');
+$DGB = ($coin->rpcencoding == 'DGB' || $coin->getOfficialSymbol() == 'DGB');
 $ETH = ($coin->rpcencoding == 'GETH');
 
 $remote = new WalletRPC($coin);
@@ -295,9 +296,9 @@ echo <<<end
 </thead><tbody>
 end;
 
-$account = '';
-if ($DCR) $account = '*';
-if ($ETH) $account = $coin->master_wallet;
+if ($DCR || $DGB) $account = '*';
+else if ($ETH) $account = $coin->master_wallet;
+else $account = '';
 
 $txs = $remote->listtransactions($account, $maxrows);
 
