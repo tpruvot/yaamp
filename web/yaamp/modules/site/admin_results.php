@@ -80,7 +80,7 @@ foreach($coins as $coin)
 	else echo '<span class="red" title="Stratum disabled">D</span>';
 
 	if($coin->visible) echo '<span title="Visible to public">V</span>';
-	else echo '<span title="Hidden">H</span>';
+	else echo '<span class="red" title="Hidden">H</span>'; // else echo '<span title="Hidden">H</span>';
 
 	if($coin->auxpow) echo '<span title="AUX PoW">X</span>';
 	else echo '&nbsp;';
