@@ -21,6 +21,20 @@ function updateRawcoins()
 
 	settings_prefetch_all();
 
+	if (!exchange_get('bigone', 'disabled')) {
+		$list = bigone_api_query('tickers');
+		if(!empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='anybits'");
+			foreach ($list as $ticker) {
+				if (strpos($ticker->{'market_id'}, '-BTC') !== false) {
+					$symbol = strstr($ticker->{'market_id'}, '-', true);
+					updateRawCoin('bigone', $symbol);
+					// debuglog("bigone $symbol update raw coin");
+				}
+			}
+		}
+	}
+
 	if (!exchange_get('bittrex', 'disabled')) {
 		$list = bittrex_api_query('public/getcurrencies');
 		if(isset($list->result) && !empty($list->result))
@@ -450,7 +464,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('crex24','yobit','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('bigone','crex24','yobit','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {
