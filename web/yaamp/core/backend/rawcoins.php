@@ -21,6 +21,21 @@ function updateRawcoins()
 
 	settings_prefetch_all();
 
+	if (!exchange_get('bitlish', 'disabled')) {
+		$list = bitlish_api_query('tickers');
+		if(!empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='bitlish'");
+			foreach ($list as $c => $ticker) {
+				if (strpos($c, 'btc') !== false) {
+					$symbol = strtoupper(str_replace("btc", "", $c));
+					if (in_array($symbol,array("EUR","GBP","USD"))) continue;
+					updateRawCoin('bitlish', $symbol);
+					// debuglog("bitlish $symbol update raw coin");
+				}
+			}
+		}
+	}
+
 	if (!exchange_get('bittrex', 'disabled')) {
 		$list = bittrex_api_query('public/getcurrencies');
 		if(isset($list->result) && !empty($list->result))
@@ -450,7 +465,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('crex24','yobit','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('bitlish','crex24','yobit','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {
