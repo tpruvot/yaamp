@@ -10,6 +10,8 @@ define('YAAMP_DBHOST', 'localhost');
 define('YAAMP_DBNAME', 'yaamp');
 define('YAAMP_DBUSER', 'root');
 define('YAAMP_DBPASSWORD', 'password');
+define('YAAMP_LOGS', '/var/log/yiimp');
+define('YAAMP_DBBACKUP_PATH', '/var/pool/backup');
 
 define('YAAMP_PRODUCTION', true);
 define('YAAMP_RENTAL', true);
