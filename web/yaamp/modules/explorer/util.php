@@ -171,6 +171,13 @@ function versionToAlgo($coin, $version)
 	$algos['GCH'] = array(
 		0=>'x12', 1=>'x11', 2=>'x13', 3=>'sha256', 4=>'blake2s'
 	);
+	$algos['GLT'] = array(
+		0=>'sha256', 1=>'scrypt', 2=>'x11', 3=>'neoscrypt', 4=>'equihash', 5=>'yescrypt', 6=>'hmq1725', 
+		7=>'xevan', 8=>'nist5', 9=>'bitcore', 10=>'pawelhash', 11=>'x13', 12=>'x14', 13=>'x15', 14=>'x17', 
+		15=>'lyra2v2', 16=>'blake2s', 17=>'blake2b', 18=>'astralhash', 19=>'padihash', 20=>'jeonghash', 
+		21=>'keccak', 22=>'zhash', 23=>'globalhash', 24=>'skein', 25=>'myr-gr', 26=>'qubit', 27=>'skunk', 
+		28=>'quark', 29=>'x16r'
+	);
 	$algos['RICHX'] = array(
 		0=>'sha256', 1=>'scrypt', 2=>'myr-gr', 3=>'skein', 4=>'qubit'
 	);
