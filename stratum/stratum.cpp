@@ -120,6 +120,7 @@ YAAMP_ALGO g_algos[] =
 	{"x14", x14_hash, 1, 0, 0},
 	{"x15", x15_hash, 1, 0, 0},
 	{"x17", x17_hash, 1, 0, 0},
+	{"x22i", x22i_hash, 1, 0, 0},
 
 	{"x11evo", x11evo_hash, 1, 0, 0},
 	{"xevan", xevan_hash, 0x100, 0, 0},
@@ -184,6 +185,7 @@ YAAMP_ALGO g_algos[] =
 	{"velvet", velvet_hash, 0x10000, 0, 0},
 	{"argon2", argon2a_hash, 0x10000, 0, sha256_hash_hex },
 	{"argon2d-dyn", argon2d_dyn_hash, 0x10000, 0, 0 }, // Dynamic Argon2d Implementation
+	{"argon2d-crds", argon2d_crds_hash, 0x10000, 0, 0 }, // CRDS Argon2d Implementation
 	{"vitalium", vitalium_hash, 1, 0, 0},
 	{"aergo", aergo_hash, 1, 0, 0},
 

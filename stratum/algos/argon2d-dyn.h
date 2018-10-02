@@ -8,6 +8,7 @@ extern "C" {
 #include <stdint.h>
 
 void argon2d_dyn_hash(const char* input, char* output, unsigned int len);
+void argon2d_crds_hash(const char* input, char* output, unsigned int len);
 
 #ifdef __cplusplus
 }
