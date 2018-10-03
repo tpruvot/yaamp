@@ -137,6 +137,7 @@ YAAMP_ALGO g_algos[] =
 	{"lyra2", lyra2re_hash, 0x80, 0, 0},
 	{"lyra2v2", lyra2v2_hash, 0x100, 0, 0},
 	{"lyra2z", lyra2z_hash, 0x100, 0, 0},
+	{"lbk3", lbk3_hash, 0x100, 0, 0},
 
 	{"bastion", bastion_hash, 1, 0 },
 	{"blake", blake_hash, 1, 0 },
@@ -170,7 +171,6 @@ YAAMP_ALGO g_algos[] =
 	{"lbry", lbry_hash, 0x100, 0, 0},
 	{"luffa", luffa_hash, 1, 0, 0},
 	{"penta", penta_hash, 1, 0, 0},
-	{"rainforest", rainforest_hash, 0x100, 0, 0},
 	{"skein2", skein2_hash, 1, 0, 0},
 	{"yescrypt", yescrypt_hash, 0x10000, 0, 0},
 	{"yescryptR16", yescryptR16_hash, 0x10000, 0, 0 },
@@ -182,8 +182,7 @@ YAAMP_ALGO g_algos[] =
 	{"m7m", m7m_hash, 0x10000, 0, 0},
 	{"veltor", veltor_hash, 1, 0, 0},
 	{"velvet", velvet_hash, 0x10000, 0, 0},
-	{"argon2", argon2a_hash, 0x10000, 0, sha256_hash_hex },
-	{"argon2d-dyn", argon2d_dyn_hash, 0x10000, 0, 0 }, // Dynamic Argon2d Implementation
+	{"argon2", argon2_hash, 0x10000, 0, sha256_hash_hex },
 	{"vitalium", vitalium_hash, 1, 0, 0},
 	{"aergo", aergo_hash, 1, 0, 0},
 
