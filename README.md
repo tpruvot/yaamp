@@ -120,6 +120,9 @@ There a lot of unused code in the php branch. Lot come from other projects I wor
 
 	http://www.yiiframework.com/
 
+WARNINGS
+- This is beta software. Use at your own risks.
+- Usage of this software requires abilities with sysadmin, database admin, coin daemons, and sometimes a bit of programming. Running a production pool can literally be more work than a full-time job.
 
 Credits:
 
