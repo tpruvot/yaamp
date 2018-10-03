@@ -26,6 +26,7 @@ function yaamp_get_algos()
 		'hex',
 		'hsr',
 		'lbry',
+		'lbk3'
 		'luffa',
 		'lyra2',
 		'lyra2v2',
@@ -179,6 +180,7 @@ function getAlgoColors($algo)
 		'quark'		=> '#c0c0c0',
 		'qubit'		=> '#d0a0f0',
 		'rainforest'	=> '#d0f0a0',
+		'lbk3'		=> '#809aef',
 		'lyra2'		=> '#80a0f0',
 		'lyra2v2'	=> '#80c0f0',
 		'lyra2z'	=> '#80b0f0',
@@ -243,6 +245,7 @@ function getAlgoPort($algo)
 		'argon2d-dyn'	=> 4239,
 		'scryptn'	=> 4333,
 		'allium'	=> 4443,
+		'lbk3'		=> 5522,
 		'lyra2'		=> 4433,
 		'lyra2v2'	=> 4533,
 		'lyra2z'	=> 4553,
