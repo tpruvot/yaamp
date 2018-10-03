@@ -26,7 +26,7 @@ function yaamp_get_algos()
 		'hex',
 		'hsr',
 		'lbry',
-		'lbk3'
+		'lbk3',
 		'luffa',
 		'lyra2',
 		'lyra2v2',
