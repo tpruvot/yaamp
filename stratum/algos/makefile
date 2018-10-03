@@ -41,4 +41,5 @@ $(OUTPUT): $(OBJECTS)
 clean:
 	rm -f *.o
 	rm -f ar2/*.o
+	rm -f blake2/*.o
 
