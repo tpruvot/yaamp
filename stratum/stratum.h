@@ -1,4 +1,3 @@
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -188,6 +187,7 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/lbry.h"
 #include "algos/luffa.h"
 #include "algos/pentablake.h"
+#include "algos/rainforest.h"
 #include "algos/whirlpool.h"
 #include "algos/whirlpoolx.h"
 #include "algos/skein2.h"
@@ -207,4 +207,4 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/vitalium.h"
 #include "algos/aergo.h"
 #include "algos/hex.h"
-
+#include "algos/argon2d-dyn.h"
