@@ -14,6 +14,7 @@ function BackendPricesUpdate()
 	updateBitzMarkets();
 	updatePoloniexMarkets();
 	updateBleutradeMarkets();
+	updateBTCAlphaMarkets();
 	updateCryptoBridgeMarkets();
 	updateEscoDexMarkets();
 	updateGateioMarkets();

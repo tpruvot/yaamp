@@ -65,6 +65,21 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('btc-alpha', 'disabled')) {
+		$list = btcalpha_api_query('ticker');
+		if(is_array($list) && !empty($list))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='btcalpha'");
+			foreach($list as $ticker) {
+				$e = explode('_', $ticker->pair);
+				if (strtoupper($e[1]) !== 'BTC')
+					continue;
+				$symbol = strtoupper($e[0]);
+				updateRawCoin('btc-alpha', $symbol);
+			}
+		}
+	}
+
 	if (!exchange_get('crex24', 'disabled')) {
 		$list = crex24_api_query('currencies');
 		if(is_array($list) && !empty($list)) {

@@ -17,6 +17,7 @@ require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("bitz.php");
 require_once("bleutrade.php");
+require_once("btcalpha.php");
 require_once("ccexapi.php");
 require_once("cexio.php");
 require_once("crex24.php");
