@@ -21,6 +21,7 @@ require_once("ccexapi.php");
 require_once("cexio.php");
 require_once("crex24.php");
 require_once("cryptobridge.php");
+require_once("escodex.php");
 require_once("gateio.php");
 require_once("graviex.php");
 require_once("kraken.php");
