@@ -205,6 +205,21 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('escodex', 'disabled')) {
+		$list = escodex_api_query('ticker');
+		if(is_array($list) && !empty($list))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='escodex'");
+			foreach($list as $ticker) {
+				#debuglog (json_encode($ticker));
+				if (strtoupper($ticker->base) !== 'BTC')
+					continue;
+				$symbol = strtoupper($ticker->quote);
+				updateRawCoin('escodex', $symbol);
+			}
+		}
+	}
+
 	if (!exchange_get('hitbtc', 'disabled')) {
 		$list = hitbtc_api_query('symbols');
 		if(is_object($list) && isset($list->symbols) && is_array($list->symbols))
