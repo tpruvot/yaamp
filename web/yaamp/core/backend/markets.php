@@ -328,6 +328,54 @@ function updateBitzMarkets($force = false)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+function updateBTCAlphaMarkets($force = false)
+{
+	debuglog(__FUNCTION__);
+	$exchange = 'btc-alpha';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$count = (int) dboscalar("SELECT count(id) FROM markets WHERE name LIKE '$exchange%'");
+	if ($count == 0) return;
+
+	$result = btcalpha_api_query('ticker');
+	if(!is_array($result)) return;
+
+	foreach($result as $ticker)
+	{
+		if (is_null(objSafeVal($ticker,'pair'))) continue;
+		$pairs = explode('_', $ticker->pair);
+		$symbol = reset($pairs); $base = end($pairs);
+		if($symbol == 'BTC' || $base != 'BTC') continue;
+
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+		}
+
+		$coin = getdbosql('db_coins', "symbol='{$symbol}'");
+		if(!$coin) continue;
+		if(!$coin->installed && !$coin->watch) continue;
+
+		$market = getdbosql('db_markets', "coinid={$coin->id} and name='{$exchange}'");
+		if(!$market) continue;
+
+		$price2 = ($ticker->buy + $ticker->sell)/2;
+		$market->price2 = AverageIncrement($market->price2, $price2);
+		$market->price = AverageIncrement($market->price, $ticker->buy);
+		$market->pricetime = time();
+		$market->priority = -1;
+		$market->txfee = 0.2; // trade pct
+		$market->save();
+
+		debuglog("$exchange: update $symbol: {$market->price} {$market->price2}");
+		if ((empty($coin->price))||(empty($coin->price2))) {
+			$coin->price = $market->price;
+			$coin->price2 = $market->price2;
+			$coin->market = $exchange;
+			$coin->save();
+		}
+	}
+}
 
 function updateCryptoBridgeMarkets($force = false)
 {
