@@ -120,6 +120,7 @@ YAAMP_ALGO g_algos[] =
 	{"x14", x14_hash, 1, 0, 0},
 	{"x15", x15_hash, 1, 0, 0},
 	{"x17", x17_hash, 1, 0, 0},
+	{"x22i", x22i_hash, 1, 0, 0},
 
 	{"x11evo", x11evo_hash, 1, 0, 0},
 	{"xevan", xevan_hash, 0x100, 0, 0},
@@ -167,6 +168,7 @@ YAAMP_ALGO g_algos[] =
 	{"skunk", skunk_hash, 1, 0, 0},
 
 	{"bmw", bmw_hash, 1, 0, 0},
+	{"lbk3", lbk3_hash, 0x100, 0, 0},
 	{"lbry", lbry_hash, 0x100, 0, 0},
 	{"luffa", luffa_hash, 1, 0, 0},
 	{"penta", penta_hash, 1, 0, 0},

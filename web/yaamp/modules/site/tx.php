@@ -7,8 +7,6 @@ if(!$user) return;
 
 $this->pageTitle = $user->username.' | '.YAAMP_SITE_NAME;
 
-$bitcoin = getdbosql('db_coins', "symbol='BTC'");
-
 echo "<div class='main-left-box'>";
 echo "<div class='main-left-title'>Transactions to $user->username</div>";
 echo "<div class='main-left-inner'>";
@@ -26,7 +24,8 @@ echo "<th>Tx</th>";
 echo "</tr>";
 echo "</thead>";
 
-$coin = ($user->coinid == $bitcoin->id) ? $bitcoin : getdbo('db_coins', $user->coinid);
+$bitcoin = getdbosql('db_coins', "symbol='BTC'");
+$coin = ($bitcoin && $user->coinid == $bitcoin->id) ? $bitcoin : getdbo('db_coins', $user->coinid);
 
 $total = 0;
 foreach($list as $payout)
