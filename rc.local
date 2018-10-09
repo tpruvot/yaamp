@@ -78,3 +78,6 @@ screen -dmS veltor $STRATUM_DIR/run.sh veltor
 screen -dmS velvet $STRATUM_DIR/run.sh velvet
 screen -dmS argon2 $STRATUM_DIR/run.sh argon2
 screen -dmS argon2d-dyn $STRATUM_DIR/run.sh argon2d-dyn
+screen -dmS x22i $STRATUM_DIR/run.sh x22i
+screen -dmS lbk3 $STRATUM_DIR/run.sh lbk3
+
