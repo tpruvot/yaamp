@@ -210,4 +210,3 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/hex.h"
 #include "algos/argon2d-dyn.h"
 #include "algos/renesis.h"
-#include "algos/lyra2z330.h
