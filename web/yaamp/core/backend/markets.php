@@ -20,6 +20,7 @@ function BackendPricesUpdate()
 	updateKrakenMarkets();
 	updateKuCoinMarkets();
 	updateCCexMarkets();
+	updateCoinbeneMarkets();
 	updateCrex24Markets();
 	updateCryptopiaMarkets();
 	updateHitBTCMarkets();
@@ -986,6 +987,46 @@ function updateAlcurexMarkets()
 				//debuglog("$exchange: $pair price updated to {$market->price}");
 				break;
 			}
+		}
+	}
+}
+
+function updateCoinbeneMarkets()
+{
+	$exchange = 'coinbene';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$list = getdbolist('db_markets', "name LIKE '$exchange%'");
+	if (empty($list)) return;
+
+	$data = coinbene_api_query('market/ticker', 'symbol=all');
+	$data = objSafeVal($data,'ticker');
+	if(!is_array($data)) return;
+
+	foreach($list as $market) {
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+		if(!$coin->installed && !$coin->watch) continue;
+
+		$symbol = $coin->getOfficialSymbol();
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+		$pair = $symbol.'BTC';
+		foreach($data as $ticker) {
+			if ($ticker->symbol != $pair) continue;
+
+			$price2 = ($ticker->bid+$ticker->ask)/2;
+			$market->price2 = AverageIncrement($market->price2, $price2);
+			$market->price = AverageIncrement($market->price, $ticker->bid);
+			$market->pricetime = time();
+			$market->save();
+
+			break;
 		}
 	}
 }

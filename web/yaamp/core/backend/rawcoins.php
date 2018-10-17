@@ -11,6 +11,7 @@ function updateRawcoins()
 	exchange_set_default('binance', 'disabled', true);
 	exchange_set_default('bter', 'disabled', true);
 	exchange_set_default('empoex', 'disabled', true);
+	exchange_set_default('coinbene', 'disabled', true);
 	exchange_set_default('coinexchange', 'disabled', true);
 	exchange_set_default('coinsmarkets', 'disabled', true);
 	exchange_set_default('gateio', 'disabled', true);
@@ -61,6 +62,19 @@ function updateRawcoins()
 					continue;
 				}
 				updateRawCoin('bleutrade', $currency->Currency, $currency->CurrencyLong);
+			}
+		}
+	}
+
+	if (!exchange_get('coinbene', 'disabled')) {
+		$data = coinbene_api_query('market/symbol');
+		$list = objSafeVal($data, 'symbol');
+		if(is_array($list) && !empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='coinbene'");
+			foreach($list as $ticker) {
+				if ($ticker->quoteAsset != 'BTC') continue;
+				$symbol = $ticker->baseAsset;
+				updateRawCoin('coinbene', $symbol);
 			}
 		}
 	}
@@ -450,7 +464,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('crex24','yobit','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('crex24','yobit','coinbene','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {
