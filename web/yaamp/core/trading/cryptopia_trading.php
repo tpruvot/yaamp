@@ -88,7 +88,8 @@ function doCryptopiaTrading($quick=false)
 
 		$market = getdbosql('db_markets', "coinid=:coinid AND name='cryptopia'", array(':coinid'=>$coin->id));
 		if(!$market) continue;
-		$market->balance = $balance->HeldForTrades;
+		$market->balance = $balance->Available;
+		$market->ontrade = $balance->HeldForTrades;
 		$market->message = $balance->StatusMessage;
 
 		$orders = NULL;
