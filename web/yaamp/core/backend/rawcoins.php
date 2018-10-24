@@ -80,6 +80,20 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('coinbene', 'disabled')) {
+		$data = coinbene_api_query('market/symbol');
+		$list = objSafeVal($data, 'symbol');
+		if(is_array($list) && !empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='coinbene'");
+			foreach($list as $ticker) {
+				if ($ticker->quoteAsset != 'BTC') continue;
+				$symbol = $ticker->baseAsset;
+				updateRawCoin('coinbene', $symbol);
+			}
+		}
+	}
+
+
 	if (!exchange_get('crex24', 'disabled')) {
 		$list = crex24_api_query('currencies');
 		if(is_array($list) && !empty($list)) {
