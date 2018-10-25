@@ -2,6 +2,10 @@
 
 #yiimp - yaamp fork
 
+WARNINGS
+- Use at your own risks.
+- Usage of this software requires abilities with sysadmin, database admin, coin daemons, and sometimes a bit of programming. Running a production pool can literally be more work than a full-time job.
+
 Required:
 
 	linux, mysql, php, memcached, a webserver (lighttpd or nginx recommended)
@@ -119,10 +123,6 @@ More instructions coming as needed.
 There a lot of unused code in the php branch. Lot come from other projects I worked on and I've been lazy to clean it up before to integrate it to yaamp. It's mostly based on the Yii framework which implements a lightweight MVC.
 
 	http://www.yiiframework.com/
-
-WARNINGS
-- This is beta software. Use at your own risks.
-- Usage of this software requires abilities with sysadmin, database admin, coin daemons, and sometimes a bit of programming. Running a production pool can literally be more work than a full-time job.
 
 Credits:
 
