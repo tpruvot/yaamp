@@ -114,6 +114,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://c-cex.com/?p={$lowsymbol}-{$lowbase}";
 	else if($market == 'empoex')
 		$url = "http://www.empoex.com/trade/{$symbol}-{$base}";
+	else if($market == 'escodex')
+		$url = "https://wallet.escodex.com/market/ESCODEX.{$symbol}_ESCODEX.{$base}";
 	else if($market == 'gateio')
 		$url = "https://gate.io/trade/{$symbol}_{$base}";
 	else if($market == 'graviex')

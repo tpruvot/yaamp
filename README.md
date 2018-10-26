@@ -2,6 +2,10 @@
 
 #yiimp - yaamp fork
 
+WARNINGS
+- Use at your own risks.
+- Usage of this software requires abilities with sysadmin, database admin, coin daemons, and sometimes a bit of programming. Running a production pool can literally be more work than a full-time job.
+
 Required:
 
 	linux, mysql, php, memcached, a webserver (lighttpd or nginx recommended)
