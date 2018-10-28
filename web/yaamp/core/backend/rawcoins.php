@@ -456,7 +456,15 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 	if($symbol == 'BTC') return;
 
 	// Restrict $symbol and $name to strict defined set of characters (to protect from rogue exchange or DNS attack on exchange)
-	
+	if (!empty($symbol) && preg_match('/[^A-Za-z0-9_$]/', $symbol)) {
+		debuglog("weird symbol $symbol from $marketname");
+		return;
+		}
+	if (!empty($name) && preg_match('/[^A-Za-z0-9_$]/', $name)) {
+		debuglog("weird name $name for symbol $symbol from $marketname");
+		return;
+		}
+
 	$coin = getdbosql('db_coins', "symbol=:symbol", array(':symbol'=>$symbol));
 	if(!$coin && YAAMP_CREATE_NEW_COINS)
 	{
