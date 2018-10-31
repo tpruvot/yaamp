@@ -50,6 +50,13 @@ class CronjobController extends CommonController
 		if($last_complete+(5*60) < time())
 			dborun("update jobs set active=false");
 		BackendBlockFind1();
+		
+		$last_share_new = memcache_get($this->memcache->memcache, "cronjob_block_shares_new_start");
+		if($last_share_new+(3*60) < time()) { // trigger every 3min
+			BackendSharesNew();
+			memcache_set($this->memcache->memcache, "cronjob_block_shares_new_start", time());
+		}
+		
 		if(!memcache_get($this->memcache->memcache, 'balances_locked')) {
 			BackendClearEarnings();
 		}
@@ -59,11 +66,13 @@ class CronjobController extends CommonController
 
 		memcache_set($this->memcache->memcache, "cronjob_block_time_start", time());
 //		screenlog(__FUNCTION__.' done');
+		// debuglog(__METHOD__ . " END");
 	}
 
 	public function actionRunLoop2()
 	{
 //		screenlog(__FUNCTION__);
+		// debuglog(__METHOD__);
 		set_time_limit(0);
 
 		$this->monitorApache();
@@ -97,7 +106,7 @@ class CronjobController extends CommonController
 
 	public function actionRun()
 	{
-//		debuglog(__METHOD__);
+		debuglog(__METHOD__);
 		set_time_limit(0);
 
 //		BackendRunCoinActions();
