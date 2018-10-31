@@ -15,6 +15,8 @@ define('YAAMP_PRODUCTION', true);
 define('YAAMP_RENTAL', true);
 define('YAAMP_LIMIT_ESTIMATE', false);
 
+define('YAAMP_USE_PPS', true);
+
 define('YAAMP_FEES_MINING', 0.5);
 define('YAAMP_FEES_EXCHANGE', 2);
 define('YAAMP_FEES_RENTING', 2);
