@@ -46,7 +46,9 @@ function BackendQuickClean()
 	}
 
 	dborun("delete from earnings where blockid in (select id from blocks where category='orphan')");
-	dborun("delete from earnings where blockid not in (select id from blocks)");
+	if (!YAAMP_USE_PPS) {
+		dborun("delete from earnings where blockid not in (select id from blocks)");
+	}
 	dborun("UPDATE blocks SET amount=0 WHERE category='orphan' AND amount>0");
 }
 
