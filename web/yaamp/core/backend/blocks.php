@@ -1,5 +1,5 @@
 <?php
-
+if (!YAAMP_USE_PPS) {
 function BackendBlockNew($coin, $db_block)
 {
 //	debuglog("NEW BLOCK $coin->name $db_block->height");
@@ -78,9 +78,59 @@ function BackendBlockNew($coin, $db_block)
 		// [*:message] => 'CDbCommand failed to execute the SQL statement: SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded; try restarting transaction'
 	}
 }
-
+	
+｝
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // Import new blocks (notified by the stratum)
+else {
+function BackendSharesNew() {
+	debuglog(__METHOD__);
+ 	$coin = getdbo('db_coins');
+	// caculate shares group by user, add new earnings for them
+	$sqlCond = "valid = 1 AND status=0";
+	// TODO: seems difficulty we give miner is different from the one that Sia api use for block
+	$list = dbolist("SELECT userid, SUM(100*difficulty/block_difficulty*reward) AS total FROM shares WHERE $sqlCond AND algo=:algo GROUP BY userid",
+	array(':algo'=>$coin->algo));
+	debuglog($list);
+	foreach($list as $item)
+	{
+		$amount = $item['total'];
+		$user = getdbo('db_accounts', $item['userid']);
+		if(!$user) continue;
+ 		if(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo);
+		if(!empty($user->donation)) {
+			$amount = take_yaamp_fee($amount, $coin->algo, $user->donation);
+			if ($amount <= 0) continue;
+		}
+ 		$earning = new db_earnings;
+		$earning->userid = $user->id;
+		$earning->coinid = $coin->id;
+		$earning->create_time = time();
+		$earning->amount = $amount;
+		$earning->price = $coin->price;
+		$earning->mature_time = time();
+		$earning->status = 1;
+ 		if (!$earning->save())
+			debuglog(__FUNCTION__.": Unable to insert earning!");
+ 		// record the user's last earning time
+		$user->last_earning = time();
+		$user->save();
+		dborun("UPDATE shares SET status=1 WHERE $sqlCond AND userid=:userid", array('userid' => $item['userid']));
+	}
+ 	$delay = time() - 24*60*60; // delete SC shares older than a day
+	$sqlCond = "time < $delay AND status=1";
+ 	try {
+		dborun("DELETE FROM shares WHERE algo=:algo AND $sqlCond", array(':algo'=>$coin->algo));
+	} catch (CDbException $e) {
+		debuglog("unable to delete shares $sqlCond retrying...");
+		sleep(1);
+		dborun("DELETE FROM shares WHERE algo=:algo AND $sqlCond", array(':algo'=>$coin->algo));
+		// [errorInfo] => array(0 => 'HY000', 1 => 1205, 2 => 'Lock wait timeout exceeded; try restarting transaction')
+		// [*:message] => 'CDbCommand failed to execute the SQL statement: SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded; try restarting transaction'
+	}
+}
+}
+
 
 function BackendBlockFind1($coinid = NULL)
 {
