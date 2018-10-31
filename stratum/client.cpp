@@ -612,7 +612,7 @@ void *client_thread(void *p)
 			b = client_send_result(client, "[]");
 
 		else if(!strcmp(method, "mining.multi_version"))
-			b = client_send_result(client, "false"); // ASICBOOST
+			b = client_send_result(client, "true"); // ASICBOOST
 
 		else if(!strcmp(method, "mining.extranonce.subscribe"))
 		{
