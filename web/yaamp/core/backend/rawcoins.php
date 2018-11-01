@@ -431,6 +431,22 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('tradeogre', 'disabled')) {
+		$list = tradeogre_api_query('markets');
+		if(is_array($list) && !empty($list))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='tradeogre'");
+			foreach($list as $ticker) {
+				$symbol_index = key($ticker);
+				$e = explode('-', $symbol_index);
+				if (strtoupper($e[0]) !== 'BTC')
+					continue;
+				$symbol = strtoupper($e[1]);
+				updateRawCoin('tradeogre', $symbol);
+			}
+		}
+	}
+
 	//////////////////////////////////////////////////////////
 
 	$markets = dbocolumn("SELECT DISTINCT name FROM markets");

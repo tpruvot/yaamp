@@ -64,6 +64,7 @@ define('EXCH_KUCOIN_KEY', '');
 define('EXCH_LIVECOIN_KEY', '');
 define('EXCH_NOVA_KEY', '');
 define('EXCH_STOCKSEXCHANGE_KEY', '');
+define('EXCH_TRADEOGRE_KEY','');
 
 // Automatic withdraw to Yaamp btc wallet if btc balance > 0.3
 define('EXCH_AUTO_WITHDRAW', 0.3);

@@ -45,6 +45,7 @@ require_once("coinsmarkets.php");
 require_once("cryptowatch.php");
 require_once("stocksexchange.php");
 require_once("tradesatoshi.php");
+require_once("tradeogre.php");
 
 /* Format an exchange coin Url */
 function getMarketUrl($coin, $marketName)

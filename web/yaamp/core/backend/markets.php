@@ -38,6 +38,7 @@ function BackendPricesUpdate()
 	updateCoinsMarketsMarkets();
 	updateStocksExchangeMarkets();
 	updateTradeSatoshiMarkets();
+	updateTradeOgreMarkets();
 
 	updateShapeShiftMarkets();
 	updateOtherMarkets();
@@ -1976,6 +1977,57 @@ function updateShapeShiftMarkets()
 				$coin->save();
 			}
 		}
+	}
+}
+
+function updateTradeOgreMarkets($force = false)
+{
+	debuglog(__FUNCTION__);
+	$exchange = 'tradeogre';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$list = getdbolist('db_markets', "name LIKE '$exchange%'");
+	if (empty($list)) return;
+
+	$markets = tradeogre_api_query('markets');
+	if(!is_array($markets)) return;
+
+	foreach($list as $market)
+	{
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+
+		$symbol = $coin->getOfficialSymbol();
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+
+		$symbol = strtoupper($symbol);
+		$dbpair = 'BTC-' .$symbol;
+
+		foreach ($markets as $ticker) {
+			debuglog(json_encode($ticker));
+			$pair = key($ticker);
+			if ($pair != $dbpair) continue;
+
+			$price2 = ($ticker[$pair]['bid']+$ticker[$pair]['ask'])/2;
+			$market->price = AverageIncrement($market->price, $ticker[$pair]['bid']);
+			$market->price2 = AverageIncrement($market->price2, $price2);
+			$market->pricetime = time();
+			$market->save();
+
+			if ((empty($coin->price))||(empty($coin->price2))) {
+				$coin->price = $market->price;
+				$coin->price2 = $market->price2;
+				$coin->market = $exchange;
+				$coin->save();
+			}
+		}
+
 	}
 }
 
