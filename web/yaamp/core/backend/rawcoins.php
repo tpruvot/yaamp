@@ -21,6 +21,18 @@ function updateRawcoins()
 
 	settings_prefetch_all();
 
+	if (!exchange_get('bibox', 'disabled')) {
+		$list = bibox_api_query('marketAll');
+		if(isset($list["result"]) && !empty($list["result"]))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='bibox'");
+			foreach($list["result"] as $currency) {
+				if ($currency["currency_symbol"] == 'BTC') continue;
+				updateRawCoin('bibox', $currency["coin_symbol"]);
+			}
+		}
+	}
+
 	if (!exchange_get('bittrex', 'disabled')) {
 		$list = bittrex_api_query('public/getcurrencies');
 		if(isset($list->result) && !empty($list->result))

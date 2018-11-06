@@ -10,6 +10,7 @@ function BackendPricesUpdate()
 
 	settings_prefetch_all();
 
+	updateBiboxMarkets();
 	updateBittrexMarkets();
 	updateBitzMarkets();
 	updatePoloniexMarkets();
@@ -624,6 +625,44 @@ function updateKrakenMarkets($force = false)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+function updateBiboxMarkets($force = false)
+{
+	debuglog(__FUNCTION__);
+	$exchange = 'bibox';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$count = (int) dboscalar("SELECT count(id) FROM markets WHERE name LIKE '$exchange%'");
+	if ($count == 0) return;
+
+	$list = bibox_api_query('marketAll');
+	if(!is_array($list)) return;
+	foreach($list["result"] as $market_data)
+	{
+		$base = $market_data["currency_symbol"];
+		if ($base!="BTC") continue;
+		$symbol = $market_data["coin_symbol"];
+
+		$coin = getdbosql('db_coins', "symbol=:sym", array(':sym'=>$symbol));
+		if(!$coin) continue;
+
+		$market = getdbosql('db_markets', "coinid={$coin->id} AND name='$exchange'");
+		if(!$market) continue;
+
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+		}
+
+		$ticker = bibox_api_query("ticker&pair={$symbol}_BTC")["result"];
+
+
+		$price2 = ($ticker["buy"] + $ticker["sell"])/2;
+		$market->price2 = AverageIncrement($market->price2, $price2);
+		$market->price = AverageIncrement($market->price, $ticker["buy"]);
+		$market->pricetime = time();
+		$market->save();
+	}
+}
 
 function updateBittrexMarkets($force = false)
 {
