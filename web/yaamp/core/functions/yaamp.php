@@ -6,6 +6,7 @@ function yaamp_get_algos()
 	return array(
 		'sha256',
 		'sha256t',
+		'sha256q',
 		'scrypt',
 		'scryptn',
 		'allium',
@@ -83,6 +84,7 @@ function yaamp_algo_mBTC_factor($algo)
 	switch($algo) {
 	case 'sha256':
 	case 'sha256t':
+	case 'sha256q':
 	case 'blake':
 	case 'blakecoin':
 	case 'blake2s':
@@ -142,6 +144,7 @@ function getAlgoColors($algo)
 	$a = array(
 		'sha256'	=> '#d0d0a0',
 		'sha256t'	=> '#d0d0f0',
+		'sha256q'	=> '#9696dd',
 		'scrypt'	=> '#c0c0e0',
 		'neoscrypt'	=> '#a0d0f0',
 		'scryptn'	=> '#d0d0d0',
@@ -223,6 +226,7 @@ function getAlgoPort($algo)
 	$a = array(
 		'sha256'	=> 3333,
 		'sha256t'	=> 3339,
+		'sha256q'	=> 3337,
 		'lbry'		=> 3334,
 		'scrypt'	=> 3433,
 		'timetravel'	=> 3555,
