@@ -25,6 +25,7 @@ require_once("coinbene.php");
 require_once("crex24.php");
 require_once("cryptobridge.php");
 require_once("escodex.php");
+require_once("finexbox.php");
 require_once("gateio.php");
 require_once("graviex.php");
 require_once("kraken.php");
@@ -120,6 +121,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "http://www.empoex.com/trade/{$symbol}-{$base}";
 	else if($market == 'escodex')
 		$url = "https://wallet.escodex.com/market/ESCODEX.{$symbol}_ESCODEX.{$base}";
+	else if($market == 'finexbox')
+		$url = "https://www.finexbox.com/Home/Orders/market/pair/{$symbol}-{$base}.html";
 	else if($market == 'gateio')
 		$url = "https://gate.io/trade/{$symbol}_{$base}";
 	else if($market == 'graviex')

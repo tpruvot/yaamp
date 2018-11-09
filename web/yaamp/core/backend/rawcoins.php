@@ -261,6 +261,8 @@ function updateRawcoins()
 		}
 	}
 
+	updateMarketfinexbox();
+
 	if (!exchange_get('hitbtc', 'disabled')) {
 		$list = hitbtc_api_query('symbols');
 		if(is_object($list) && isset($list->symbols) && is_array($list->symbols))
@@ -491,6 +493,33 @@ function updateRawcoins()
 	//	if ($coin->symbol != 'BTC')
 	//		$coin->delete();
 	}
+}
+
+function updateMarketfinexbox()
+{
+	debuglog ("=== Start Sync finexbox ===");
+	if (!exchange_get('finexbox', 'disabled')) {
+		#debuglog ("Get API");
+		$list = finexbox_api_query('market');
+		#debuglog(json_encode($list));
+		if(is_object($list))
+		{
+			#debuglog(json_encode($list));
+			dborun("UPDATE markets SET deleted=true WHERE name='finexbox'");
+			foreach($list->result as $item) {
+				#print ($item["PairName"]);
+				#debuglog(json_encode($item));
+				$e = explode('_', $item->market);
+				$base = strtoupper($e[1]);
+				if ($base != 'BTC')
+					continue;
+				$symbol = strtoupper($e[0]);
+				#debuglog("Update Raw Coin " .$symbol);
+				updateRawCoin('finexbox', $symbol , $item->currency);
+			}
+		}
+	}
+	debuglog ("=== End Sync finexbox ===");
 }
 
 function updateRawCoin($marketname, $symbol, $name='unknown')

@@ -26,6 +26,7 @@ function BackendPricesUpdate()
 	updateCoinbeneMarkets();
 	updateCrex24Markets();
 	updateCryptopiaMarkets();
+	updateFinexboxMarkets();
 	updateHitBTCMarkets();
 	updateYobitMarkets();
 	updateAlcurexMarkets();
@@ -465,6 +466,62 @@ function updateEscoDexMarkets($force = false)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+function updateFinexboxMarkets($force = false)
+{
+	debuglog(__FUNCTION__);
+	$exchange = 'finexbox';
+	if (exchange_get($exchange, 'disabled')) return;
+
+	$count = (int) dboscalar("SELECT count(id) FROM markets WHERE name LIKE '$exchange%'");
+	if ($count == 0) return;
+
+
+	$result = finexbox_api_query('market');
+	if(!is_object($result)) return;
+
+	foreach($result->result as $market_data)
+	{
+		if (is_null(arraySafeVal($market_data,'market'))) continue;		
+		$market_name = $market_data->market;
+		$e = explode("_", $market_name);
+		if ($e[1]!="BTC") continue;
+		$symbol = $e[0];
+		$base = $e[1];
+
+		
+
+		$coin = getdbosql('db_coins', "symbol='{$symbol}'");
+		if(!$coin) continue;
+		if(!$coin->installed && !$coin->watch) continue;
+
+		$market = getdbosql('db_markets', "coinid={$coin->id} and name='{$exchange}'");
+		if(!$market) continue;
+
+		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+		}
+
+
+		$price2 = ($market_data->price + $market_data->high)/2;
+		$market->price2 = AverageIncrement($market->price2, $price2);
+		$market->price = AverageIncrement($market->price, $market_data->price);
+		$market->pricetime = time();
+		$market->priority = -1;
+		$market->txfee = 0.2; // trade pct
+		$market->save();
+
+		debuglog("$exchange: update $symbol: {$market->price} {$market->price2}");
+		if ((empty($coin->price))||(empty($coin->price2))) {
+			$coin->price = $market->price;
+			$coin->price2 = $market->price2;
+			$coin->market = $exchange;
+			$coin->save();
+		}
+
+	}
+}
+
 
 function updateGateioMarkets($force = false)
 {
