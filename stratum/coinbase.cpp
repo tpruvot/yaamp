@@ -304,7 +304,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	}
 
 	//  add IFX
-	if ((strcmp(coind->symbol, "IFX") == 0)||(strcmp(coind->symbol, "GTM") == 0))
+	if ((strcmp(coind->symbol, "IFX") == 0)||(strcmp(coind->symbol, "GTM") == 0)||(strcmp(coind->symbol, "AGM") == 0))
 	{
 		char payees[4];
 		int npayees = 1;
