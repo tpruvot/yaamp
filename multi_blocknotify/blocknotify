@@ -1,0 +1,10 @@
+#!/bin/bash
+PORT=$(echo $1|awk -F[/:] '{print $2}')
+APP="/var/stratum/blocknotify_default"
+HOST=("asia.phi-phi-pool.com" "eu.phi-phi-pool.com")
+for stratum in "${HOST[@]}"
+do
+	CMD="$APP $stratum:$PORT $2 $3"
+	#echo $CMD
+	$CMD
+done
