@@ -104,6 +104,8 @@ if(count($workers))
 
 		$version = substr($worker->version, 0, 20);
 		$password = substr($worker->password, 0, 32);
+		if (empty($password) && !empty($worker->worker))
+			$password = substr($worker->worker, 0, 32);
 
 		$subscribe = Booltoa($worker->subscribe);
 
