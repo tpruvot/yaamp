@@ -124,7 +124,7 @@ YAAMP_ALGO g_algos[] =
 	{"x17", x17_hash, 1, 0, 0},
 	{"x18", x18_hash, 1, 0, 0},
 	{"x22i", x22i_hash, 1, 0, 0},
-	{"x21s", x21s_hash, 1, 0, 0},
+	{"x21s", x21s_hash, 0x100, 0, 0},
 
 	{"pipe", pipe_hash, 1,0,0},
 
