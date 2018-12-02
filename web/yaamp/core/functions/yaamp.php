@@ -17,6 +17,7 @@ function yaamp_get_algos()
 		'blake',
 		'blakecoin',
 		'blake2s',
+		'blake2b',
 		'decred',
 		'deep',
 		'dedal',		
@@ -95,6 +96,7 @@ function yaamp_algo_mBTC_factor($algo)
 	case 'blake':
 	case 'blakecoin':
 	case 'blake2s':
+	case 'blake2b':
 	case 'decred':
 	case 'keccak':
 	case 'keccakc':
@@ -178,6 +180,7 @@ function getAlgoColors($algo)
 		'bastion'	=> '#e0b0b0',
 		'blake'		=> '#f0f0f0',
 		'blakecoin'	=> '#f0f0f0',
+		'blake2b'	=> '#f2c81f',
 		'exosis'	=> '#49CCFE',
 		'groestl'	=> '#d0a0a0',
 		'jha'		=> '#a0d0c0',
@@ -295,6 +298,7 @@ function getAlgoPort($algo)
 		'decred'	=> 3252,
 		'vanilla'	=> 5755,
 		'blake2s'	=> 5766,
+		'blake2b'	=> 5777,
 		'penta'		=> 5833,
 		'rainforest'	=> 7443,
 		'luffa'		=> 5933,
