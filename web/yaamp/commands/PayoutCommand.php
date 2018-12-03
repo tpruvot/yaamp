@@ -133,8 +133,8 @@ class PayoutCommand extends CConsoleCommand
 		if (empty($payouts) || empty($ids))
 			return 0;
 
-		$DCR = ($coin->rpcencoding == 'DCR' || $coin->getOfficialSymbol() == 'DCR');
-		$DGB = ($coin->rpcencoding == 'DGB' || $coin->getOfficialSymbol() == 'DGB');
+		$DCR = ($coin->rpcencoding == 'DCR' || $coin->getOfficialSymbol() == 'DCR' || $coin->symbol2 == 'DCR' || $coin->symbol == 'DCR');
+		$DGB = ($coin->rpcencoding == 'DGB' || $coin->getOfficialSymbol() == 'DGB' || $coin->symbol2 == 'DGB' || $coin->symbol == 'DGB');
 
 		$remote = new WalletRPC($coin);
 		$account = '';
