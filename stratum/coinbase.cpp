@@ -249,11 +249,19 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
         }
 
         base58_decode("XWfdnGbXnBxeegrPJEvnYaNuwf6DXCruMX", script_payee);
-        job_pack_tx(coind, templ->coinb2, 6.75 * 100000000, script_payee);
+        job_pack_tx(coind, templ->coinb2, 7.5 * 100000000, script_payee);
 
+<<<<<<< HEAD
         base58_decode("XQ4WEZTFP83gVhhLBKavwopz7U84JucR8w", script_payee);
-        job_pack_tx(coind, templ->coinb2, 2.25 * 100000000, script_payee);
+        job_pack_tx(coind, templ->coinb2, 1.5 * 100000000, script_payee);
 
+=======
+            base58_decode("XWfdnGbXnBxeegrPJEvnYaNuwf6DXCruMX", script_payee);
+            job_pack_tx(coind, templ->coinb2, 7.5 * 100000000, script_payee);
+
+            base58_decode("XQ4WEZTFP83gVhhLBKavwopz7U84JucR8w", script_payee);
+            job_pack_tx(coind, templ->coinb2, 1.5 * 100000000, script_payee);
+>>>>>>> f5c408561000da95092daf70f8e603fff05268ea
 
         strcat(templ->coinb2, "00000000"); // locktime
         coind->reward = (double)available/100000000*coind->reward_mul;
@@ -396,7 +404,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 else if(strcmp(coind->symbol, "HXX") == 0) {
         char script_payee[1024];
 
-        bool znode_masternode_enabled = json_get_bool(json_result, "bznode_payments_started");
+        bool znode_masternode_enabled = json_get_bool(json_result, "xnode_payments_started");
         if (znode_masternode_enabled == true) {
             json_value* znode_masternode = json_get_object(json_result, "xnode");
             const char *payee = json_get_string(znode_masternode, "payee");
