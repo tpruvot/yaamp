@@ -393,6 +393,46 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		return;
 	}
 
+else if(strcmp(coind->symbol, "HXX") == 0) {
+        char script_payee[1024];
+
+        bool znode_masternode_enabled = json_get_bool(json_result, "bznode_payments_started");
+        if (znode_masternode_enabled == true) {
+            json_value* znode_masternode = json_get_object(json_result, "xnode");
+            const char *payee = json_get_string(znode_masternode, "payee");
+            json_int_t amount = json_get_int(znode_masternode, "amount");
+            if (payee && amount) {
+                //debuglog("bznode payee: %s\n", payee);
+                strcat(templ->coinb2, "06");
+                job_pack_tx(coind, templ->coinb2, available, NULL);
+
+                base58_decode(payee, script_payee);
+                job_pack_tx(coind, templ->coinb2, amount, script_payee);
+            }
+        } else {
+            strcat(templ->coinb2, "05");
+            job_pack_tx(coind, templ->coinb2, available, NULL);
+        }
+
+
+        base58_decode("HE7NSv3jevUAPjwsLGpoYSz9ftzV9S36Xq", script_payee);
+        job_pack_tx(coind, templ->coinb2, 0.1 * 100000000, script_payee);
+
+        base58_decode("HNdzbEtifr2nTd3VBvUWqJLc35ZFXr2EYo", script_payee);
+        job_pack_tx(coind, templ->coinb2, 0.1 * 100000000, script_payee);
+
+        base58_decode("HG1utYiVhkgBNz5ezrVpsjABxmMdVdcQe5", script_payee);
+        job_pack_tx(coind, templ->coinb2, 0.1 * 100000000, script_payee);
+
+        base58_decode("H94j1zMAbWwHWcEq8hUogAMALpVzj34M6Q", script_payee);
+        job_pack_tx(coind, templ->coinb2, 0.3 * 100000000, script_payee);
+
+        strcat(templ->coinb2, "00000000"); // locktime
+        coind->reward = (double)available/100000000*coind->reward_mul;
+
+        return;
+    }	
+
 	else if(strcmp(coind->symbol, "STAK") == 0) {
 		char script_payee[512] = { 0 };
 		char payees[4];
