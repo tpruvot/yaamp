@@ -296,9 +296,9 @@ echo <<<end
 </thead><tbody>
 end;
 
+$account = '';
 if ($DCR || $DGB) $account = '*';
 else if ($ETH) $account = $coin->master_wallet;
-else $account = '';
 
 $txs = $remote->listtransactions($account, $maxrows);
 
