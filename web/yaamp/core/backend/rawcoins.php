@@ -14,6 +14,7 @@ function updateRawcoins()
 	exchange_set_default('coinbene', 'disabled', true);
 	exchange_set_default('coinexchange', 'disabled', true);
 	exchange_set_default('coinsmarkets', 'disabled', true);
+	exchange_set_default('escodex', 'disabled', true);
 	exchange_set_default('gateio', 'disabled', true);
 	exchange_set_default('jubi', 'disabled', true);
 	exchange_set_default('nova', 'disabled', true);
@@ -215,6 +216,21 @@ function updateRawcoins()
 					continue;
 				$symbol = strtoupper($e[0]);
 				updateRawCoin('cryptobridge', $symbol);
+			}
+		}
+	}
+
+	if (!exchange_get('escodex', 'disabled')) {
+		$list = escodex_api_query('ticker');
+		if(is_array($list) && !empty($list))
+		{
+			dborun("UPDATE markets SET deleted=true WHERE name='escodex'");
+			foreach($list as $ticker) {
+				#debuglog (json_encode($ticker));
+				if (strtoupper($ticker->base) !== 'BTC')
+					continue;
+				$symbol = strtoupper($ticker->quote);
+				updateRawCoin('escodex', $symbol);
 			}
 		}
 	}
@@ -464,7 +480,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('crex24','yobit','coinbene','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('crex24','escodex','yobit','coinbene','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {
