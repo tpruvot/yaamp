@@ -26,9 +26,9 @@ function BackendBlockNew($coin, $db_block)
 		if(!$user) continue;
 
 		$amount = $reward * $hash_power / $total_hash_power;
-		if(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo);
+		f(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo, -1, $user->username); //if(!$user->no_fees) $amount = take_yaamp_fee($amount, $coin->algo);
 		if(!empty($user->donation)) {
-			$amount = take_yaamp_fee($amount, $coin->algo, $user->donation);
+			$amount = take_yaamp_fee($amount, $coin->algo, $user->donation, $user->username); //$amount = take_yaamp_fee($amount, $coin->algo, $user->donation);
 			if ($amount <= 0) continue;
 		}
 
@@ -48,7 +48,7 @@ function BackendBlockNew($coin, $db_block)
 		else	// immature
 			$earning->status = 0;
 
-		$ucoin = getdbo('db_coins', $user->coinid);
+		$ucoin = (object) dborow("SELECT algo,symbol FROM coins WHERE id=:id", array(':id'=>$user->coinid));
 		if(!YAAMP_ALLOW_EXCHANGE && $ucoin && $ucoin->algo != $coin->algo) {
 			debuglog($coin->symbol.": invalid earning for {$user->username}, user coin is {$ucoin->symbol}");
 			$earning->status = -1;
@@ -57,8 +57,7 @@ function BackendBlockNew($coin, $db_block)
 		if (!$earning->save())
 			debuglog(__FUNCTION__.": Unable to insert earning!");
 
-		$user->last_earning = time();
-		$user->save();
+		dborun('UPDATE accounts SET last_earning=:time WHERE id=:id', array(':id'=>$user->id, ':time'=>time()));
 	}
 
 	$delay = time() - 5*60;

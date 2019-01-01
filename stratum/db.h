@@ -20,6 +20,7 @@ void db_update_coinds(YAAMP_DB *db);
 void db_update_remotes(YAAMP_DB *db);
 
 //int db_find_user(YAAMP_DB *db, YAAMP_CLIENT *client);
+bool db_check_symbol(YAAMP_DB *db, char *symbol);
 void db_add_user(YAAMP_DB *db, YAAMP_CLIENT *client);
 
 void db_add_worker(YAAMP_DB *db, YAAMP_CLIENT *client);

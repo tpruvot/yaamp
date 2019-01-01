@@ -213,6 +213,14 @@ function getBestMarket($coin)
 
 function AverageIncrement($value1, $value2)
 {
+	if ($value1 == 0){
+		return $value2;
+	}
+
+	if ($value2 == 0){
+		return $value1;
+	}
+
 	$percent = 80;
 	$value = ($value1*(100-$percent) + $value2*$percent) / 100;
 

@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tpruvot/yiimp.svg?branch=next)](https://travis-ci.org/tpruvot/yiimp)
 
-#yiimp - yaamp fork
+# yiimp - yaamp fork
 
 WARNINGS
 - Use at your own risks.
@@ -123,6 +123,30 @@ More instructions coming as needed.
 There a lot of unused code in the php branch. Lot come from other projects I worked on and I've been lazy to clean it up before to integrate it to yaamp. It's mostly based on the Yii framework which implements a lightweight MVC.
 
 	http://www.yiiframework.com/
+
+
+# yiimp - file tree
+
+	NOTE: "/yiimp/" in Github repo => "/var/" on VPS (after compiling yiimp)
+
+| Front-End |  |
+|:-----------|:-----------|
+| Homepage | `yiimp/web/yaamp/modules/site/index.php` |
+| API | `yiimp/web/yaamp/modules/site/api.php` |
+| About us | `yiimp/web/yaamp/modules/site/about.php` |
+| Results | `yiimp/web/yaamp/modules/site/results` |
+| Dedicated custom ports (line:144) |  `if statement for Dedicated custom ports.` |
+| Next payment (line:128 & 134) | `yiimp/web/yaamp/ui/main.php` |
+| Images | `yiimp/web/images` |
+
+| coins and payment fix |  |
+|:-----------|:-----------|
+| yiimp/web/yaamp/core/backend/payment.php (line:57) | `\|\| $coin->symbol == '<coinSymbol>' \|\|` <br> ` note: (coinSymbol is different from coinAlgo).` |
+| yiimp/stratum/algos (new file)  | `<algo>.h (copy from another exisitng to make easier)` |
+| yiimp/stratum/stratum.h (line:149) | `#include "algos/<algo>.h"` |
+| yiimp/web/yaamp/core/functions/yaamp.php | `function yaamp_get_algos; function yaamp_algo_mBTC_factor; function yaamp_get_algo_norm; function getAlgoColors; function getAlgoPort)` |
+| sql/labels.json |  `"<ticker>":"<coin>", (example: "ETN":"Electroneum",)` |
+| rc-old.local (line:18) | `screen -dmS <algo> /var/stratum/run.sh <algo/coin/ticker>` <br> `(example: screen -dmS x11 /var/stratum/run.sh x11)` |
 
 
 Credits:

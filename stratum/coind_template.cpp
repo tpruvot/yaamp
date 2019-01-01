@@ -251,9 +251,15 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	json_value *json_result = json_get_object(json, "result");
 	if(!json_result || json_is_null(json_result))
 	{
-		coind_error(coind, "getblocktemplate result");
-		json_value_free(json);
-		return NULL;
+                strcpy(params, "[]");
+                json_value *json = rpc_call(&coind->rpc, "getblocktemplate", params);
+                json_value *json_result = json_get_object(json, "result");
+                if(!json || json_is_null(json)) {
+                   coind_error(coind, "getblocktemplate result");
+                   json_value_free(json);
+                   return NULL;
+                }
+
 	}
 
 	// segwit rule
@@ -393,6 +399,28 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	txids.push_back("");
 
 	templ->has_segwit_txs = false;
+
+        templ->has_pow2_witness_data = false;
+
+        if (strcmp(coind->symbol, "NLG") == 0)
+        {
+
+            json_value* pow2_aux_1_val = json_get_val(json_result, "pow2_aux1");
+            json_value* pow2_aux_2_val = json_get_val(json_result, "pow2_aux2");
+            if (pow2_aux_1_val && json_is_string(pow2_aux_1_val) && pow2_aux_2_val && json_is_string(pow2_aux_2_val))
+            {
+                const char* pow2_aux_1 = json_get_string(json_result, "pow2_aux1");
+                const char* pow2_aux_2 = json_get_string(json_result, "pow2_aux2");
+                if(pow2_aux_1 && strlen(pow2_aux_1) && pow2_aux_2 && strlen(pow2_aux_2))
+                {
+                    strcpy(templ->pow2_aux_1, pow2_aux_1);
+                    strcpy(templ->pow2_aux_2, pow2_aux_2);
+                    templ->has_pow2_witness_data = true;
+                    templ->pow2_subsidy = json_get_int(json_result, "pow2_subsidy");
+                }
+            }
+        }
+
 
 	templ->has_filtered_txs = false;
 	templ->filtered_txs_fee = 0;
