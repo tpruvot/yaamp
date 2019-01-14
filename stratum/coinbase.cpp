@@ -1,4 +1,3 @@
-
 // http://www.righto.com/2014/02/bitcoin-mining-hard-way-algorithms.html
 
 // https://en.bitcoin.it/wiki/Merged_mining_specification#Merged_mining_coinbase
@@ -285,9 +284,19 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		coind->reward = (double)available / 100000000 * coind->reward_mul;
 		return;
 	}
+	else if(strcmp(coind->symbol, "TUX") == 0)  {
+		char script_payee[1024];
+		char charity_payee[256] = { 0 };
+		const char *payee = json_get_string(json_result, "donation_payee");
+		if(payee != NULL){
+			sprintf(coind->charity_address, "%s", payee);
+		} else {
+			sprintf(coind->charity_address, "%s", "");
+		}
+	}
 
 	// 2 txs are required on these coins, one for foundation (dev fees)
-	if(coind->charity_percent && !coind->hasmasternodes)
+	if((coind->charity_percent && !coind->hasmasternodes) || (strlen(coind->charity_address) > 0 && strcmp(coind->symbol, "TUX") == 0))
 	{
 		char script_payee[1024];
 		char charity_payee[256] = { 0 };
@@ -300,10 +309,15 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		base58_decode(charity_payee, script_payee);
 
 		json_int_t charity_amount = json_get_int(json_result, "payee_amount");
+		if(strcmp(coind->symbol, "TUX") == 0) {
+			charity_amount = json_get_int(json_result, "donation_amount");
+		} else {
+			available -= charity_amount;
+		}
 		if (charity_amount <= 0)
 			charity_amount = (available * coind->charity_percent) / 100;
 
-		available -= charity_amount;
+		//available -= charity_amount;
 		coind->charity_amount = charity_amount;
 
 		if (templ->has_segwit_txs) {
@@ -313,7 +327,17 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			strcat(templ->coinb2, "02");
 		}
 		job_pack_tx(coind, templ->coinb2, available, NULL);
-		job_pack_tx(coind, templ->coinb2, charity_amount, script_payee);
+		// job_pack_tx(coind, templ->coinb2, charity_amount, script_payee);
+		char echarity_amount[32];
+		encode_tx_value(echarity_amount, charity_amount);
+		strcat(templ->coinb2, echarity_amount);
+        char coinb2_part[1024] = { 0 };
+        char coinb2_len[3] = { 0 };
+        sprintf(coinb2_part, "a9%02x%s87", (unsigned int)(strlen(script_payee) >> 1) & 0xFF, script_payee);
+        sprintf(coinb2_len, "%02x", (unsigned int)(strlen(coinb2_part) >> 1) & 0xFF);
+        strcat(templ->coinb2, coinb2_len);
+        strcat(templ->coinb2, coinb2_part);
+		debuglog("pack tx %s\n", coinb2_part);
 		strcat(templ->coinb2, "00000000"); // locktime
 
 		coind->reward = (double)available/100000000*coind->reward_mul;
@@ -375,17 +399,17 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			return;
 		}
 		if(coind->charity_percent) {
-            		char charity_payee[256] = { 0 };
-            		const char *payee = json_get_string(json_result, "payee");
-            		if (payee) snprintf(charity_payee, 255, "%s", payee);
-            		else sprintf(charity_payee, "%s", coind->charity_address);
-            		if (strlen(charity_payee) == 0)
-                		stratumlog("ERROR %s has no charity_address set!\n", coind->name);
-            		json_int_t charity_amount = (available * coind->charity_percent) / 100;
-            		npayees++;
-            		available -= charity_amount;
-            		coind->charity_amount = charity_amount;
-            		base58_decode(charity_payee, script_payee);
+				char charity_payee[256] = { 0 };
+				const char *payee = json_get_string(json_result, "payee");
+				if (payee) snprintf(charity_payee, 255, "%s", payee);
+				else sprintf(charity_payee, "%s", coind->charity_address);
+				if (strlen(charity_payee) == 0)
+					stratumlog("ERROR %s has no charity_address set!\n", coind->name);
+				json_int_t charity_amount = (available * coind->charity_percent) / 100;
+				npayees++;
+				available -= charity_amount;
+				coind->charity_amount = charity_amount;
+				base58_decode(charity_payee, script_payee);
            		job_pack_tx(coind, script_dests, charity_amount, script_payee);
         	}
 		// smart contracts balance refund, same format as DASH superblocks
@@ -617,6 +641,3 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 //	debuglog("coinb1 %s\n", templ->coinb1);
 //	debuglog("coinb2 %s\n", templ->coinb2);
 }
-
-
-
