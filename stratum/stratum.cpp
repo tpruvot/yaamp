@@ -146,6 +146,7 @@ YAAMP_ALGO g_algos[] =
 	{"bastion", bastion_hash, 1, 0 },
 	{"blake", blake_hash, 1, 0 },
 	{"blakecoin", blakecoin_hash, 1 /*0x100*/, 0, sha256_hash_hex },
+	{"blake2b", blake2b_hash, 1, 0 },
 	{"blake2s", blake2s_hash, 1, 0 },
 	{"vanilla", blakecoin_hash, 1, 0 },
 	{"decred", decred_hash, 1, 0 },
@@ -194,6 +195,7 @@ YAAMP_ALGO g_algos[] =
 	{"aergo", aergo_hash, 1, 0, 0},
 
 	{"sha256t", sha256t_hash, 1, 0, 0}, // sha256 3x
+	{"sha256q", sha256q_hash, 1, 0, 0}, // sha256 4x
 
 	{"sib", sib_hash, 1, 0, 0},
 
