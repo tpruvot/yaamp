@@ -20,6 +20,7 @@ function yaamp_get_algos()
 		'blake2s',
 		'blake2b',
 		'decred',
+		'dedal',
 		'deep',
 		'exosis',
 		'hmq1725',
@@ -52,6 +53,7 @@ function yaamp_get_algos()
 		'x16s',
 		'x17',
 		'x22i',
+		'x20r',
 		'x21s',
 		'xevan',
 		'groestl', // dmd-gr -m 256 (deprecated)
@@ -92,6 +94,7 @@ function yaamp_algo_mBTC_factor($algo)
 	case 'blake2s':
 	case 'blake2b':
 	case 'decred':
+	case 'dedal':
 	case 'keccak':
 	case 'keccakc':
 	case 'lbry':
@@ -153,6 +156,7 @@ function getAlgoColors($algo)
 		'scryptn'	=> '#d0d0d0',
 		'c11'		=> '#a0a0d0',
 		'decred'	=> '#f0f0f0',
+		'dedal'		=> '#g0f0f0',
 		'deep'		=> '#e0ffff',
 		'x11'		=> '#f0f0a0',
 		'x11evo'	=> '#c0f0c0',
@@ -164,6 +168,7 @@ function getAlgoColors($algo)
 		'x16s'		=> '#f0b080',
 		'x17'		=> '#f0b0a0',
 		'x22i'		=> '#f0a090',
+		'x20r'		=> '#c0a090',
 		'x21s'		=> '#f0a090',
 		'xevan'		=> '#f0b0a0',
 		'allium'	=> '#80a0d0',
@@ -248,6 +253,7 @@ function getAlgoPort($algo)
 		'x16s'		=> 3663,
 		'x17'		=> 3737,
 		'x22i'		=> 3223,
+		'x20r'		=> 3352,
 		'x21s'		=> 3224,
 		'aergo'		=> 3691,
 		'xevan'		=> 3739,
@@ -282,6 +288,7 @@ function getAlgoPort($algo)
 		'blake'		=> 5733,
 		'blakecoin'	=> 5743,
 		'decred'	=> 3252,
+		'dedal'		=> 3353,
 		'vanilla'	=> 5755,
 		'blake2s'	=> 5766,
 		'blake2b'	=> 5777,

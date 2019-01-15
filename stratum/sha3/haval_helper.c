@@ -68,7 +68,6 @@ SPH_XCAT(haval, PASSES)
 		if (current == 128U) {
 			DSTATE;
 			IN_PREPARE(sc->buf);
-
 			RSTATE;
 			SPH_XCAT(CORE, PASSES)(INW);
 			WSTATE;
@@ -108,7 +107,6 @@ SPH_XCAT(haval, PASSES)(sph_haval_context *sc, const void *data, size_t len)
 #endif
 	if (current > 0) {
 		unsigned clen;
-
 		clen = 128U - current;
 		SPH_XCAT(SPH_XCAT(haval, PASSES), _short)(sc, data, clen);
 		data = (const unsigned char *)data + clen;
@@ -124,7 +122,6 @@ SPH_XCAT(haval, PASSES)(sph_haval_context *sc, const void *data, size_t len)
 	RSTATE;
 	while (len >= 128U) {
 		IN_PREPARE(data);
-
 		SPH_XCAT(CORE, PASSES)(INW);
 		data = (const unsigned char *)data + 128U;
 		len -= 128U;
@@ -167,7 +164,6 @@ SPH_XCAT(SPH_XCAT(haval, PASSES), _close)(sph_haval_context *sc,
 
 		do {
 			IN_PREPARE(sc->buf);
-
 			SPH_XCAT(CORE, PASSES)(INW);
 		} while (0);
 		current = 0;
@@ -182,14 +178,13 @@ SPH_XCAT(SPH_XCAT(haval, PASSES), _close)(sph_haval_context *sc,
 	sph_enc32le_aligned(sc->buf + 124,
 		SPH_T32((sc->count_high << 3) | (sc->count_low >> 29)));
 #endif
+
 	do {
 		IN_PREPARE(sc->buf);
-
 		SPH_XCAT(CORE, PASSES)(INW);
 	} while (0);
-
 	WSTATE;
+
 	haval_out(sc, dst);
 	haval_init(sc, sc->olen, sc->passes);
 }
-
