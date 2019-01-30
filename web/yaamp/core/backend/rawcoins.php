@@ -20,6 +20,8 @@ function updateRawcoins()
 	exchange_set_default('nova', 'disabled', true);
 	exchange_set_default('stocksexchange', 'disabled', true);
 	exchange_set_default('tradesatoshi', 'disabled', true);
+	exchange_set_default('moondex', 'disabled', true);
+	
 
 	settings_prefetch_all();
 
@@ -175,6 +177,19 @@ function updateRawcoins()
 			}
 		}
 	}
+
+	if (!exchange_get('moondex', 'disabled')) {
+                $list = moondex_api_query('public/getmarkets');
+                        dborun("UPDATE markets SET deleted=true WHERE name='moondex'");
+                                foreach ($list as $list1 => $key) {
+                                foreach($key as $sub => $sub2) {
+                                $e = $sub2->BaseCurrency;
+                                if (strtoupper($e) !== 'BTC') continue; 
+                                $symbol = $sub2->MarketCurrency;
+                                //debuglog ("Moondex Rawcoins ticker $symbol is updated");
+                                updateRawCoin('moondex', $symbol);
+                        } }
+        }
 
 	if (!exchange_get('coinsmarkets', 'disabled')) {
 		$list = coinsmarkets_api_query('apicoin');
@@ -480,7 +495,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 		}
 
 		// some other to ignore...
-		if (in_array($marketname, array('crex24','escodex','yobit','coinbene','kucoin','tradesatoshi')))
+		if (in_array($marketname, array('crex24','moondex','escodex','yobit','coinbene','kucoin','tradesatoshi')))
 			return;
 
 		if (market_get($marketname, $symbol, "disabled")) {
