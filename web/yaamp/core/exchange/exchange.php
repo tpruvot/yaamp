@@ -44,6 +44,8 @@ require_once("coinsmarkets.php");
 require_once("cryptowatch.php");
 require_once("stocksexchange.php");
 require_once("tradesatoshi.php");
+require_once("moondex.php");
+
 
 /* Format an exchange coin Url */
 function getMarketUrl($coin, $marketName)
@@ -115,6 +117,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "http://www.empoex.com/trade/{$symbol}-{$base}";
 	else if($market == 'escodex')
 		$url = "https://wallet.escodex.com/market/ESCODEX.{$symbol}_ESCODEX.{$base}";
+	else if($market == 'moondex')
+		$url = "https://dex.moondex.org/market/.{$base}-.{$symbol}";
 	else if($market == 'gateio')
 		$url = "https://gate.io/trade/{$symbol}_{$base}";
 	else if($market == 'graviex')
