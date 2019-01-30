@@ -20,6 +20,7 @@ function BackendPricesUpdate()
 	updateGraviexMarkets();
 	updateKrakenMarkets();
 	updateKuCoinMarkets();
+	updateMoondexMarkets();
 	updateCCexMarkets();
 	updateCoinbeneMarkets();
 	updateCrex24Markets();
@@ -833,6 +834,62 @@ function updatePoloniexMarkets()
 		}
 		cache()->set($exchange.'-deposit_address-check', time(), 12*3600);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+function updateMoondexMarkets()
+{
+        $exchange = 'moondex';
+        if (exchange_get($exchange, 'disabled')) return;
+
+        $list = getdbolist('db_markets', "name LIKE '$exchange%'");
+        if (empty($list)) return;
+
+        foreach($list as $market)
+        {
+                $coin = getdbo('db_coins', $market->coinid);
+                if(!$coin) continue;
+
+                $symbol = $coin->getOfficialSymbol();
+                $pair = strtoupper($symbol);
+
+                $data = array();
+                $data = moondex_api_query('public/getmarketsummary?market=BTC-'.$pair);
+
+                $sqlFilter = '';
+                if (!empty($market->base_coin)) {
+                        $pair = strtoupper($symbol.'-'.$market->base_coin);
+                        $sqlFilter = "AND base_coin='{$market->base_coin}'";
+                }
+
+                if (market_get($exchange, $symbol, "disabled")) {
+                        $market->disabled = 1;
+                        $market->message = 'disabled from settings';
+                        $market->save();
+                        continue;
+                }
+
+                foreach ($data as $ticker) {
+                $dataask = $data->result->Ask;
+                $databid = $data->result->Bid;
+
+                                $price2 = ($databid+$dataask)/2;
+                                $market->price2 = AverageIncrement($market->price2, $price2);
+                                $market->price = AverageIncrement($market->price, $databid);
+                                $market->pricetime = time(); // $ticker->timestamp "2018-08-31T12:48:56Z"
+                                $market->save();
+
+                                if (empty($coin->price) && $dataask) {
+                                        $coin->price = $market->price;
+                                        $coin->price2 = $price2;
+                                        $coin->save();
+                                }
+                                debuglog("$exchange: $pair price updated to {$market->price}");
+                                break;
+                        }
+
+        }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
