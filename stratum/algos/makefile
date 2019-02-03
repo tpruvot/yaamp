@@ -13,7 +13,7 @@ SOURCES=lyra2re.c lyra2v2.c lyra2v3.c Lyra2.c lyra2z.c Lyra2-z.c Sponge.c allium
 	x22i.c SWIFFTX/SWIFFTX.c \
 	blake.c blakecoin.c blake2b.c blake2s.c jha.c keccak.c lbry.c tribus.c exosis.c \
 	deep.c fresh.c groestl.c neoscrypt.c nist5.c quark.c qubit.c skein.c skein2.c \
-	bitcore.c timetravel.c x11evo.c x16r.c x16s.c xevan.c bastion.c hmq17.c sonoa.c \
+	bitcore.c timetravel.c x11evo.c x16r.c x16s.c x16rt.c xevan.c bastion.c hmq17.c sonoa.c \
 	bmw.c luffa.c pentablake.c vitalium.c whirlpool.c whirlpoolx.c zr5.c \
 	scrypt.c scryptn.c sha256.c sha256t.c sha256q.c \
 	yescrypt.c yescrypt-opt.c sha256_Y.c \
