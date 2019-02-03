@@ -129,6 +129,7 @@ YAAMP_ALGO g_algos[] =
 
 	{"x16r", x16r_hash, 0x100, 0, 0},
 	{"x16s", x16s_hash, 0x100, 0, 0},
+	{"x16rt", x16rt_hash, 0x100, 0, 0},
 	{"timetravel", timetravel_hash, 0x100, 0, 0},
 	{"bitcore", timetravel10_hash, 0x100, 0, 0},
 	{"exosis", exosis_hash, 0x100, 0, 0},
