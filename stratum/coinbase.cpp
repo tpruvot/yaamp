@@ -411,7 +411,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	{
 		char script_dests[2048] = { 0 };
 		char script_payee[128] = { 0 };
-		char payees[4]; // addresses count
+		char payees[512]; // addresses count
 		int npayees = (templ->has_segwit_txs) ? 2 : 1;
 		bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
 		bool superblocks_enabled = json_get_bool(json_result, "superblocks_enabled");
@@ -460,25 +460,43 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			}
 		}
 		if (masternode_enabled && masternode) {
-			bool started = json_get_bool(json_result, "masternode_payments_started");
-			const char *payee = json_get_string(masternode, "payee");
-			json_int_t amount = json_get_int(masternode, "amount");
-			if (payee && amount && started) {
-				npayees++;
-				available -= amount;
-				base58_decode(payee, script_payee);
-				bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
-				if(masternode_use_p2sh)
-					p2sh_pack_tx(coind, script_dests, amount, script_payee);
-				else
-					job_pack_tx(coind, script_dests, amount, script_payee);
+			if(!strcmp(coind->algo, "exosis")) {
+				bool started = json_get_bool(json_result, "masternode_payments_started");
+				for(int i = 0; i < masternode->u.array.length; i++) {
+					const char *payee = json_get_string(masternode->u.array.values[i], "payee");
+					json_int_t amount = json_get_int(masternode->u.array.values[i], "amount");
+					if (payee && amount && started) {
+						npayees++;
+						available -= amount;
+						base58_decode(payee, script_payee);
+						bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
+						if(masternode_use_p2sh)
+							p2sh_pack_tx(coind, script_dests, amount, script_payee);
+						else
+							job_pack_tx(coind, script_dests, amount, script_payee);
+					}
+				}
+			} else {
+				bool started = json_get_bool(json_result, "masternode_payments_started");
+				const char *payee = json_get_string(masternode, "payee");
+				json_int_t amount = json_get_int(masternode, "amount");
+				if (payee && amount && started) {
+					npayees++;
+					available -= amount;
+					base58_decode(payee, script_payee);
+					bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
+					if(masternode_use_p2sh)
+						p2sh_pack_tx(coind, script_dests, amount, script_payee);
+					else
+						job_pack_tx(coind, script_dests, amount, script_payee);
+				}
 			}
 		}
 		sprintf(payees, "%02x", npayees);
 		strcat(templ->coinb2, payees);
 		if (templ->has_segwit_txs) strcat(templ->coinb2, commitment);
-		strcat(templ->coinb2, script_dests);
 		job_pack_tx(coind, templ->coinb2, available, NULL);
+		strcat(templ->coinb2, script_dests);
 		strcat(templ->coinb2, "00000000"); // locktime
 		coind->reward = (double)available/100000000*coind->reward_mul;
 		//debuglog("%s total %u available %u\n", coind->symbol, templ->value, available);

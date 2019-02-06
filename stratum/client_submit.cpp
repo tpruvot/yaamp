@@ -39,16 +39,23 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce, templ->extradata_be);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 36); // 80+64 / sizeof(u32)
+	} else if (strlen(templ->extradata_be) == 16) { // EXOSIS
+		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
+			ntime, templ->nbits, nonce, templ->extradata_be);
+		ser_string_be(submitvalues->header, submitvalues->header_be, 22); // 80+8 / sizeof(u32)
 	} else {
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 20);
 	}
 
+
 	binlify(submitvalues->header_bin, submitvalues->header_be);
 
 //	printf("%s\n", submitvalues->header_be);
 	int header_len = strlen(submitvalues->header)/2;
+	if (strlen(templ->extradata_be) == 16) // EXOSIS: moneysupply not hashed
+		header_len -= 8;
 	g_current_algo->hash_function((char *)submitvalues->header_bin, (char *)submitvalues->hash_bin, header_len);
 
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);

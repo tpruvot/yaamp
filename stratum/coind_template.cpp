@@ -1,4 +1,5 @@
 
+
 #include "stratum.h"
 
 void coind_getauxblock(YAAMP_COIND *coind)
@@ -343,6 +344,12 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 		// same weird byte order as previousblockhash field
 		ser_string_be2(sc_root, &templ->extradata_be[ 0], 8);
 		ser_string_be2(sc_utxo, &templ->extradata_be[64], 8);
+	}
+	if (!strcmp(coind->algo, "exosis")) {
+		char sc_moneysupply[16];
+		sprintf(sc_moneysupply, "%016lx", json_get_int(json_result, "moneysupply"));
+		strcpy(&templ->extradata_hex[0], sc_moneysupply);
+		ser_string_be2(sc_moneysupply, &templ->extradata_be[0], 2);
 	}
 
 	if (strcmp(coind->rpcencoding, "DCR") == 0) {
