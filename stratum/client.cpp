@@ -229,10 +229,10 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 		}
 	}
 
-	if (!is_base58(client->username)) {
+	/*if (!is_base58(client->username)) {
 		clientlog(client, "bad mining address %s", client->username);
 		return false;
-	}
+	}*/
 
 	bool reset = client_initialize_multialgo(client);
 	if(reset) return false;
