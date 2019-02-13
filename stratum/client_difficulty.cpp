@@ -76,14 +76,21 @@ int client_send_difficulty(YAAMP_CLIENT *client, double difficulty)
 
 	if(difficulty >= 1)
 		client_call(client, "mining.set_difficulty", "[%.0f]", difficulty);
-	else
+	else if (difficulty >= 0.001)
 		client_call(client, "mining.set_difficulty", "[%.3f]", difficulty);
+	else if (difficulty >= 0.000001)
+		client_call(client, "mining.set_difficulty", "[%.6f]", difficulty);
+	else
+		client_call(client, "mining.set_difficulty", "[%.8f]", difficulty);
 	return 0;
 }
 
 void client_initialize_difficulty(YAAMP_CLIENT *client)
 {
 	char *p = strstr(client->password, "d=");
+	//Add "SD" param,  lets users set a starting diff.
+	//Acts like D= but without the "forced" value
+	char *p1 = strstr(client->password, "sd=");
 	char *p2 = strstr(client->password, "decred=");
 	if(!p || p2) return;
 
@@ -94,7 +101,9 @@ void client_initialize_difficulty(YAAMP_CLIENT *client)
 	if(user_target >= YAAMP_MINDIFF && user_target <= YAAMP_MAXDIFF)
 	{
 		client->difficulty_actual = diff;
+		if (!p1) {
 		client->difficulty_fixed = true;
+		}
 	}
 
 }

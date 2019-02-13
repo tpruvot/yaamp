@@ -89,6 +89,10 @@ extern int g_stratum_max_ttf;
 extern bool g_stratum_reconnect;
 extern bool g_stratum_renting;
 extern bool g_stratum_segwit;
+//added for BLE
+extern bool g_stratum_usemetronome;
+extern bool g_stratum_metronomesleep;
+
 extern int g_limit_txs_per_block;
 
 extern bool g_handle_haproxy_ips;
@@ -213,4 +217,5 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/aergo.h"
 #include "algos/hex.h"
 #include "algos/argon2d-dyn.h"
+#include "algos/argon2d-zmy.h"
 #include "algos/exosis.h"

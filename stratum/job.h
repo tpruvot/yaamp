@@ -61,6 +61,12 @@ struct YAAMP_JOB_TEMPLATE
 
 	int auxs_size;
 	YAAMP_COIND_AUX *auxs[MAX_AUXS];
+
+	//added for BLE
+	char metronomehash_hex[512];
+	char metronomehash_be[512];
+	bool metronomeactive;
+
 };
 
 #define YAAMP_JOB_MAXSUBIDS		200

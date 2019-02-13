@@ -117,8 +117,8 @@ void db_update_algos(YAAMP_DB *db)
 	int pid = getpid();
 	int fds = opened_files();
 	if(!db) return;
-
-	if(g_current_algo->overflow)
+	//BLE:TODO: Make this smarter...
+	if(g_current_algo->overflow && !g_stratum_metronomesleep)
 	{
 		debuglog("setting overflow\n");
 		g_current_algo->overflow = false;
@@ -193,9 +193,9 @@ void db_update_coinds(YAAMP_DB *db)
 	db_query(db, "SELECT id, name, rpchost, rpcport, rpcuser, rpcpasswd, rpcencoding, master_wallet, reward, price, "
 		"hassubmitblock, txmessage, enable, auto_ready, algo, pool_ttf, charity_address, charity_amount, charity_percent, "
 		"reward_mul, symbol, auxpow, actual_ttf, network_ttf, usememorypool, hasmasternodes, algo, symbol2, "
-		"rpccurl, rpcssl, rpccert, account, multialgos, max_miners, max_shares, usesegwit "
+		"rpccurl, rpcssl, rpccert, account, multialgos, max_miners, max_shares, usesegwit, usemetronome "
 		"FROM coins WHERE enable AND auto_ready AND algo='%s' ORDER BY index_avg", g_stratum_algo);
-
+	//added sleep option for BLE
 	MYSQL_RES *result = mysql_store_result(&db->mysql);
 	if(!result) yaamp_error("Cant query database");
 
@@ -306,6 +306,11 @@ void db_update_coinds(YAAMP_DB *db)
 		if(row[35]) coind->usesegwit = atoi(row[35]) > 0;
 
 		if(coind->usesegwit) g_stratum_segwit = true;
+
+		//added for BLE
+		if(row[36]) coind->usemetronome = atoi(row[36]) > 0;
+		if(coind->usemetronome) g_stratum_usemetronome = true;
+
 
 		// force the right rpcencoding for DCR
 		if(!strcmp(coind->symbol, "DCR") && strcmp(coind->rpcencoding, "DCR"))

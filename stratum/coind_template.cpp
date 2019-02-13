@@ -308,6 +308,28 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	const char *flags = json_get_string(json_coinbaseaux, "flags");
 	strcpy(templ->flags, flags ? flags : "");
 
+
+
+
+
+	if (coind->usemetronome) {
+		// For BLE: Get Metro hash,  enabled/disable sleep based on it.
+		const char *metronomehash = json_get_string(json_result, "metronomehash");
+		strcpy(templ->metronomehash_hex, metronomehash ? metronomehash : "" );
+		unsigned char metrocount = 0;
+
+		for (int i = 0; i < strlen(templ->metronomehash_hex);  i++)
+			if (templ->metronomehash_hex[i] == '0') metrocount++;
+
+		if (metrocount == 64) {
+			templ->metronomeactive = g_stratum_metronomesleep = true;
+			//used for testing..
+			//ser_string_be2(templ->metronomehash_hex, templ->metronomehash_be, 8);
+		} else {
+			templ->metronomeactive = g_stratum_metronomesleep = false;
+			ser_string_be2(templ->metronomehash_hex, templ->metronomehash_be, 8);
+		}
+	}
 	// LBC Claim Tree (with wallet gbt patch)
 	const char *claim = json_get_string(json_result, "claimtrie");
 	if (claim) {
@@ -533,7 +555,9 @@ bool coind_create_job(YAAMP_COIND *coind, bool force)
 	if(	!force && job_last && job_last->templ && job_last->templ->created + 45 > time(NULL) &&
 		templ->height == job_last->templ->height &&
 		templ->txcount == job_last->templ->txcount &&
-		strcmp(templ->coinb2, job_last->templ->coinb2) == 0)
+		strcmp(templ->coinb2, job_last->templ->coinb2) == 0 &&
+		//ADDED FOR BLE:  Check if new metronome hash..
+		strcmp(templ->metronomehash_hex, job_last->templ->metronomehash_hex) == 0)
 	{
 //		debuglog("coind_create_job %s %d same template %x \n", coind->name, coind->height, coind->job->id);
 		if (templ->txcount) {

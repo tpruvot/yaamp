@@ -178,8 +178,8 @@ void db_update_workers(YAAMP_DB *db)
 		YAAMP_CLIENT *client = (YAAMP_CLIENT *)li->data;
 		if(client->deleted) continue;
 		if(!client->workerid) continue;
-
-		if(client->speed < 0.00001)
+		//BLETODO:  Need some logic here, to carry over hashrate when in sleep mode.
+		if(client->speed < 0.00001 && !g_stratum_usemetronome) 
 		{
 			clientlog(client, "speed %f", client->speed);
 			shutdown(client->sock->sock, SHUT_RDWR);

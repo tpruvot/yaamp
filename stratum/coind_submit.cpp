@@ -42,10 +42,12 @@ bool coind_submitblock(YAAMP_COIND *coind, const char *block)
 
 	sprintf(params, "[\"%s\"]", block);
 	json_value *json = rpc_call(&coind->rpc, "submitblock", params);
-
+	//debuglog("\nsubmit:\n\n%s\n\n\n", params);
 	free(params);
-	if(!json) return false;
-
+	if(!json) {
+		debuglog("no return from submit coin block\n");
+		return false;
+	}
 	json_value *json_error = json_get_object(json, "error");
 	if(json_error && json_error->type != json_null)
 	{

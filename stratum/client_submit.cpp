@@ -39,6 +39,14 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce, templ->extradata_be);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 36); // 80+64 / sizeof(u32)
+
+	} else if (!strcmp(g_stratum_algo, "sha256d-le"))  { //match is 0, so shows as false...
+		//Bitcoin LE Header template.
+		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
+			templ->metronomehash_be, ntime, templ->nbits, nonce);
+		ser_string_be(submitvalues->header, submitvalues->header_be, 36);
+//		debuglog("metronome: %s\n header_be: %s\n header: %s \n", templ->metronomehash_be, submitvalues->header_be, submitvalues->header );
+
 	} else {
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce);
@@ -46,6 +54,7 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	}
 
 	binlify(submitvalues->header_bin, submitvalues->header_be);
+	//debuglog("submit header be: %s \n", submitvalues->header_be);
 
 //	printf("%s\n", submitvalues->header_be);
 	int header_len = strlen(submitvalues->header)/2;
@@ -215,7 +224,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 				debuglog("%s %d REJECTED\n", coind_aux->name, coind_aux->height);
 		}
 	}
-
+	//debuglog("hash:  %08X  target: %08X \n", hash_int, coin_target);
 	if(hash_int <= coin_target)
 	{
 		char count_hex[8] = { 0 };
@@ -300,6 +309,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 		else {
 			debuglog("*** REJECTED :( %s block %d %d txs\n", coind->name, templ->height, templ->txcount);
 			rejectlog("REJECTED %s block %d\n", coind->symbol, templ->height);
+//			debuglog("hash2 %s\n", submitvalues->hash_be);
 			if (g_debuglog_hash) {
 				//debuglog("block %s\n", block_hex);
 				debuglog("--------------------------------------------------------------\n");
@@ -421,8 +431,14 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 	}
 
 	bool is_decred = job->coind && !strcmp("DCR", job->coind->rpcencoding);
+	bool is_ble = job->coind && !strcmp(g_stratum_algo, "sha256d-le");
 
 	YAAMP_JOB_TEMPLATE *templ = job->templ;
+
+	 if (is_ble && strlen(templ->metronomehash_be) < 64)  {
+	 	client_submit_error(client, job, 28, "Metronome not active... Invalid share", extranonce2, ntime, nonce);
+	 	return true;
+	 }
 
 	if(strlen(nonce) != YAAMP_NONCE_SIZE*2 || !ishexa(nonce, YAAMP_NONCE_SIZE*2)) {
 		client_submit_error(client, job, 20, "Invalid nonce size", extranonce2, ntime, nonce);

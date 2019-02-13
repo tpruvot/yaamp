@@ -74,6 +74,8 @@ public:
 	char commitment[128];
 	char witness_magic[16];
 
+	bool usemetronome;
+	
 	YAAMP_JOB *job;
 //	YAAMP_JOB_TEMPLATE *templ;
 };

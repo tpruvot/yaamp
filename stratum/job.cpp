@@ -300,9 +300,11 @@ void job_update()
 		if(client->deleted) continue;
 		if(client->jobid_next) continue;
 
+//BLE:TODO: Added for initial concept,  may need to remove (not needed?)
+		if (!g_stratum_usemetronome || !g_stratum_metronomesleep) {
 		debuglog("clients with no job\n");
 		g_current_algo->overflow = true;
-
+		}
 		if(!g_list_coind.first) break;
 
 		// here: todo: choose first can mine

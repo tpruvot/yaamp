@@ -22,6 +22,11 @@ static void job_mining_notify_buffer(YAAMP_JOB *job, char *buffer)
 			job->id, templ->prevhash_be, templ->claim_be, templ->coinb1, templ->coinb2,
 			templ->txmerkles, templ->version, templ->nbits, templ->ntime);
 		return;
+	} else if (g_stratum_usemetronome) {
+		//added for BLE
+		sprintf(buffer, "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"%x\",\"%s\",\"%s\",\"%s\",[%s],\"%s\",\"%s\",\"%s\",true,\"%s\"]}\n",
+		job->id, templ->prevhash_be, templ->coinb1, templ->coinb2, templ->txmerkles, templ->version, templ->nbits, templ->ntime, templ->metronomehash_be);
+		return;
 	} else if (strlen(templ->extradata_hex) == 128) {
 		// LUX smart contract state hashes (like lbry extra field, here the 2 root hashes in one)
 		sprintf(buffer, "{\"id\":null,\"method\":\"mining.notify\",\"params\":["

@@ -38,7 +38,8 @@ int g_stratum_max_cons = 5000;
 bool g_stratum_reconnect;
 bool g_stratum_renting;
 bool g_stratum_segwit = false;
-
+bool g_stratum_usemetronome = false;
+bool g_stratum_metronomesleep = false;
 int g_limit_txs_per_block = 0;
 
 bool g_handle_haproxy_ips = false;
@@ -111,6 +112,7 @@ static void neoscrypt_hash(const char* input, char* output, uint32_t len)
 YAAMP_ALGO g_algos[] =
 {
 	{"sha256", sha256_double_hash, 1, 0, 0},
+	{"sha256d-le", sha256_double_hash, 1, 0, 0},
 	{"scrypt", scrypt_hash, 0x10000, 0, 0},
 	{"scryptn", scryptn_hash, 0x10000, 0, 0},
 	{"neoscrypt", neoscrypt_hash, 0x10000, 0, 0},
@@ -190,6 +192,7 @@ YAAMP_ALGO g_algos[] =
 	{"velvet", velvet_hash, 0x10000, 0, 0},
 	{"argon2", argon2a_hash, 0x10000, 0, sha256_hash_hex },
 	{"argon2d-dyn", argon2d_dyn_hash, 0x10000, 0, 0 }, // Dynamic Argon2d Implementation
+	{"argon2d-zmy", argon2d_zmy_hash, 0x10000, 0, 0 }, // zumy variant of argon 
 	{"vitalium", vitalium_hash, 1, 0, 0},
 	{"aergo", aergo_hash, 1, 0, 0},
 
@@ -358,8 +361,11 @@ int main(int argc, char **argv)
 
 		block_prune(db);
 		submit_prune(db);
-
-		sleep(1);
+		//Added for BLE, lower sleep cycle to help catch metronome faster.
+		if (g_stratum_metronomesleep) 
+			usleep(100000);
+		else 
+			sleep(1);
 		job_signal();
 
 		////////////////////////////////////
@@ -375,7 +381,13 @@ int main(int argc, char **argv)
 		object_prune(&g_list_share, share_delete);
 		object_prune(&g_list_submit, submit_delete);
 
-		if (!g_exiting) sleep(20);
+		if (!g_exiting) {
+			//Added for BLE, sleep 1/12 a second instead of 20 seconds while sleeping.
+			if (g_stratum_metronomesleep) 
+				usleep(100000);
+			else 
+				sleep(20);
+		}
 	}
 
 	stratumlog("closing database...\n");

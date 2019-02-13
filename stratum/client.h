@@ -91,6 +91,9 @@ public:
 	int jobid_next;
 	int jobid_sent;
 	int jobid_locked;
+//added for BLE	// CHECK FOR USAGE
+	bool has_had_job;
+	bool metronomesleep;
 
 	YAAMP_CLIENT_ALGO algos_subscribed[YAAMP_MAXALGOS];
 	int job_history[YAAMP_JOB_MAXHISTORY];

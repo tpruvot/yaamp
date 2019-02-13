@@ -529,6 +529,10 @@ void *client_thread(void *p)
 	client->speed = 1;
 	client->created = time(NULL);
 	client->last_best = time(NULL);
+	//added for BLE 
+	//BLE:TODO:  Check if i'm actually using this.. I believe the code has been removed
+	client->has_had_job = false;
+	client->metronomesleep = false;
 
 	client->sock = socket_initialize((int)(long)p);
 //	client->source = source_init(client);
