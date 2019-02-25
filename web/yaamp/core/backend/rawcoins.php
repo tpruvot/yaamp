@@ -456,11 +456,11 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 	if($symbol == 'BTC') return;
 
 	// Restrict $symbol and $name to strict defined set of characters (to protect from rogue exchange or DNS attack on exchange)
-	if (!preg_match('/[^A-Za-z0-9_\$]/', $symbol)) {
+	if (preg_match('/[^A-Za-z0-9_\$]/', $symbol)) {
 		debuglog("weird symbol $symbol from $marketname");
 		return;
 		}
-	if (!preg_match('/[^A-Za-z0-9_\$]/', $name)) {
+	if (preg_match('/[^A-Za-z0-9_\$ ]/', $name)) {
 		debuglog("weird name $name for symbol $symbol from $marketname");
 		return;
 		}
