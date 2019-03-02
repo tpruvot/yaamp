@@ -136,7 +136,6 @@ function BackendBlockFind1($coinid = NULL)
 		}
 
 		$tx = $remote->gettransaction($block['tx'][0]);
-		if ($coin->symbol !== 'BITC')
 		if(!$tx || !isset($tx['details']) || !isset($tx['details'][0]))
 		{
 			$db_block->amount = 0;
