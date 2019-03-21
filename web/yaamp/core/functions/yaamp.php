@@ -35,6 +35,7 @@ function yaamp_get_algos()
 		'lyra2v2',
 		'lyra2v3',
 		'lyra2z',
+		'lyra2zz',
 		'neoscrypt',
 		'nist5',
 		'penta',
