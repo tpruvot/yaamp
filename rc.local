@@ -53,7 +53,7 @@ screen -dmS allium $STRATUM_DIR/run.sh allium
 #screen -dmS lyra2 $STRATUM_DIR/run.sh lyra2
 screen -dmS lyra2v2 $STRATUM_DIR/run.sh lyra2v2
 screen -dmS lyra2z $STRATUM_DIR/run.sh lyra2z
-screen -dmS zero $STRATUM_DIR/run.sh lyra2zz
+screen -dmS lyra2zz $STRATUM_DIR/run.sh lyra2zz
 screen -dmS rainforest $STRATUM_DIR/run.sh rainforest
 
 screen -dmS blakecoin $STRATUM_DIR/run.sh blakecoin # blake 8
