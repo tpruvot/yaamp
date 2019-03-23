@@ -45,11 +45,11 @@ typedef unsigned char byte;
 extern "C" {
 #endif
 
-    int LYRA2ZZ(void *K, uint64_t kLen, const void *pwd, uint64_t pwdlen, const void *salt, uint64_t saltlen, uint64_t timeCost, uint64_t nRows, uint64_t nCols);
+int LYRA2ZZ(void *K, uint64_t kLen, const void *pwd, uint64_t pwdlen, const void *salt, uint64_t saltlen, uint64_t timeCost, uint64_t nRows, uint64_t nCols);
 
 #ifdef __cplusplus
 }
 
 #endif
 
-#endif /* LYRA2_H_ */
+#endif /* LYRA2ZZ_H_ */
