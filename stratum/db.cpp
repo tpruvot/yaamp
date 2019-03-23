@@ -320,9 +320,9 @@ void db_update_coinds(YAAMP_DB *db)
 			if (strcmp(coind->symbol, "CRW") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "DNR") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
-			if (strcmp(coind->symbol, "LAX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
+			if (strcmp(coind->symbol, "LAX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "MAG") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "PBS") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;
