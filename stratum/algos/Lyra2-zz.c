@@ -59,8 +59,6 @@ int LYRA2ZZ(void *K, uint64_t kLen, const void *pwd, uint64_t pwdlen, const void
 
 	//========== Initializing the Memory Matrix and pointers to it =============//
 	//Tries to allocate enough space for the whole memory matrix
-
-
 	const int64_t ROW_LEN_INT64 = BLOCK_LEN_INT64 * nCols;
 	const int64_t ROW_LEN_BYTES = ROW_LEN_INT64 * 8;
 
@@ -146,7 +144,6 @@ int LYRA2ZZ(void *K, uint64_t kLen, const void *pwd, uint64_t pwdlen, const void
 	do {
 		//M[row] = rand; //M[row*] = M[row*] XOR rotW(rand)
 		reducedDuplexRowSetup(state, memMatrix[prev], memMatrix[rowa], memMatrix[row], nCols);
-
 
 		//updates the value of row* (deterministically picked during Setup))
 		rowa = (rowa + step) & (window - 1);
