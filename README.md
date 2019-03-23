@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/RealAwesomeness/yiimp.svg?branch=next)](https://travis-ci.org/RealAwesomeness/yiimp)
+[![Build Status](https://travis-ci.org/tpruvot/yiimp.svg?branch=next)](https://travis-ci.org/tpruvot/yiimp)
 
 #yiimp - yaamp fork
 
