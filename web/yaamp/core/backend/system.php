@@ -3,7 +3,7 @@
 function BackendDoBackup()
 {
 	$d = date('Y-m-d-H', time());
-	$filename = "$YAAMP_DBBACKUP_PATH/yaamp-$d.sql";
+	$filename = YAAMP_DBBACKUP_PATH."/yaamp-$d.sql";
 
 	if (is_readable("/usr/bin/xz")) {
 		$ziptool = "xz --threads=4"; $ext = ".xz";
