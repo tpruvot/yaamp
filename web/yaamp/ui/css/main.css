@@ -44,12 +44,12 @@ h2
 
 hr
 {
-	display: block; 
+	display: block;
 	height: 1px;
-    border: 0; 
+    border: 0;
     border-top: 1px solid #e5e5e5;
 }
-    
+
 
 .page
 {
@@ -70,7 +70,7 @@ hr
 .page .headermenu img
 {
 	border-radius: 5px;
-	padding: 2px 0 0 0; 
+	padding: 2px 0 0 0;
 	height: 26px;
 }
 
@@ -92,9 +92,10 @@ hr
 	height: 40px;
 	color: #aaa;
 
-	background-image: url(/images/base/top_header.png);
+	background-color: #455A64;
+	background-size: 9px 40px;
 	background-repeat: repeat-x;
-	
+
 	-webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .25);
 	box-shadow: 0 2px 3px rgba(0, 0, 0, .25);
 }
@@ -117,7 +118,7 @@ hr
 {
 	color: #eee;
 	border: 1px solid #181818;
-	background-image: url(/images/base/top_header_selected.png);
+	background-image: :  linear-gradient(#2c3e50, #455A64, #2c3e50);
 	background-repeat: repeat-x;
 }
 
@@ -224,4 +225,3 @@ hr
 {
 	color: blue;
 }
-
