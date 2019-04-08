@@ -480,7 +480,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		strcat(templ->coinb2, "00000000"); // locktime
 		if(coinbase_payload && strlen(coinbase_payload) > 0) {
 			char coinbase_payload_size[18];
-			ser_compactsize((unsigned int)(strlen(coinbase_payload_size) >> 1), coinbase_payload_size);
+			ser_compactsize((unsigned int)(strlen(coinbase_payload) >> 1), coinbase_payload_size);
 			strcat(templ->coinb2, coinbase_payload_size);
 			strcat(templ->coinb2, coinbase_payload);
 		}
