@@ -115,11 +115,8 @@ bool coind_validate_address(YAAMP_COIND *coind)
 	sprintf(params, "[\"%s\"]", coind->wallet);
 
 	json_value *json;
-	bool getaddressinfo = ((strcmp(coind->symbol,"DGB") == 0) || (strcmp(coind->symbol2, "DGB") == 0));
-	if(getaddressinfo)
-		json = rpc_call(&coind->rpc, "getaddressinfo", params);
-	else
-		json = rpc_call(&coind->rpc, "validateaddress", params);
+	bool getaddressinfo = false;
+	json = rpc_call(&coind->rpc, "validateaddress", params);
 	if(!json) return false;
 
 	json_value *json_result = json_get_object(json, "result");
@@ -127,6 +124,20 @@ bool coind_validate_address(YAAMP_COIND *coind)
 	{
 		json_value_free(json);
 		return false;
+	}
+
+	if(!json_get_bool(json_result, "ismine"))
+	{
+		stratumlog("%s wallet is using getaddressinfo.\n", coind->name);
+		getaddressinfo = true;
+		json = rpc_call(&coind->rpc, "getaddressinfo", params);
+
+		json_result = json_get_object(json, "result");
+		if(!json_result)
+		{
+			json_value_free(json);
+			return false;
+		}
 	}
 
 	bool isvalid = getaddressinfo || json_get_bool(json_result, "isvalid");
