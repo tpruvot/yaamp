@@ -116,7 +116,14 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	json_int_t available = templ->value;
 
 	// sample coins using mandatory dev/foundation fees
-	if(strcmp(coind->symbol, "EGC") == 0) {
+	if(strcmp(coind->symbol, "IMG") == 0) {
+		    coind->imgbase64 = "";
+			if (coind->charity_percent <= 0)
+				coind->charity_percent = 2;
+			if (strlen(coind->charity_address) == 0)
+				sprintf(coind->charity_address, "Mhrt6FAHVPpX72FCKEuLDeb5HgkPryNceS");
+		}
+	else if(strcmp(coind->symbol, "EGC") == 0) {
 		if (coind->charity_percent <= 0)
 			coind->charity_percent = 2;
 		if (strlen(coind->charity_address) == 0)
