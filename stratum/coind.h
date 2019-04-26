@@ -51,6 +51,7 @@ public:
 	char lastnotifyhash[192];
 
 	int height;
+	string imgbase64;
 	double difficulty;
 
 	double reward;
