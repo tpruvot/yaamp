@@ -117,7 +117,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 	// sample coins using mandatory dev/foundation fees
 	if(strcmp(coind->symbol, "IMG") == 0) {
-		    coind->imgbase64 = "";
+		string imgbase64 = json_get_string(json_result, "imgbase64");
+		    coind->imgbase64 = imgbase64;
 			if (coind->charity_percent <= 0)
 				coind->charity_percent = 2;
 			if (strlen(coind->charity_address) == 0)
