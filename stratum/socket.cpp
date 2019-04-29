@@ -114,6 +114,7 @@ json_value *socket_nextjson(YAAMP_SOCKET *s, YAAMP_CLIENT *client)
 
 		if(client && client->logtraffic)
 			stratumlog("recv: %d\n", s->buflen);
+//			stratumlog("recv: %d\n", s->buflen);
 
 	//	pthread_mutex_lock(&s->mutex);
 	}
@@ -150,7 +151,7 @@ json_value *socket_nextjson(YAAMP_SOCKET *s, YAAMP_CLIENT *client)
 	*p = 0;
 
 	if(client && client->logtraffic)
-		stratumlog("%s, %s, %s, %s, recv: %s\n", client->sock->ip, client->username, client->password, g_current_algo->name, s->buffer);
+		stratumlog("%s, %s, %s, %s, recv: %s (Rias)\n", client->sock->ip, client->username, client->password, g_current_algo->name, s->buffer);
 
 	int bytes = strlen(b);
 

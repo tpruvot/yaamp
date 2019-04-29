@@ -105,10 +105,16 @@ void db_register_stratum(YAAMP_DB *db)
 	int t = time(NULL);
 	if(!db) return;
 
-	db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port) VALUES (%d,%d,%d,'%s','%s',%d) "
-		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d",
-		pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port,
-		t, g_stratum_algo, g_tcp_server, g_tcp_port
+//        db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port) VALUES (%d,%d,%d,'%s','%s',%d) "
+//                " ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d",
+//                pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port,
+//                t, g_stratum_algo, g_tcp_server, g_tcp_port
+//        );
+
+	db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port, fee, msg) VALUES (%d,%d,%d,'%s','%s',%d,%6.2f,'%s') "
+		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d, fee=%6.2f, msg='%s'",
+		pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg,
+		t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg
 	);
 }
 
@@ -322,7 +328,6 @@ void db_update_coinds(YAAMP_DB *db)
 			if (strcmp(coind->symbol, "FLAX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "ITZ") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "J") == 0 || strcmp(coind->symbol2, "J") == 0) coind->oldmasternodes = true;
-			if (strcmp(coind->symbol, "LAX") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "MAG") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "PBS") == 0) coind->oldmasternodes = true;
 			if (strcmp(coind->symbol, "URALS") == 0) coind->oldmasternodes = true;

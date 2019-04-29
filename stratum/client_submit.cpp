@@ -149,14 +149,19 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 	uint64_t coin_target = decode_compact(templ->nbits);
 	if (templ->nbits && !coin_target) coin_target = 0xFFFF000000000000ULL;
 
-	int block_size = YAAMP_SMALLBUFSIZE;
+	unsigned int block_size = YAAMP_SMALLBUFSIZE;
 	vector<string>::const_iterator i;
 
 	for(i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
 		block_size += strlen((*i).c_str());
 
 	char *block_hex = (char *)malloc(block_size);
-	if(!block_hex) return;
+	if(!block_hex){
+		debuglog("*** Memory allocation failure. Block size: %d B.\n", block_size);
+		 return;
+	}else{
+//                debuglog("Memory allocated. Block size: %d B.\n", block_size);
+	}
 
 	// do aux first
 	for(int i=0; i<templ->auxs_size; i++)
@@ -249,6 +254,14 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 			else
 				snprintf(block_hex, block_size, "%s", hex);
 		}
+
+
+//FILE *f = fopen("/var/stratum/block.log", "w");
+//fprintf(f, "Start block. Size = %d B\n", strlen(block_hex));
+//fwrite(block_hex, strlen(block_hex),1, f);
+//fprintf(f, "\n<<<< End of block.\n\n\n\n\n\n\n\n\n");
+//fclose(f);
+
 
 		bool b = coind_submit(coind, block_hex);
 		if(b)

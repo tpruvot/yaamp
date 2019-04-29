@@ -27,23 +27,12 @@ static void p2sh_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char
 	strcat(data, coinb2_part);
 }
 
-/**
- * Compact Size
- * size <  253        -- 1 byte
- * size <= USHRT_MAX  -- 3 bytes  (253 + 2 bytes)
- * size <= UINT_MAX   -- 5 bytes  (254 + 4 bytes)
- * size >  UINT_MAX   -- 9 bytes  (255 + 8 bytes)
- */
-
 static void job_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char *key)
 {
 	int ol = strlen(data);
 	char evalue[32];
 
 	if(coind->p2sh_address && !key) {
-//		if(strcmp(coind->symbol, "IMG") == 0)
-//			debuglog("IMG: (coind->p2sh_address && !key) pack tx %s\n", data);
-
 		p2sh_pack_tx(coind, data, amount, coind->script_pubkey);
 		return;
 	}
@@ -57,31 +46,9 @@ static void job_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char 
 	else
 		sprintf(data+strlen(data), "1976a914%s88ac", key? key: coind->script_pubkey);
 
-	if(strcmp(coind->symbol, "IMG") == 0){
-		sprintf(data+strlen(data), "%s", "00"); // "52696173" - "Rias"
-
-//		debuglog("IMG: (data) pack tx %s\n", data+ol);
-//		debuglog("IMG: (ammount) pack tx %lld\n", amount);
-	}
+//	debuglog("pack tx %s\n", data+ol);
+//	debuglog("pack tx %lld\n", amount);
 }
-
-static void job_pack_tx_IMG(YAAMP_COIND *coind, char *data, json_int_t amount, char *key)
-{
-	int ol = strlen(data);
-	char evalue[32];
-
-	encode_tx_value(evalue, amount);
-	sprintf(data+strlen(data), "%s", evalue);
-
-	sprintf(data+strlen(data), "2321%sac", coind->pubkey);
-
-	sprintf(data+strlen(data), "%s", "00");
-
-//		debuglog("IMG: (data mn) pack tx %s\n", data+ol);
-//		debuglog("IMG: (ammount mn) pack tx %lld\n", amount);
-
-}
-
 
 void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
 {
@@ -119,10 +86,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char entime[32] = { 0 };
 	char commitment[128] = { 0 };
 
-//	if(strcmp(coind->symbol, "IMG") == 0){
-//		debuglog("IMG: start coinbase_create\n\n ");
-//	}
-
 	ser_number(templ->height, eheight);
 	ser_number(time(NULL), etime);
 	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
@@ -134,7 +97,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
 
-	char script2[32] = "526961733100"; // "7969696d7000" - "yiimp\0" in hex ascii // "526961733100" - "Rias1\0"
+	char script2[32] = "7969696d7000"; // "yiimp\0" in hex ascii
 
 	if(!coind->pos && !coind->isaux && templ->auxs_size)
 		coinbase_aux(templ, script2);
@@ -488,12 +451,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		char script_dests[2048] = { 0 };
 		char script_payee[128] = { 0 };
 		char payees[4]; // addresses count
-
-//		if(strcmp(coind->symbol, "IMG") == 0){
-//			debuglog("IMG: start most recent masternodes rpc (DASH, SIB, MUE, DSR, GBX...)\n ");
-//		}
-
-
 		int npayees = (templ->has_segwit_txs) ? 2 : 1;
 		bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
 		bool superblocks_enabled = json_get_bool(json_result, "superblocks_enabled");
@@ -542,11 +499,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			}
 		}
 		if (masternode_enabled && masternode) {
-
-//			if(strcmp(coind->symbol, "IMG") == 0){
-//				debuglog("IMG: start (masternode_enabled && masternode)\n ");
-//			}
-
 			bool started = json_get_bool(json_result, "masternode_payments_started");
 			const char *payee = json_get_string(masternode, "payee");
 			json_int_t amount = json_get_int(masternode, "amount");
@@ -557,8 +509,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 				bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
 				if(masternode_use_p2sh)
 					p2sh_pack_tx(coind, script_dests, amount, script_payee);
-//				else if(strcmp(coind->symbol, "IMG") == 0)
-//					job_pack_tx_IMG(coind, script_dests, amount, script_payee);
 				else
 					job_pack_tx(coind, script_dests, amount, script_payee);
 			}
@@ -566,22 +516,12 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		sprintf(payees, "%02x", npayees);
 		strcat(templ->coinb2, payees);
 		if (templ->has_segwit_txs) strcat(templ->coinb2, commitment);
-		if(strcmp(coind->symbol, "IMG") == 0){
-			job_pack_tx_IMG(coind, templ->coinb2, available, NULL);
-			strcat(templ->coinb2, script_dests);
-		}else{
-			strcat(templ->coinb2, script_dests);
-			job_pack_tx(coind, templ->coinb2, available, NULL);
-		}
+		strcat(templ->coinb2, script_dests);
+		job_pack_tx(coind, templ->coinb2, available, NULL);
 		strcat(templ->coinb2, "00000000"); // locktime
 		coind->reward = (double)available/100000000*coind->reward_mul;
-//		if(strcmp(coind->symbol, "IMG") == 0){
-//			debuglog("IMG: start (rest)\n ");
-//			debuglog("%s total %u available %u\n", coind->symbol, templ->value, available);
-//			debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
-//			debuglog("%s rawTX templ->coinb1 %s\n", coind->symbol, templ->coinb1);
-//			debuglog("%s rawTX templ->coinb2 %s\n", coind->symbol, templ->coinb2);
-//		}
+		//debuglog("%s total %u available %u\n", coind->symbol, templ->value, available);
+		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
 
@@ -674,11 +614,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 	else if(coind->hasmasternodes && coind->oldmasternodes) /* OLD DASH style */
 	{
-//
-//			if(strcmp(coind->symbol, "IMG") == 0){
-//				debuglog("IMG: start (if(coind->hasmasternodes && coind->oldmasternodes) /* OLD DASH style */)\n ");
-//			}
-//
 		char charity_payee[256] = { 0 };
 		const char *payee = json_get_string(json_result, "payee");
 		if (payee) snprintf(charity_payee, 255, "%s", payee);
@@ -755,7 +690,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		strcat(templ->coinb2, "01");
 	}
 
-
 	job_pack_tx(coind, templ->coinb2, available, NULL);
 
 	//if(coind->txmessage)
@@ -763,22 +697,12 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 	strcat(templ->coinb2, "00000000"); // locktime
 
-        if(strcmp(coind->symbol, "DEM") == 0){
-                debuglog("DEM: start (rest - rest)\n ");
-                strcat(templ->coinb2, "00");
-        }
-
 	coind->reward = (double)available/100000000*coind->reward_mul;
+//	debuglog("coinbase %f\n", coind->reward);
 
-	if(strcmp(coind->symbol, "DEM") == 0){
-                debuglog("DEM: summary:\n ");
-
-		debuglog("coinbase %f\n", coind->reward);
-
-		debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
-		debuglog("coinb1 %s\n", templ->coinb1);
-		debuglog("coinb2 %s\n", templ->coinb2);
-	}
+//	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
+//	debuglog("coinb1 %s\n", templ->coinb1);
+//	debuglog("coinb2 %s\n", templ->coinb2);
 }
 
 

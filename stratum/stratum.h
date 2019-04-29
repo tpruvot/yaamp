@@ -101,6 +101,10 @@ extern bool g_debuglog_rpc;
 extern bool g_debuglog_list;
 extern bool g_debuglog_remote;
 
+extern double g_stratum_fee;
+extern char g_stratum_msg[17];
+
+
 extern uint64_t g_max_shares;
 extern uint64_t g_shares_counter;
 
@@ -171,7 +175,6 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/lyra2v2.h"
 #include "algos/lyra2v3.h"
 #include "algos/lyra2z.h"
-#include "algos/lyra2zz.h"
 #include "algos/blake.h"
 #include "algos/blakecoin.h"
 #include "algos/blake2b.h"

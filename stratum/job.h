@@ -39,7 +39,7 @@ struct YAAMP_JOB_TEMPLATE
 
 	vector<string> txsteps;
 	vector<string> txdata;
-	string imgbase64;
+
 	char version[32];
 	char nbits[32];
 	char ntime[32];

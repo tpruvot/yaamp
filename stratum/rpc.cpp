@@ -38,7 +38,7 @@ bool rpc_connect(YAAMP_RPC *rpc)
 	rpc->bufpos = 0;
 
 	if (g_debuglog_rpc) {
-		debuglog("connected to %s:%d\n", rpc->host, rpc->port);
+		debuglog("connected to %s:%d (Rias)\n", rpc->host, rpc->port);
 	}
 
 	return true;
@@ -149,11 +149,13 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 	{
 		int bytes = recv(rpc->sock, buffer+bufpos, YAAMP_SMALLBUFSIZE-bufpos-1, 0);
 		if (g_debuglog_rpc) {
-			debuglog("got %s\n", buffer+bufpos);
+			debuglog("got %s. buffersize = %d\n", buffer+bufpos, sizeof(buffer));
+			stratumlog("got %s. buffersize = %d\n", buffer+bufpos, sizeof(buffer));
+		 // debuglog("got %s\n", buffer+bufpos);
 		}
 		if(bytes <= 0)
 		{
-			debuglog("ERROR: recv1, %d, %d, %s, %s\n", bytes, errno, data, buffer);
+			debuglog("ERROR: recv1, %d, %d, %s, %s (bufersize = %d)\n", bytes, errno, data, buffer, sizeof(buffer));
 			CommonUnlock(&rpc->mutex);
 			return NULL;
 		}
@@ -227,6 +229,7 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 		bufpos += bytes;
 		databuf[bufpos] = 0;
 	}
+//        debuglog("Receive2: received %d B\n", bufpos);
 
 	CommonUnlock(&rpc->mutex);
 
