@@ -105,17 +105,17 @@ void db_register_stratum(YAAMP_DB *db)
 	int t = time(NULL);
 	if(!db) return;
 
-//        db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port) VALUES (%d,%d,%d,'%s','%s',%d) "
-//                " ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d",
-//                pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port,
-//                t, g_stratum_algo, g_tcp_server, g_tcp_port
-//        );
+        db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port) VALUES (%d,%d,%d,'%s','%s',%d) "
+                " ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d",
+                pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port,
+                t, g_stratum_algo, g_tcp_server, g_tcp_port
+        );
 
-	db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port, fee, msg) VALUES (%d,%d,%d,'%s','%s',%d,%6.2f,'%s') "
-		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d, fee=%6.2f, msg='%s'",
-		pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg,
-		t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg
-	);
+//	db_query(db, "INSERT INTO stratums (pid, time, started, algo, url, port, fee, msg) VALUES (%d,%d,%d,'%s','%s',%d,%6.2f,'%s') "
+//		" ON DUPLICATE KEY UPDATE time=%d, algo='%s', url='%s', port=%d, fee=%6.2f, msg='%s'",
+//		pid, t, t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg,
+//		t, g_stratum_algo, g_tcp_server, g_tcp_port, g_stratum_fee, g_stratum_msg
+//	);
 }
 
 void db_update_algos(YAAMP_DB *db)
