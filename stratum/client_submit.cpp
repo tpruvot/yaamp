@@ -267,6 +267,10 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 
 			merkle_hash((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
 
+                        // isnt perfect, but it works
+                        if(strcmp(coind->symbol, "SIN") == 0)
+                           x22i_hash_hex((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
+
 			char hash1[1024];
 			memset(hash1, 0, 1024);
 
