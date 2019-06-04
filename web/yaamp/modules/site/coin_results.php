@@ -4,7 +4,8 @@ $coin = getdbo('db_coins', getiparam('id'));
 if (!$coin) $this->goback();
 
 $PoS = ($coin->algo == 'PoS'); // or if 'stake' key is present in 'getinfo' method
-$DCR = ($coin->rpcencoding == 'DCR');
+$DCR = ($coin->rpcencoding == 'DCR' || $coin->getOfficialSymbol() == 'DCR');
+$DGB = ($coin->rpcencoding == 'DGB' || $coin->getOfficialSymbol() == 'DGB');
 $ETH = ($coin->rpcencoding == 'GETH');
 
 $remote = new WalletRPC($coin);
@@ -296,10 +297,18 @@ echo <<<end
 end;
 
 $account = '';
-if ($DCR) $account = '*';
-if ($ETH) $account = $coin->master_wallet;
+if ($DCR || $DGB) $account = '*';
+else if ($ETH) $account = $coin->master_wallet;
 
 $txs = $remote->listtransactions($account, $maxrows);
+
+// Coins with disabled accounting will not show any tx. $account should be "*"
+
+if (empty($txs)) {
+        $account = '*';
+        $txs = $remote->listtransactions($account, $maxrows);
+}
+
 
 if (empty($txs)) {
 	if (!empty($remote->error)) {
