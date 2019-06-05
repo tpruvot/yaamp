@@ -332,6 +332,12 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 			debuglog("claim_hex: %s\n", templ->claim_hex);
 		}
 	}
+	else if (strcmp(coind->symbol, "BITC") == 0) {
+		templ->needpriceinfo = json_get_bool(json_result, "needpriceinfo");
+		strcpy(templ->priceinfo, json_get_string(json_result, "priceinfo"));
+		//if (templ->needpriceinfo) std::cout << "needpriceinfo" << std::endl; else std::cout << "NO needpriceinfo" << std::endl;
+		//std::cout << "priceinfo:" << templ->priceinfo << std::endl;
+	}
 
 	const char *sc_root = json_get_string(json_result, "stateroot");
 	const char *sc_utxo = json_get_string(json_result, "utxoroot");

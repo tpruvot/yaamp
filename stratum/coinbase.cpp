@@ -93,9 +93,14 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			if (json) {
 				json_value *json_result = json_get_object(json, "result");
 				if (json_result) {
-					sprintf(templ->coinb1, "%s", json_get_string(json_result, "coinbasepart1"));			
+					sprintf(templ->coinb1, "%s", json_get_string(json_result, "coinbaseforhashpart1"));			
 					templ->coinb1[strlen(templ->coinb1) - 16] = '\0';
-					sprintf(templ->coinb2, "%s", json_get_string(json_result, "coinbasepart2"));			
+					sprintf(templ->coinb2, "%s", json_get_string(json_result, "coinbaseforhashpart2"));			
+					
+					sprintf(templ->coinforsubmitb1, "%s", json_get_string(json_result, "coinbasepart1"));
+					templ->coinforsubmitb1[strlen(templ->coinforsubmitb1) - 16] = '\0';
+					sprintf(templ->coinforsubmitb2, "%s", json_get_string(json_result, "coinbasepart2"));
+					templ->isbitcash = true;
 				}
 			}
 		}
