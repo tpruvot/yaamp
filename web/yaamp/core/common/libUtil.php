@@ -41,7 +41,7 @@ function getuserparam($address)
 {
 	if(empty($address)) return null;
 
-	$address = trim(substr($address, 0, 35));
+	$address = trim(substr($address, 0, 98));
 	$user = getdbosql('db_accounts', "username=:ad", array(':ad'=>$address));
 
 	return $user;
@@ -51,7 +51,7 @@ function getrenterparam($address)
 {
 	if(empty($address)) return null;
 
-	$address = trim(substr($address, 0, 35));
+	$address = trim(substr($address, 0, 98));
 	$renter = getdbosql('db_renters', "address=:ad", array(':ad'=>$address));
 
 	return $renter;

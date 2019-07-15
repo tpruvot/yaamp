@@ -3,4 +3,4 @@
 
 -- filled by the stratum instance, to allow to handle/watch multiple instances
 
-ALTER TABLE `workers` MODIFY COLUMN name VARCHAR(52);
+ALTER TABLE `workers` MODIFY COLUMN name VARCHAR(98);
