@@ -82,6 +82,7 @@ void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
 
 void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *json_result)
 {
+	templ->isbitcash = false;
 	if(strcmp(coind->symbol, "BITC") == 0) {
 		char *params = (char *)malloc(1024);
 		if (params) {

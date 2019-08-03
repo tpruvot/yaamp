@@ -53,7 +53,7 @@ struct YAAMP_JOB_TEMPLATE
 	char coinb2[4*1024];
 	char coinforsubmitb1[4*1024];
 	char coinforsubmitb2[4*1024];
-	bool isbitcash = false;
+	bool isbitcash;
 
 	char header[256];
 
