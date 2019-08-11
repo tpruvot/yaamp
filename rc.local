@@ -34,6 +34,7 @@ screen -dmS timetravel $STRATUM_DIR/run.sh timetravel
 screen -dmS bitcore $STRATUM_DIR/run.sh bitcore
 screen -dmS hmq1725 $STRATUM_DIR/run.sh hmq1725
 screen -dmS tribus $STRATUM_DIR/run.sh tribus
+screen -dmS sk1024 $STRATUM_DIR/run.sh sk1024
 
 screen -dmS sha $STRATUM_DIR/run.sh sha
 screen -dmS sha256t $STRATUM_DIR/run.sh sha256t
