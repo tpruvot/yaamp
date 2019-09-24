@@ -82,6 +82,32 @@ void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
 
 void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *json_result)
 {
+	templ->isbitcash = false;
+	if(strcmp(coind->symbol, "BITC") == 0) {
+		char *params = (char *)malloc(1024);
+		if (params) {
+			sprintf(params, "[\"%s\", %i]", coind->wallet, templ->height);
+			//std::cout << "Params:" << params << std::endl;
+			json_value *json = rpc_call(&coind->rpc, "createcoinbaseforaddress", params);
+
+			free(params);
+			if (json) {
+				json_value *json_result = json_get_object(json, "result");
+				if (json_result) {
+					sprintf(templ->coinb1, "%s", json_get_string(json_result, "coinbaseforhashpart1"));			
+					templ->coinb1[strlen(templ->coinb1) - 16] = '\0';
+					sprintf(templ->coinb2, "%s", json_get_string(json_result, "coinbaseforhashpart2"));			
+					
+					sprintf(templ->coinforsubmitb1, "%s", json_get_string(json_result, "coinbasepart1"));
+					templ->coinforsubmitb1[strlen(templ->coinforsubmitb1) - 16] = '\0';
+					sprintf(templ->coinforsubmitb2, "%s", json_get_string(json_result, "coinbasepart2"));
+					templ->isbitcash = true;
+				}
+			}
+		}
+		return;
+	}
+	
 	char eheight[32], etime[32];
 	char entime[32] = { 0 };
 	char commitment[128] = { 0 };
