@@ -77,7 +77,7 @@ int client_send_difficulty(YAAMP_CLIENT *client, double difficulty)
 	if(difficulty >= 1)
 		client_call(client, "mining.set_difficulty", "[%.0f]", difficulty);
 	else
-		client_call(client, "mining.set_difficulty", "[%.3f]", difficulty);
+		client_call(client, "mining.set_difficulty", "[%.8f]", difficulty);
 	return 0;
 }
 
