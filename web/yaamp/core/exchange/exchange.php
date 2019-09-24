@@ -123,7 +123,7 @@ function getMarketUrl($coin, $marketName)
 	else if($market == 'kucoin')
 		$url = "https://www.kucoin.com/trade/{$symbol}-{$base}";
 	else if($market == 'livecoin')
-		$url = "https://www.livecoin.net/en/trading/{$symbol}%2F{$base}";
+		$url = "https://www.livecoin.net/en/trading/{$symbol}_{$base}";
 	else if($market == 'nova')
 		$url = "https://novaexchange.com/market/{$base}_{$symbol}/";
 	else if($market == 'stocksexchange')
