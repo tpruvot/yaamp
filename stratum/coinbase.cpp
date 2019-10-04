@@ -84,7 +84,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 {
 	templ->isbitcash = false;
 	if(strcmp(coind->symbol, "BITC") == 0) {
-		char *params = (char *)malloc(1024);
+		char *params = (char *)malloc(4096);
 		if (params) {
 			unsigned char price_bin[1024];
 			unsigned char pricehash_bin[1024];
