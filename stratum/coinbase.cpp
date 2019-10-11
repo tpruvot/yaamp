@@ -91,15 +91,19 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			char pricehash_hex[1024];
 			char pricehash_be[1024];
 			
-			binlify(price_bin, templ->priceinfo);
+			if (templ->priceinfo && strlen(templ->priceinfo) > 0 && strlen(templ->priceinfo) < 1000) {
+				binlify(price_bin, templ->priceinfo);
 			
-			int price_len = strlen(templ->priceinfo)/2;
-			sha256_double_hash((char *)price_bin, (char *)pricehash_bin, price_len);
+				int price_len = strlen(templ->priceinfo)/2;
+				sha256_double_hash((char *)price_bin, (char *)pricehash_bin, price_len);
 
-			hexlify(pricehash_hex, pricehash_bin, 32);
-			string_be(pricehash_hex, pricehash_be);
+				hexlify(pricehash_hex, pricehash_bin, 32);
+				string_be(pricehash_hex, pricehash_be);
 			
-			sprintf(params, "[\"%s\", %i, \"%s\"]", coind->wallet, templ->height, pricehash_be);
+				sprintf(params, "[\"%s\", %i, \"%s\"]", coind->wallet, templ->height, pricehash_be);
+			} else {
+				sprintf(params, "[\"%s\", %i]", coind->wallet, templ->height);
+			}
 			//std::cout << "Params:" << params << std::endl;
 			json_value *json = rpc_call(&coind->rpc, "createcoinbaseforaddress", params);
 
