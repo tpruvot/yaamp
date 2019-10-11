@@ -91,7 +91,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			char pricehash_hex[1024];
 			char pricehash_be[1024];
 			
-			if (templ->priceinfo && strlen(templ->priceinfo) > 0 && strlen(templ->priceinfo) < 1000) {
+			if (templ->needpriceinfo && strlen(templ->priceinfo) > 0 && strlen(templ->priceinfo) < 1000) {
 				binlify(price_bin, templ->priceinfo);
 			
 				int price_len = strlen(templ->priceinfo)/2;
