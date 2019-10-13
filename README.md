@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tpruvot/yiimp.svg?branch=next)](https://travis-ci.org/tpruvot/yiimp)
 
-#yiimp - yaamp fork
+#yiimp - yaamp fork - merge mining
 
 WARNINGS
 - Use at your own risks.
