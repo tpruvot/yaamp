@@ -500,6 +500,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		}
 		if (masternode_enabled && masternode) {
 			bool started = json_get_bool(json_result, "masternode_payments_started");
+			if (json_is_array(masternode) && (masternode->u.array.length > 0))
+				masternode = masternode->u.array.values[0];
 			const char *payee = json_get_string(masternode, "payee");
 			json_int_t amount = json_get_int(masternode, "amount");
 			if (payee && amount && started) {
