@@ -14,7 +14,7 @@ static void encode_tx_value(char *encoded, json_int_t value)
 		TX_VALUE(value, 32), TX_VALUE(value, 40), TX_VALUE(value, 48), TX_VALUE(value, 56));
 }
 
-static void p2sh_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char *payee)
+static void p2sh_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, const char *payee)
 {
 	char evalue[32];
 	char coinb2_part[256];
@@ -93,6 +93,11 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char eversion1[32] = "01000000";
 	if(coind->txmessage)
 		strcpy(eversion1, "02000000");
+
+	const char *coinbase_payload = json_get_string(json_result, "coinbase_payload");
+	if (coinbase_payload && strlen(coinbase_payload) > 0) {
+		strcpy(eversion1, "03000500");
+	}
 
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
@@ -541,6 +546,20 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		coind->reward = (double)available/100000000*coind->reward_mul;
 		//debuglog("%s total %u available %u\n", coind->symbol, templ->value, available);
 		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
+
+		// FIXME: it assumes that coinbase_payload length < 0xFD.
+		// Otherwise the full compactSize implementation is necessary.
+		if (coinbase_payload && strlen(coinbase_payload) > 0) {
+			unsigned int len = (strlen(coinbase_payload) >> 1) & 0xFF;
+			if (len < 0xFD) {
+				char cb_payload_len[4];
+				sprintf(cb_payload_len, "%02x", len);
+				strcat(templ->coinb2, cb_payload_len);
+				strcat(templ->coinb2, coinbase_payload);
+			} else {
+				strcat(templ->coinb2, "00");
+			}
+		}
 		return;
 	}
 
