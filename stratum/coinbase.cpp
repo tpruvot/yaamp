@@ -507,12 +507,13 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 					if (payee && amount && started) {
 						npayees++;
 						available -= amount;
-						base58_decode(payee, script_payee);
-						bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
-						if(masternode_use_p2sh)
-							p2sh_pack_tx(coind, script_dests, amount, script_payee);
-						else
+						const char *script = json_get_string(masternode->u.array.values[i], "script");
+						if (script) {
+							p2sh_pack_tx(coind, script_dests, amount, script);
+						} else {
+							base58_decode(payee, script_payee);
 							job_pack_tx(coind, script_dests, amount, script_payee);
+						}
 						//debuglog("%s masternode %s %u\n", coind->symbol, payee, amount);
 					}
 				}
