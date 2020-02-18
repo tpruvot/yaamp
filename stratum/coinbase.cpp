@@ -659,16 +659,37 @@ if (!coind->hasmasternodes && founder_enabled && founder) {
 	if (masternode_enabled && masternode)
 	{
 		bool started = json_get_bool(json_result, "masternode_payments_started");
+	if (json_is_array(masternode)) {
+		for(int i = 0; i < masternode->u.array.length; i) {
+			const char *payee = json_get_string(masternode->u.array.values[i], "payee");
+			json_int_t amount = json_get_int(masternode->u.array.values[i], "amount");
+			if (payee && amount && started) {
+			npayees;
+			available -= amount;
+			const char *script = json_get_string(masternode->u.array.values[i], "script");
+			if (script) {
+			p2sh_pack_tx(coind, script_dests, amount, script);
+	} else {
+	base58_decode(payee, script_payee);
+	job_pack_tx(coind, script_dests, amount, script_payee);
+	}
+//debuglog("%s masternode %s %u\n", coind->symbol, payee, amount);
+	}
+}
+	} else {
 		const char *payee = json_get_string(masternode, "payee");
 		json_int_t amount = json_get_int(masternode, "amount");
-		if (started && payee && amount) {
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
+		if (payee && amount && started) {
+		npayees;
+		available -= amount;
+		base58_decode(payee, script_payee);
+		bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
+		if(masternode_use_p2sh)
+		p2sh_pack_tx(coind, script_dests, amount, script_payee);
+		else
+		job_pack_tx(coind, script_dests, amount, script_payee);
+}
+  }
  	sprintf(payees, "%02x", npayees);
 	strcat(templ->coinb2, payees);
 	strcat(templ->coinb2, script_dests);
