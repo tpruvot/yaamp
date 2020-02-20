@@ -141,6 +141,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	if (coinbase_payload && strlen(coinbase_payload) > 0) {
 		strcpy(eversion1, "03000500");
 	}
+
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
 
@@ -169,8 +170,10 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		if (strlen(coind->charity_address) == 0)
 			sprintf(coind->charity_address, "EdFwYw4Mo2Zq6CFM2yNJgXvE2DTJxgdBRX");
 	}
-        if(strcmp(coind->symbol, "SIN") == 0)
-        {
+
+        if(strcmp(coind->symbol, "SIN") == 0) {
+
+               // these just get reused
                int npayees = 1;
                char payees[2];
                char sinpayee[256] = {0};
@@ -179,11 +182,14 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
                char devscript[1024] = {0};
                const char *devpayaddr = json_get_string(json_result, "payee");
                json_int_t devfee_amount = json_get_int(json_result, "payee_amount");
+
+               // prepare devpay script
                snprintf(devpayee, 255, "%s", devpayaddr);
                base58_decode(devpayee, devscript);
                npayees++;
-
                available -= devfee_amount;
+
+               // masternode packs
                const char* mnpayaddrs[7] = {0};
                json_value* masternodes = json_get_array(json_result, "masternode");
                json_int_t mnamounts[7] = {0};
@@ -204,6 +210,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
                        job_pack_tx(coind, templ->coinb2, mnamounts[i], sinscript);
                }
 
+               // sequence
                strcat(templ->coinb2, "00000000");
                coind->reward = (double)available/100000000;
                return;
@@ -460,46 +467,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		}
 	}
 
-	
-	else if(strcmp(coind->symbol, "RITO") == 0)  {
-	bool founder_enabled = json_get_bool(json_result, "founder_payments_started");
-	json_value* founder = json_get_object(json_result, "founder");
-	if (!coind->hasmasternodes && founder_enabled && founder) {
-	char founder_payee[256] = { 0 };
-	char founder_script[1024] = { 0};
-	const char *payee = json_get_string(founder, "payee");
-	bool founder_use_p2sh = (strcmp(coind->symbol, "RITO") == 0);
-	json_int_t amount = json_get_int(founder, "amount");
-	if(payee && amount) {
-		if (payee) snprintf(founder_payee, 255, "%s", payee);
-		if (strlen(founder_payee) == 0)
-			stratumlog("ERROR %s has no charity_address set!\n", coind->name);
-		base58_decode(founder_payee, founder_script);
-		available -= amount;
-
-		if (templ->has_segwit_txs) {
-			strcat(templ->coinb2, "03"); // 3 outputs (nulldata + fees + miner)
-			strcat(templ->coinb2, commitment);
-		} else {
-			strcat(templ->coinb2, "02");
-		}
-		job_pack_tx(coind, templ->coinb2, available, NULL);
-		if(founder_use_p2sh) {
-			p2sh_pack_tx(coind, templ->coinb2, amount, founder_script);
-		} else {
-			job_pack_tx(coind, templ->coinb2, amount, founder_script);
-		}
-		strcat(templ->coinb2, "00000000"); // locktime
-
-		coind->reward = (double)available/100000000*coind->reward_mul;
-		debuglog("%s founder address %s, amount %lld\n", coind->symbol,founder_payee, amount);
-		debuglog("%s founder script %s\n", coind->symbol,founder_script);
-		debuglog("%s scripts %s\n", coind->symbol, templ->coinb2);
-
-	return;
-	}
-}
-}
 	// 2 txs are required on these coins, one for foundation (dev fees)
 	if(coind->charity_percent && !coind->hasmasternodes)
 	{
@@ -540,295 +507,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	{
 		stratumlog("ERROR %s should not use coinbase (getwork only)!\n", coind->symbol);
 		coind->reward = (double)available/100000000;
-		return;
-	}
-	
-	//  add IFX
-	if (strcmp(coind->symbol, "IFX") == 0)
-{
-	char payees[4];
-	int npayees = 1;
-	char script_dests[4096] = { 0 };
-	//
-	json_value* founderreward = json_get_array(json_result, "founderreward");
-	if (founderreward)
-	{
-		const char *payee = json_get_string(founderreward, "founderpayee");
-		json_int_t amount = json_get_int(founderreward, "amount");
-		if (payee && amount)
-		{
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	json_value* masternode = json_get_object(json_result, "masternode");
-	bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-	if (masternode_enabled && masternode)
-	{
-		bool started = json_get_bool(json_result, "masternode_payments_started");
-		const char *payee = json_get_string(masternode, "payee");
-		json_int_t amount = json_get_int(masternode, "amount");
-		if (started && payee && amount) {
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	sprintf(payees, "%02x", npayees);
-	strcat(templ->coinb2, payees);
-	strcat(templ->coinb2, script_dests);
-	job_pack_tx(coind, templ->coinb2, available, NULL);
-	strcat(templ->coinb2, "00000000"); // locktime
-	coind->reward = (double)available / 100000000 * coind->reward_mul;
-	return;
-	}
-
-	//  add GTM 
-	if (strcmp(coind->symbol, "GTM") == 0)
-{
-	char payees[4];
-	int npayees = 1;
-	char script_dests[4096] = { 0 };
-	//
-	json_value* founderreward = json_get_array(json_result, "founderreward");
-	if (founderreward)
-	{
-		const char *payee = json_get_string(founderreward, "founderpayee");
-		json_int_t amount = json_get_int(founderreward, "amount");
-		if (payee && amount)
-		{
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	json_value* masternode = json_get_object(json_result, "masternode");
-	bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-	if (masternode_enabled && masternode)
-	{
-		bool started = json_get_bool(json_result, "masternode_payments_started");
-		const char *payee = json_get_string(masternode, "payee");
-		json_int_t amount = json_get_int(masternode, "amount");
-		if (started && payee && amount) {
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	sprintf(payees, "%02x", npayees);
-	strcat(templ->coinb2, payees);
-	strcat(templ->coinb2, script_dests);
-	job_pack_tx(coind, templ->coinb2, available, NULL);
-	strcat(templ->coinb2, "00000000"); // locktime
-	coind->reward = (double)available / 100000000 * coind->reward_mul;
-	return;
-	}
-	
-// 	//  add AGM 
-// 	if (strcmp(coind->symbol, "AGM") == 0)
-// {
-// 	char payees[4];
-// 	int npayees = 1;
-// 	char script_dests[4096] = { 0 };
-// 	//
-// 	json_value* founderreward = json_get_array(json_result, "founderreward");
-// 	if (founderreward)
-// 	{
-// 		const char *payee = json_get_string(founderreward, "founderpayee");
-// 		json_int_t amount = json_get_int(founderreward, "amount");
-// 		if (payee && amount)
-// 		{
-// 			char script_payee[128] = { 0 };
-// 			npayees++;
-// 			available -= amount;
-// 			base58_decode(payee, script_payee);
-// 			job_pack_tx(coind, script_dests, amount, script_payee);
-// 		}
-// 	}
-//  	json_value* masternode = json_get_object(json_result, "masternode");
-// 	bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-// 	if (masternode_enabled && masternode)
-// 	{
-// 		bool started = json_get_bool(json_result, "masternode_payments_started");
-// 	if (json_is_array(masternode)) {
-// 		for(int i = 0; i < masternode->u.array.length; i) {
-// 			const char *payee = json_get_string(masternode->u.array.values[i], "payee");
-// 			json_int_t amount = json_get_int(masternode->u.array.values[i], "amount");
-// 			if (payee && amount && started) {
-// 			npayees;
-// 			available -= amount;
-// 			const char *script = json_get_string(masternode->u.array.values[i], "script");
-// 			if (script) {
-// 			p2sh_pack_tx(coind, script_dests, amount, script);
-// 	} else {
-// 	base58_decode(payee, script_payee);
-// 	job_pack_tx(coind, script_dests, amount, script_payee);
-// 	}
-// //debuglog("%s masternode %s %u\n", coind->symbol, payee, amount);
-// 	}
-// }
-	} else {
-		const char *payee = json_get_string(masternode, "payee");
-		json_int_t amount = json_get_int(masternode, "amount");
-		if (payee && amount && started) {
-		npayees;
-		available -= amount;
-		base58_decode(payee, script_payee);
-		bool masternode_use_p2sh = (strcmp(coind->symbol, "MAC") == 0);
-		if(masternode_use_p2sh)
-		p2sh_pack_tx(coind, script_dests, amount, script_payee);
-		else
-		job_pack_tx(coind, script_dests, amount, script_payee);
-}
-  }
- 	sprintf(payees, "%02x", npayees);
-	strcat(templ->coinb2, payees);
-	strcat(templ->coinb2, script_dests);
-	job_pack_tx(coind, templ->coinb2, available, NULL);
-	strcat(templ->coinb2, "00000000"); // locktime
-	coind->reward = (double)available / 100000000 * coind->reward_mul;
-	return;
-	}
-	
-		//  add CRDS 
-	if (strcmp(coind->symbol, "CRDS") == 0)
-{
-	char payees[4];
-	int npayees = 1;
-	char script_dests[4096] = { 0 };
-	//
-	json_value* founderreward = json_get_array(json_result, "founderreward");
-	if (founderreward)
-	{
-		const char *payee = json_get_string(founderreward, "founderpayee");
-		json_int_t amount = json_get_int(founderreward, "amount");
-		if (payee && amount)
-		{
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	json_value* masternode = json_get_object(json_result, "masternode");
-	bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-	if (masternode_enabled && masternode)
-	{
-		bool started = json_get_bool(json_result, "masternode_payments_started");
-		const char *payee = json_get_string(masternode, "payee");
-		json_int_t amount = json_get_int(masternode, "amount");
-		if (started && payee && amount) {
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	sprintf(payees, "%02x", npayees);
-	strcat(templ->coinb2, payees);
-	strcat(templ->coinb2, script_dests);
-	job_pack_tx(coind, templ->coinb2, available, NULL);
-	strcat(templ->coinb2, "00000000"); // locktime
-	coind->reward = (double)available / 100000000 * coind->reward_mul;
-	return;
-	}
-	
-	//  add BMN 
-	if (strcmp(coind->symbol, "BMN") == 0)
-{
-	char payees[4];
-	int npayees = 1;
-	char script_dests[4096] = { 0 };
-	//
-	json_value* founderreward = json_get_array(json_result, "founderreward");
-	if (founderreward)
-	{
-		const char *payee = json_get_string(founderreward, "founderpayee");
-		json_int_t amount = json_get_int(founderreward, "amount");
-		if (payee && amount)
-		{
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	json_value* masternode = json_get_object(json_result, "masternode");
-	bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-	if (masternode_enabled && masternode)
-	{
-		bool started = json_get_bool(json_result, "masternode_payments_started");
-		const char *payee = json_get_string(masternode, "payee");
-		json_int_t amount = json_get_int(masternode, "amount");
-		if (started && payee && amount) {
-			char script_payee[128] = { 0 };
-			npayees++;
-			available -= amount;
-			base58_decode(payee, script_payee);
-			job_pack_tx(coind, script_dests, amount, script_payee);
-		}
-	}
- 	sprintf(payees, "%02x", npayees);
-	strcat(templ->coinb2, payees);
-	strcat(templ->coinb2, script_dests);
-	job_pack_tx(coind, templ->coinb2, available, NULL);
-	strcat(templ->coinb2, "00000000"); // locktime
-	coind->reward = (double)available / 100000000 * coind->reward_mul;
-	return;
-	}
-	
-	 //add GLT
-	else if(strcmp(coind->symbol, "GLT") == 0)
-	{
-		char script_dests[2048] = { 0 };
-		char script_payee[128] = { 0 };
-        char script_treasury[128] = { 0 };
-		char payees[4];
-		int npayees = 1;
-		bool masternode_enabled = json_get_bool(json_result, "masternode_payments_enforced");
-		json_value* masternode = json_get_object(json_result, "masternode");
-        json_value* treasury = json_get_object(json_result, "treasury");
-        bool treasury_enabled = true;
-		if(treasury_enabled && treasury) {
-				const char *scriptPubKey = json_get_string(treasury, "scriptPubKey");
-				json_int_t amount = json_get_int(treasury, "amount");
-				if (scriptPubKey && amount) {
-					npayees++;
-					available -= amount;
-                    base58_decode(scriptPubKey, script_treasury);
-					job_pack_tx(coind, script_dests, amount, script_treasury);
-					//debuglog("%s treasury %u\n", coind->symbol, amount);
-				}
-		}
-		if (masternode_enabled && masternode) {
-			const char *payee = json_get_string(masternode, "payee");
-			json_int_t amount = json_get_int(masternode, "amount");
-			if (payee && amount) {
-				npayees++;
-				available -= amount;
-				base58_decode(payee, script_payee);
-				job_pack_tx(coind, script_dests, amount, script_payee);
-			}
-		}
-		sprintf(payees, "%02x", npayees);
-		strcat(templ->coinb2, payees);
-		strcat(templ->coinb2, script_dests);
-		job_pack_tx(coind, templ->coinb2, available, NULL);
-		strcat(templ->coinb2, "00000000"); // locktime
-		coind->reward = (double)available/100000000*coind->reward_mul;
-		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
 
@@ -916,7 +594,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		}
 		if (masternode_enabled && masternode) {
 			bool started = json_get_bool(json_result, "masternode_payments_started");
-		if (json_is_array(masternode)) {
+			if (json_is_array(masternode)) {
 				for(int i = 0; i < masternode->u.array.length; i++) {
 					const char *payee = json_get_string(masternode->u.array.values[i], "payee");
 					json_int_t amount = json_get_int(masternode->u.array.values[i], "amount");
@@ -946,7 +624,6 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 					else
 						job_pack_tx(coind, script_dests, amount, script_payee);
 				}
-
 			}
 		}
 		sprintf(payees, "%02x", npayees);
@@ -971,8 +648,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			} else {
 				strcat(templ->coinb2, "00");
 			}
-		}	
-	return;
+		}
+		return;
 	}
 
 	else if(strcmp(coind->symbol, "ARC") == 0)
@@ -1017,7 +694,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		//debuglog("%s %d dests %s\n", coind->symbol, npayees, script_dests);
 		return;
 	}
-	
+
 	else if(strcmp(coind->symbol, "ENT") == 0)
 	{
 		char script_dests[2048] = { 0 };
@@ -1146,7 +823,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	//	strcat(templ->coinb2, "00");
 	if(strcmp(coind->symbol, "DEM") == 0){if(coind->txmessage){strcat(templ->coinb2, "00");}} //fixes eMark.
     if(strcmp(coind->symbol, "FLO") == 0){if(coind->txmessage){strcat(templ->coinb2, "00");}} //fixes FlorinCoin
-	
+
 	strcat(templ->coinb2, "00000000"); // locktime
 
 	coind->reward = (double)available/100000000*coind->reward_mul;
