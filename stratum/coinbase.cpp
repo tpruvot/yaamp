@@ -145,7 +145,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
 
-	char script2[32] = "746865706f6f6c2e6c6966655c30"; // "thepool.life\0" in hex ascii
+	char script2[32] = "746865706f6f6c2e6c696665"; // "thepool.life" in hex ascii
 
 	if(!coind->pos && !coind->isaux && templ->auxs_size)
 		coinbase_aux(templ, script2);
