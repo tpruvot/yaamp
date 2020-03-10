@@ -84,26 +84,7 @@ static void scrypt_hash(const char* input, char* output, uint32_t len)
 
 static void scryptn_hash(const char* input, char* output, uint32_t len)
 {
-	time_t time_table[][2] =
-	{
-		{2048, 1389306217},
-		{4096, 1456415081},
-		{8192, 1506746729},
-		{16384, 1557078377},
-		{32768, 1657741673},
-		{65536, 1859068265},
-		{131072, 2060394857},
-		{262144, 1722307603},
-		{524288, 1769642992},
-		{0, 0},
-	};
-
-	for(int i=0; time_table[i][0]; i++)
-		if(time(NULL) < time_table[i+1][1])
-		{
-			scrypt_N_R_1_256(input, output, time_table[i][0], 1, len);
-			return;
-		}
+	scrypt_N_R_1_256(input, output, 2048, 1, len);
 }
 
 static void neoscrypt_hash(const char* input, char* output, uint32_t len)
