@@ -112,12 +112,17 @@ function yaamp_get_algos()
 function yaamp_algo_mBTC_factor($algo)
 {
 	switch($algo) {
+	case 'scryptn':
 	case 'sha256':
+               return 1000000000;
 	case 'sha256t':
+	case 'script':
+		return 1000000000;
 	case 'sha256q':
 	case 'blake':
 	case 'blakecoin':
 	case 'blake2s':
+	       return 1000000;
 	case 'blake2b':
 	case 'decred':
 	case 'keccak':
