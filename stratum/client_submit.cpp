@@ -337,18 +337,6 @@ void client_submit_error(YAAMP_CLIENT *client, YAAMP_JOB *job, int id, const cha
 	object_unlock(job);
 }
 
-static bool ntime_valid_range(const char ntimehex[])
-{
-	time_t rawtime = 0;
-	uint32_t ntime = 0;
-	if (strlen(ntimehex) != 8) return false;
-	sscanf(ntimehex, "%8x", &ntime);
-	if (ntime < 0x5b000000 || ntime > 0x60000000) // 14 Jan 2021
-		return false;
-	time(&rawtime);
-	return (abs(rawtime - ntime) < (30 * 60));
-}
-
 static bool valid_string_params(json_value *json_params)
 {
 	for(int p=0; p < json_params->u.array.length; p++) {
@@ -431,8 +419,8 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 
 	if(strcmp(ntime, templ->ntime))
 	{
-		if (!ishexa(ntime, 8) || !ntime_valid_range(ntime)) {
-			client_submit_error(client, job, 23, "Invalid time rolling", extranonce2, ntime, nonce);
+		if (!ishexa(ntime, 8)) {
+			client_submit_error(client, job, 23, "Invalid ntime", extranonce2, ntime, nonce);
 			return true;
 		}
 		// dont allow algos permutations change over time (can lead to different speeds)
