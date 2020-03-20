@@ -1,5 +1,4 @@
 <?php
-
 $id = getiparam('id');
 echo <<<end
 
@@ -42,5 +41,3 @@ function main_refresh()
 </script>
 
 end;
-
-

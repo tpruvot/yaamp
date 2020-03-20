@@ -1,5 +1,4 @@
 <?php
-
 echo getAdminSideBarLinks();
 
 echo <<<end
@@ -10,6 +9,7 @@ echo <<<end
 tr.ssrow.filtered { display: none; }
 </style>
 end;
+
 
 showTableSorter('maintable', "{
 	tableClass: 'dataGrid',
@@ -40,22 +40,23 @@ WHERE coins.installed AND coins.enable AND
 	 (markets.deposit_address IS NULL OR (markets.message is not null and markets.message!=''))
 ORDER BY coins.id DESC, markets.id DESC");
 
-if (!empty($list))
-foreach($list as $item)
+if (!empty($list)) foreach ($list as $item)
 {
-	$coin = getdbo('db_coins', $item['coinid']);
-	$market = getdbo('db_markets', $item['marketid']);
+    $coin = getdbo('db_coins', $item['coinid']);
+    $market = getdbo('db_markets', $item['marketid']);
 
-	$coinimg = CHtml::image($coin->image, $coin->symbol, array('width'=>'16'));
+    $coinimg = CHtml::image($coin->image, $coin->symbol, array(
+        'width' => '16'
+    ));
 
-	echo "<tr class='ssrow'>";
-	echo "<td width=16>{$coinimg}</td>";
-	echo "<td><a href='/site/coin?id=$coin->id'>$coin->name</a></td>";
-	echo "<td>$market->name</td>";
-	echo "<td>".bitcoinvaluetoa($market->price)."</td>";
-	echo "<td>$market->message</td>";
-	echo "<td>$market->deposit_address</td>";
-	echo "</tr>";
+    echo "<tr class='ssrow'>";
+    echo "<td width=16>{$coinimg}</td>";
+    echo "<td><a href='/site/coin?id=$coin->id'>$coin->name</a></td>";
+    echo "<td>$market->name</td>";
+    echo "<td>" . bitcoinvaluetoa($market->price) . "</td>";
+    echo "<td>$market->message</td>";
+    echo "<td>$market->deposit_address</td>";
+    echo "</tr>";
 }
 
 echo "</tbody></table>";

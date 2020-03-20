@@ -1,104 +1,106 @@
 <?php
-
 ///////////////////////////////////////////////////////////////////////
-
 function getdbo($class, $id)
 {
-	$record = CActiveRecord::model($class);
-	$table = $record->getTableSchema();
+    $record = CActiveRecord::model($class);
+    $table = $record->getTableSchema();
 
-	$sql = "$table->primaryKey=:db_key";
-	return $record->find($sql, array(':db_key'=>$id));
+    $sql = "$table->primaryKey=:db_key";
+    return $record->find($sql, array(
+        ':db_key' => $id
+    ));
 
-//	return $record->findByPk($id);
+    //	return $record->findByPk($id);
+
 }
 
-function getdbosql($class, $sql='1', $params=array())
+function getdbosql($class, $sql = '1', $params = array())
 {
-//	debuglog("$class, $sql");
-	return CActiveRecord::model($class)->find($sql, $params);
+    //	debuglog("$class, $sql");
+    return CActiveRecord::model($class)->find($sql, $params);
 }
 
-function getdbolist($class, $sql='1', $params=array())
+function getdbolist($class, $sql = '1', $params = array())
 {
-//	debuglog("sql $sql");
-	return CActiveRecord::model($class)->findAll($sql, $params);
+    //	debuglog("sql $sql");
+    return CActiveRecord::model($class)->findAll($sql, $params);
 }
 
-function getdbocount($class, $sql='1', $params=array())
+function getdbocount($class, $sql = '1', $params = array())
 {
-//	debuglog("sql $sql");
-	return CActiveRecord::model($class)->count($sql, $params);
+    //	debuglog("sql $sql");
+    return CActiveRecord::model($class)->count($sql, $params);
 }
 
-function dborun($sql, $params=array())
+function dborun($sql, $params = array())
 {
-	$command = app()->db->createCommand($sql);
+    $command = app()
+        ->db
+        ->createCommand($sql);
 
-	foreach($params as $name=>$value)
-		$command->bindValue($name, $value);
+    foreach ($params as $name => $value) $command->bindValue($name, $value);
 
-	return $command->execute();
+    return $command->execute();
 }
 
-function dboscalar($sql, $params=array())
+function dboscalar($sql, $params = array())
 {
-	$command = app()->db->createCommand($sql);
+    $command = app()
+        ->db
+        ->createCommand($sql);
 
-	foreach($params as $name=>$value)
-		$command->bindValue($name, $value);
+    foreach ($params as $name => $value) $command->bindValue($name, $value);
 
-	return $command->queryScalar();
+    return $command->queryScalar();
 }
 
-function dborow($sql, $params=array())
+function dborow($sql, $params = array())
 {
-	$command = app()->db->createCommand($sql);
+    $command = app()
+        ->db
+        ->createCommand($sql);
 
-	foreach($params as $name=>$value)
-		$command->bindValue($name, $value);
+    foreach ($params as $name => $value) $command->bindValue($name, $value);
 
-	return $command->queryRow();
+    return $command->queryRow();
 }
 
-function dbocolumn($sql, $params=array())
+function dbocolumn($sql, $params = array())
 {
-	$command = app()->db->createCommand($sql);
+    $command = app()
+        ->db
+        ->createCommand($sql);
 
-	foreach($params as $name=>$value)
-		$command->bindValue($name, $value);
+    foreach ($params as $name => $value) $command->bindValue($name, $value);
 
-	return $command->queryColumn();
+    return $command->queryColumn();
 }
 
-function dbolist($sql, $params=array())
+function dbolist($sql, $params = array())
 {
-	$command = app()->db->createCommand($sql);
+    $command = app()
+        ->db
+        ->createCommand($sql);
 
-	foreach($params as $name=>$value)
-		$command->bindValue($name, $value);
+    foreach ($params as $name => $value) $command->bindValue($name, $value);
 
-	return $command->queryAll();
+    return $command->queryAll();
 }
 
 function getdbolistWith($model, $with, $criteria)
 {
-	return CActiveRecord::model($model)->with($with)->findAll($criteria);
+    return CActiveRecord::model($model)->with($with)->findAll($criteria);
 }
 
-function sqlQuote($value, $querytype='')
+function sqlQuote($value, $querytype = '')
 {
-	$db = app()->db;
-	$quoted = $value;
+    $db = app()->db;
+    $quoted = $value;
 
-	if ($querytype == '')
-		$quoted = $db->quoteValue($value);
-	elseif ($querytype == 'beginWith')
-		$quoted = $db->quoteValue($value.'%');
-	elseif ($querytype == 'endWith')
-		$quoted = $db->quoteValue('%'.$value);
-	elseif ($querytype == 'contains')
-		$quoted = $db->quoteValue('%'.$value.'%');
+    if ($querytype == '') $quoted = $db->quoteValue($value);
+    elseif ($querytype == 'beginWith') $quoted = $db->quoteValue($value . '%');
+    elseif ($querytype == 'endWith') $quoted = $db->quoteValue('%' . $value);
+    elseif ($querytype == 'contains') $quoted = $db->quoteValue('%' . $value . '%');
 
-	return $quoted;
+    return $quoted;
 }

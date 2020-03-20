@@ -1,36 +1,37 @@
 <?php
-
 $id = getiparam('id');
 $coin = getdbo('db_coins', $id);
-if (!$coin) {
-	$this->goback();
+if (!$coin)
+{
+    $this->goback();
 }
 
-$this->pageTitle = 'Wallet - '.$coin->symbol;
+$this->pageTitle = 'Wallet - ' . $coin->symbol;
 
 // force a refresh after 10mn to prevent memory leaks in chrome
-app()->clientScript->registerMetaTag('600', null, 'refresh');
+app()
+    ->clientScript
+    ->registerMetaTag('600', null, 'refresh');
 
-if (!empty($coin->algo) && $coin->algo != 'PoS')
-	user()->setState('yaamp-algo', $coin->algo);
+if (!empty($coin->algo) && $coin->algo != 'PoS') user()
+    ->setState('yaamp-algo', $coin->algo);
 
 $remote = new WalletRPC($coin);
 $info = $remote->getinfo();
 
 $sellamount = $coin->balance;
 //if ($info) $sellamount = floatval($sellamount) - arraySafeVal($info, "paytxfee") * 3;
-
-echo getAdminSideBarLinks().'<br/><br/>';
+echo getAdminSideBarLinks() . '<br/><br/>';
 echo getAdminWalletLinks($coin, $info, 'wallet');
 
-$maxrows = arraySafeVal($_REQUEST,'rows', 500);
-$since = arraySafeVal($_REQUEST,'since', time() - (7*24*3600)); // one week
-
+$maxrows = arraySafeVal($_REQUEST, 'rows', 500);
+$since = arraySafeVal($_REQUEST, 'since', time() - (7 * 24 * 3600)); // one week
 echo '<div id="main_actions">';
 
-app()->clientScript->registerCoreScript('jquery.ui'); // dialog
-
-/* 
+app()
+    ->clientScript
+    ->registerCoreScript('jquery.ui'); // dialog
+/*
 echo "<br><a href='/site/makeconfigfile?id=$coin->id'><b>MAKE CONFIG & START</b></a>";
 
 if($info)
@@ -154,11 +155,15 @@ Amount: <input type=text id="input_sell_amount" value="$sellamount">
 
 END;
 
+
 JavascriptReady("main_refresh();");
 
-if ($coin->watch) {
-	$this->renderPartial('coin_market_graph', array('coin'=>$coin));
-	JavascriptReady("$(window).resize(graph_resized);");
+if ($coin->watch)
+{
+    $this->renderPartial('coin_market_graph', array(
+        'coin' => $coin
+    ));
+    JavascriptReady("$(window).resize(graph_resized);");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

@@ -17,8 +17,8 @@ Select Server:
 end;
 
 $serverlist = dbolist("SELECT DISTINCT rpchost FROM coins WHERE installed=1 ORDER BY rpchost");
-foreach ($serverlist as $srv)   {
-	echo '<option value="'.$srv['rpchost'].'">'.$srv['rpchost'].'</option>';
+foreach ($serverlist as $srv) {
+    echo '<option value="' . $srv['rpchost'] . '">' . $srv['rpchost'] . '</option>';
 }
 
 echo <<<end
@@ -44,14 +44,14 @@ echo <<<end
 
 $('#server_select').change(function(event)
 {
-	var server = $('#server_select').val();
-	clearTimeout(main_timeout);
-	window.location.href = '/site/admin?server='+server;
+    var server = $('#server_select').val();
+    clearTimeout(main_timeout);
+    window.location.href = '/site/admin?server='+server;
 });
 
 $(function()
 {
-	main_refresh();
+    main_refresh();
 });
 
 var main_delay=30000;
@@ -60,33 +60,31 @@ var lastSearch = false;
 
 function main_ready(data)
 {
-	$('#main_results').html(data);
-	$('#server_select').val('{$server}');
+    $('#main_results').html(data);
+    $('#server_select').val('{$server}');
 
-	if (lastSearch !== false) {
-		$('input.search').val(lastSearch);
-		$('table.dataGrid').trigger('search');
-	}
+    if (lastSearch !== false) {
+        $('input.search').val(lastSearch);
+        $('table.dataGrid').trigger('search');
+    }
 
-	main_timeout = setTimeout(main_refresh, main_delay);
+    main_timeout = setTimeout(main_refresh, main_delay);
 }
 
 function main_error()
 {
-	main_timeout = setTimeout(main_refresh, main_delay*2);
+    main_timeout = setTimeout(main_refresh, main_delay*2);
 }
 
 function main_refresh()
 {
-	var url = "/site/admin_results?server=$server";
+    var url = "/site/admin_results?server=$server";
 
-	clearTimeout(main_timeout);
-	lastSearch = $('input.search').val();
-	$.get(url, '', main_ready).error(main_error);
+    clearTimeout(main_timeout);
+    lastSearch = $('input.search').val();
+    $.get(url, '', main_ready).error(main_error);
 }
 
 </script>
 
 end;
-
-

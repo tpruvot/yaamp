@@ -1,5 +1,4 @@
 <?php
-
 JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.enhancedLegendRenderer.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
@@ -252,5 +251,6 @@ function graph_balance_data(data)
 }
 </script>
 end;
+
 
 // JavascriptReady("$(window).resize(graph_resized);");

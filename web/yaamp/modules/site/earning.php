@@ -2,9 +2,10 @@
 echo getAdminSideBarLinks();
 
 $coin_id = getiparam('id');
-if ($coin_id) {
-	$coin = getdbo('db_coins', $coin_id);
-	$this->pageTitle = 'Earnings - '.$coin->symbol;
+if ($coin_id)
+{
+    $coin = getdbo('db_coins', $coin_id);
+    $this->pageTitle = 'Earnings - ' . $coin->symbol;
 }
 
 JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
@@ -32,7 +33,8 @@ function main_error()
 
 function main_refresh()
 {
-	var url = '/site/earning_results?id=<?= $coin_id ?>';
+	var url = '/site/earning_results?id=<?=$coin_id
+?>';
 	var minh = $(window).height() - 150;
 	$('#main_results').css({'min-height': minh + 'px'});
 
@@ -43,5 +45,4 @@ function main_refresh()
 </script>
 
 <?php
-
 JavascriptReady("main_refresh();");

@@ -1,5 +1,4 @@
 <?php
-
 echo getAdminSideBarLinks();
 
 echo <<<end
@@ -40,9 +39,3 @@ function main_refresh()
 </script>
 
 end;
-
-
-
-
-
-

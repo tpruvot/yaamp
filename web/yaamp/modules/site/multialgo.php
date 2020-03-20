@@ -39,11 +39,11 @@ connection will close (and move to your next configured algo) if the algo is not
 
 :start
 
-ccminer -r 0 -a x11   -o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:3533 -u joe -p x11,x13,x14,x15,quark,lyra2
-ccminer -r 0 -a x13   -o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:3633 -u joe -p x11,x13,x14,x15,quark,lyra2
-ccminer -r 0 -a x15   -o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:3733 -u joe -p x11,x13,x14,x15,quark,lyra2
-ccminer -r 0 -a lyra2 -o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:4433 -u joe -p x11,x13,x14,x15,quark,lyra2
-ccminer -r 0 -a quark -o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:4033 -u joe -p x11,x13,x14,x15,quark,lyra2
+ccminer -r 0 -a x11   -o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:3533 -u joe -p x11,x13,x14,x15,quark,lyra2
+ccminer -r 0 -a x13   -o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:3633 -u joe -p x11,x13,x14,x15,quark,lyra2
+ccminer -r 0 -a x15   -o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:3733 -u joe -p x11,x13,x14,x15,quark,lyra2
+ccminer -r 0 -a lyra2 -o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:4433 -u joe -p x11,x13,x14,x15,quark,lyra2
+ccminer -r 0 -a quark -o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:4033 -u joe -p x11,x13,x14,x15,quark,lyra2
 
 sleep 5000
 goto start
@@ -83,5 +83,3 @@ is the reference with a factor of 1.</p>
 
 
 </script>
-
-

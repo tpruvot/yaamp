@@ -4,9 +4,9 @@ require('misc.php');
 echo <<<END
 
 <!doctype html>
-<!--[if IE 7 ]>		 <html class="no-js ie ie7 lte7 lte8 lte9" lang="en-US"> <![endif]-->
-<!--[if IE 8 ]>		 <html class="no-js ie ie8 lte8 lte9" lang="en-US"> <![endif]-->
-<!--[if IE 9 ]>		 <html class="no-js ie ie9 lte9>" lang="en-US"> <![endif]-->
+<!--[if IE 7 ]>         <html class="no-js ie ie7 lte7 lte8 lte9" lang="en-US"> <![endif]-->
+<!--[if IE 8 ]>         <html class="no-js ie ie8 lte8 lte9" lang="en-US"> <![endif]-->
+<!--[if IE 9 ]>         <html class="no-js ie ie9 lte9>" lang="en-US"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="en-US"> <!--<![endif]-->
 
 <head>
@@ -20,9 +20,9 @@ echo <<<END
 
 END;
 
-$pageTitle = empty($this->pageTitle) ? YAAMP_SITE_NAME : YAAMP_SITE_NAME." - ".$this->pageTitle;
+$pageTitle = empty($this->pageTitle) ? YAAMP_SITE_NAME : YAAMP_SITE_NAME . " - " . $this->pageTitle;
 
-echo '<title>'.$pageTitle.'</title>';
+echo '<title>' . $pageTitle . '</title>';
 
 echo CHtml::cssFile("/extensions/jquery/themes/ui-lightness/jquery-ui.css");
 echo CHtml::cssFile('/yaamp/ui/css/main.css');
@@ -71,82 +71,82 @@ return;
 
 function showItemHeader($selected, $url, $name)
 {
-	if($selected) $selected_text = "class='selected'";
-	else $selected_text = '';
+    if ($selected)
+        $selected_text = "class='selected'";
+    else
+        $selected_text = '';
 
-	echo "<span><a $selected_text href='$url'>$name</a></span>";
-	echo "&nbsp;";
+    echo "<span><a $selected_text href='$url'>$name</a></span>";
+    echo "&nbsp;";
 }
 
 function showPageHeader()
 {
-	echo '<div class="tabmenu-out">';
-	echo '<div class="tabmenu-inner">';
+    echo '<div class="tabmenu-out">';
+    echo '<div class="tabmenu-inner">';
 
-	echo '&nbsp;&nbsp;<a href="/">'.YAAMP_SITE_NAME.'</a>';
+    echo '&nbsp;&nbsp;<a href="/">' . YAAMP_SITE_NAME . '</a>';
 
-	$action = controller()->action->id;
-	$wallet = user()->getState('yaamp-wallet');
-	$ad = isset($_GET['address']);
+    $action = controller()->action->id;
+    $wallet = user()->getState('yaamp-wallet');
+    $ad     = isset($_GET['address']);
 
-	showItemHeader(controller()->id=='site' && $action=='index' && !$ad, '/', 'Home');
-	showItemHeader($action=='mining', '/site/mining', 'Pool');
-	showItemHeader(controller()->id=='site'&&($action=='index' || $action=='wallet') && $ad, "/?address=$wallet", 'Wallet');
-	showItemHeader(controller()->id=='stats', '/stats', 'Graphs');
-	showItemHeader($action=='miners', '/site/miners', 'Miners');
-	if (YIIMP_PUBLIC_EXPLORER)
-		showItemHeader(controller()->id=='explorer', '/explorer', 'Explorers');
+    showItemHeader(controller()->id == 'site' && $action == 'index' && !$ad, '/', 'Home');
+    showItemHeader($action == 'mining', '/site/mining', 'Pool');
+    showItemHeader(controller()->id == 'site' && ($action == 'index' || $action == 'wallet') && $ad, "/?address=$wallet", 'Wallet');
+    showItemHeader(controller()->id == 'stats', '/stats', 'Graphs');
+    showItemHeader($action == 'miners', '/site/miners', 'Miners');
+    if (YIIMP_PUBLIC_EXPLORER)
+        showItemHeader(controller()->id == 'explorer', '/explorer', 'Explorers');
 
-	if (YIIMP_PUBLIC_BENCHMARK)
-		showItemHeader(controller()->id=='bench', '/bench', 'Benchs');
+    if (YIIMP_PUBLIC_BENCHMARK)
+        showItemHeader(controller()->id == 'bench', '/bench', 'Benchs');
 
-	if (YAAMP_RENTAL)
-		showItemHeader(controller()->id=='renting', '/renting', 'Rental');
+    if (YAAMP_RENTAL)
+        showItemHeader(controller()->id == 'renting', '/renting', 'Rental');
 
-	if(controller()->admin)
-	{
-		if (isAdminIP($_SERVER['REMOTE_ADDR']) === false)
-			debuglog("admin {$_SERVER['REMOTE_ADDR']}");
+    if (controller()->admin) {
+        if (isAdminIP($_SERVER['REMOTE_ADDR']) === false)
+            debuglog("admin {$_SERVER['REMOTE_ADDR']}");
 
-		showItemHeader(controller()->id=='coin', '/coin', 'Coins');
-		showItemHeader($action=='common', '/site/common', 'Dashboard');
-		showItemHeader(controller()->id=='site'&&$action=='admin', "/site/admin", 'Wallets');
+        showItemHeader(controller()->id == 'coin', '/coin', 'Coins');
+        showItemHeader($action == 'common', '/site/common', 'Dashboard');
+        showItemHeader(controller()->id == 'site' && $action == 'admin', "/site/admin", 'Wallets');
 
-		if (YAAMP_RENTAL)
-			showItemHeader(controller()->id=='renting' && $action=='admin', '/renting/admin', 'Jobs');
+        if (YAAMP_RENTAL)
+            showItemHeader(controller()->id == 'renting' && $action == 'admin', '/renting/admin', 'Jobs');
 
-		if (YAAMP_ALLOW_EXCHANGE)
-			showItemHeader(controller()->id=='trading', '/trading', 'Trading');
+        if (YAAMP_ALLOW_EXCHANGE)
+            showItemHeader(controller()->id == 'trading', '/trading', 'Trading');
 
-		if (YAAMP_USE_NICEHASH_API)
-			showItemHeader(controller()->id=='nicehash', '/nicehash', 'Nicehash');
-	}
+        if (YAAMP_USE_NICEHASH_API)
+            showItemHeader(controller()->id == 'nicehash', '/nicehash', 'Nicehash');
+    }
 
-	echo '<span style="float: right;">';
+    echo '<span style="float: right;">';
 
-	$mining = getdbosql('db_mining');
-	$nextpayment = date('H:i T', $mining->last_payout+YAAMP_PAYMENTS_FREQ);
-	// $nextpayment = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ) . ' UTC (US)';
-	// define('UTCEUR', 7200);
-	// $nextpaymentEUR = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ+UTCEUR); // . ' UTC+2 (EUR)';
-	$eta = ($mining->last_payout+YAAMP_PAYMENTS_FREQ) - time();
-	$eta_mn = 'in '.round($eta / 60).' minutes';
+    $mining      = getdbosql('db_mining');
+    $nextpayment = date('H:i T', $mining->last_payout + YAAMP_PAYMENTS_FREQ);
+    // $nextpayment = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ) . ' UTC (US)';
+    // define('UTCEUR', 7200);
+    // $nextpaymentEUR = date('H:i', $mining->last_payout+YAAMP_PAYMENTS_FREQ+UTCEUR); // . ' UTC+2 (EUR)';
+    $eta         = ($mining->last_payout + YAAMP_PAYMENTS_FREQ) - time();
+    $eta_mn      = 'in ' . round($eta / 60) . ' minutes';
 
-	echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.'</span>';
-	// echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' / '.$nextpaymentEUR.'</span>';
-	// echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' UTC (US) / '.$nextpaymentEUR.' UTC+2 (EUR)</span>';
+    echo '<span id="nextpayout" style="font-size: .8em;" title="' . $eta_mn . '">Next Payout: ' . $nextpayment . '</span>';
+    // echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' / '.$nextpaymentEUR.'</span>';
+    // echo '<span id="nextpayout" style="font-size: .8em;" title="'.$eta_mn.'">Next Payout: '.$nextpayment.' UTC (US) / '.$nextpaymentEUR.' UTC+2 (EUR)</span>';
 
-	echo "</div>";
-	echo "</div>";
+    echo "</div>";
+    echo "</div>";
 }
 
 function showPageFooter()
 {
-	echo '<div class="footer">';
-	$year = date("Y", time());
+    echo '<div class="footer">';
+    $year = date("Y", time());
 
-	echo "<p>&copy; $year ".YAAMP_SITE_NAME.' - '.
-		'<a href="https://github.com/cryptopool-builders/Multi-Pool-Installer">Built with Ultimate Crypto-Server Setup Installer</a></p>';
+    echo "<p>&copy; $year " . YAAMP_SITE_NAME . ' - ' . '<a href="https://github.com/cryptopool-builders/Multi-Pool-Installer">Built with Ultimate Crypto-Server Setup Installer</a></p>';
 
-	echo '</div><!-- footer -->';
+    echo '</div><!-- footer -->';
 }

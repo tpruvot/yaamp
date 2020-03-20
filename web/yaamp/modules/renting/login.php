@@ -1,5 +1,4 @@
 <?php
-
 $algo = user()->getState('yaamp-algo');
 
 JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
@@ -12,9 +11,10 @@ JavascriptFile('/yaamp/ui/js/auto_refresh.js');
 $this->widget('UniForm');
 
 $address = getparam('address');
-if($address == 0) $address = '';
-if (!empty($address) && preg_match('/[^A-Za-z0-9]/', $address)) {
-	die;
+if ($address == 0) $address = '';
+if (!empty($address) && preg_match('/[^A-Za-z0-9]/', $address))
+{
+    die;
 }
 
 echo <<<end
@@ -38,8 +38,8 @@ echo <<<end
 
 end;
 
-if(!YAAMP_RENTAL)
-	echo "<p style='font-size: 1.2em; font-weight: bold; color: red;'>Renting is temporarily disabled.</p>";
+
+if (!YAAMP_RENTAL) echo "<p style='font-size: 1.2em; font-weight: bold; color: red;'>Renting is temporarily disabled.</p>";
 
 echo <<<end
 <p style='font-size: 1.2em; font-weight: bold;'>You need to login to access the renting area.</p>
@@ -60,27 +60,28 @@ then be allowed to rent hashpower to use on third party pools.</p>
 
 end;
 
-$recents = isset($_COOKIE['deposits'])? explode("|", $_COOKIE['deposits']): array();
 
-if(controller()->admin || sizeof($recents) < 10)
-	echo "<input type=button value='Register' class='main-submit-button' onclick='javascript:deposit_create()' >";
+$recents = isset($_COOKIE['deposits']) ? explode("|", $_COOKIE['deposits']) : array();
+
+if (controller()->admin || sizeof($recents) < 10) echo "<input type=button value='Register' class='main-submit-button' onclick='javascript:deposit_create()' >";
 
 echo "</form><br><br>";
 
 echo "<table class='dataGrid2'>";
 
-foreach($recents as $address)
+foreach ($recents as $address)
 {
-	if(empty($address)) continue;
+    if (empty($address)) continue;
 
-	$renter = getdbosql('db_renters', "address=:address", array(':address'=>$address));
-	if(!$renter) continue;
-//	debuglog($address);
-
-	echo "<tr class='ssrow'><td width=24>";
-	echo "<img width=16 src='/images/btc.png'>";
-	echo "</td><td><a href='/renting/login?address=$renter->address' style='font-family: monospace; font-size: 1.1em;'>$address</a></td>";
-	echo "<tr>";
+    $renter = getdbosql('db_renters', "address=:address", array(
+        ':address' => $address
+    ));
+    if (!$renter) continue;
+    //	debuglog($address);
+    echo "<tr class='ssrow'><td width=24>";
+    echo "<img width=16 src='/images/btc.png'>";
+    echo "</td><td><a href='/renting/login?address=$renter->address' style='font-family: monospace; font-size: 1.1em;'>$address</a></td>";
+    echo "<tr>";
 }
 
 echo "</table><br>";
@@ -233,10 +234,3 @@ function deposit_create()
 
 
 end;
-
-
-
-
-
-
-

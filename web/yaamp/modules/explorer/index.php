@@ -1,5 +1,4 @@
 <?php
-
 JavascriptFile("/yaamp/ui/js/jquery.metadata.js");
 JavascriptFile("/yaamp/ui/js/jquery.tablesorter.widgets.js");
 
@@ -21,6 +20,7 @@ a.low { color: red; font-weight: bold; }
 <div class="main-left-title">Block Explorer</div>
 <div class="main-left-inner">
 end;
+
 
 showTableSorter('maintable', "{
 	tableClass: 'dataGrid2',
@@ -47,61 +47,74 @@ echo <<<end
 </thead><tbody>
 end;
 
+
 $list = getdbolist('db_coins', "enable and visible order by name");
-foreach($list as $coin)
+foreach ($list as $coin)
 {
-	if($coin->symbol == 'BTC') continue;
-	if(!empty($coin->symbol2)) continue;
+    if ($coin->symbol == 'BTC') continue;
+    if (!empty($coin->symbol2)) continue;
 
-	$coin->version = formatWalletVersion($coin);
+    $coin->version = formatWalletVersion($coin);
 
-	//if (!$coin->network_hash)
-		$coin->network_hash = controller()->memcache->get("yiimp-nethashrate-{$coin->symbol}");
-	if (!$coin->network_hash) {
-		$remote = new WalletRPC($coin);
-		if ($remote)
-			$info = $remote->getmininginfo();
-		if (isset($info['networkhashps'])) {
-			$coin->network_hash = $info['networkhashps'];
-			controller()->memcache->set("yiimp-nethashrate-{$coin->symbol}", $info['networkhashps'], 60);
-		}
-		else if (isset($info['netmhashps'])) {
-			$coin->network_hash = floatval($info['netmhashps']) * 1e6;
-			controller()->memcache->set("yiimp-nethashrate-{$coin->symbol}", $coin->network_hash, 60);
-		}
-	}
+    //if (!$coin->network_hash)
+    $coin->network_hash = controller()
+        ->memcache
+        ->get("yiimp-nethashrate-{$coin->symbol}");
+    if (!$coin->network_hash)
+    {
+        $remote = new WalletRPC($coin);
+        if ($remote) $info = $remote->getmininginfo();
+        if (isset($info['networkhashps']))
+        {
+            $coin->network_hash = $info['networkhashps'];
+            controller()
+                ->memcache
+                ->set("yiimp-nethashrate-{$coin->symbol}", $info['networkhashps'], 60);
+        }
+        else if (isset($info['netmhashps']))
+        {
+            $coin->network_hash = floatval($info['netmhashps']) * 1e6;
+            controller()
+                ->memcache
+                ->set("yiimp-nethashrate-{$coin->symbol}", $coin->network_hash, 60);
+        }
+    }
 
-	$difficulty = Itoa2($coin->difficulty, 3);
-	$nethash_sfx = $coin->network_hash? strtoupper(Itoa2($coin->network_hash)).'H/s': '';
+    $difficulty = Itoa2($coin->difficulty, 3);
+    $nethash_sfx = $coin->network_hash ? strtoupper(Itoa2($coin->network_hash)) . 'H/s' : '';
 
-	echo '<tr class="ssrow">';
-	echo '<td><img src="'.$coin->image.'" width="18"></td>';
+    echo '<tr class="ssrow">';
+    echo '<td><img src="' . $coin->image . '" width="18"></td>';
 
-	echo '<td><b>'.$coin->createExplorerLink($coin->name).'</a></b></td>';
-	echo '<td><b>'.$coin->symbol.'</b></td>';
+    echo '<td><b>' . $coin->createExplorerLink($coin->name) . '</a></b></td>';
+    echo '<td><b>' . $coin->symbol . '</b></td>';
 
-	echo '<td>'.$coin->algo.'</td>';
-	echo '<td>'.$coin->version.'</td>';
+    echo '<td>' . $coin->algo . '</td>';
+    echo '<td>' . $coin->version . '</td>';
 
-	echo '<td>'.$coin->block_height.'</td>';
-	$diffnote = '';
-	if ($coin->algo == 'equihash' || $coin->algo == 'quark') $diffnote = '*';
-	echo '<td data="'.$coin->difficulty.'">'.$difficulty.$diffnote.'</td>';
-	$cnx_class = (intval($coin->connections) > 3) ? '' : 'low';
-	$peers_link = CHtml::link($coin->connections, "javascript:wallet_peers({$coin->id});", array('class'=>$cnx_class));
-	echo '<td>'.$peers_link.'</td>';
-	echo '<td data="'.$coin->network_hash.'">'.$nethash_sfx.'</td>';
+    echo '<td>' . $coin->block_height . '</td>';
+    $diffnote = '';
+    if ($coin->algo == 'equihash' || $coin->algo == 'quark') $diffnote = '*';
+    echo '<td data="' . $coin->difficulty . '">' . $difficulty . $diffnote . '</td>';
+    $cnx_class = (intval($coin->connections) > 3) ? '' : 'low';
+    $peers_link = CHtml::link($coin->connections, "javascript:wallet_peers({$coin->id});", array(
+        'class' => $cnx_class
+    ));
+    echo '<td>' . $peers_link . '</td>';
+    echo '<td data="' . $coin->network_hash . '">' . $nethash_sfx . '</td>';
 
-	echo "<td>";
+    echo "<td>";
 
-	if(!empty($coin->link_bitcointalk))
-		echo CHtml::link('forum', $coin->link_bitcointalk, array('target'=>'_blank'));
+    if (!empty($coin->link_bitcointalk)) echo CHtml::link('forum', $coin->link_bitcointalk, array(
+        'target' => '_blank'
+    ));
 
-	elseif(!empty($coin->link_site))
-		echo CHtml::link('site', $coin->link_site, array('target'=>'_blank'));
+    elseif (!empty($coin->link_site)) echo CHtml::link('site', $coin->link_site, array(
+        'target' => '_blank'
+    ));
 
-	echo "</td>";
-	echo "</tr>";
+    echo "</td>";
+    echo "</tr>";
 }
 
 echo <<<end
@@ -115,4 +128,3 @@ echo <<<end
 <br><br><br><br><br><br><br><br><br><br>
 
 end;
-

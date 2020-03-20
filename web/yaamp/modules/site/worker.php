@@ -4,14 +4,14 @@ echo getAdminSideBarLinks();
 $algo = user()->getState('yaamp-algo');
 $algos = yaamp_get_algos();
 $algo_opts = '';
-foreach($algos as $a) {
-	if($a == $algo)
-		$algo_opts .= "<option value='$a' selected>$a</option>";
-	else
-		$algo_opts .= "<option value='$a'>$a</option>";
+foreach ($algos as $a)
+{
+    if ($a == $algo) $algo_opts .= "<option value='$a' selected>$a</option>";
+    else $algo_opts .= "<option value='$a'>$a</option>";
 }
-if (!strstr($algo_opts, 'selected') && $this->admin) {
-	$algo_opts = "<option value=\"$algo\" selected>$algo</option>" . $algo_opts;
+if (!strstr($algo_opts, 'selected') && $this->admin)
+{
+    $algo_opts = "<option value=\"$algo\" selected>$algo</option>" . $algo_opts;
 }
 
 echo <<<end
@@ -19,6 +19,7 @@ echo <<<end
 Select Algo: <select id="algo_select">$algo_opts</select>&nbsp;
 </div>
 end;
+
 ?>
 
 <div id='main_results'></div>
@@ -62,6 +63,3 @@ $('#algo_select').bind('change', function() {
 });
 
 </script>
-
-
-

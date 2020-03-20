@@ -1,22 +1,21 @@
 <?php
-
 if (!$coin) $this->goback();
-$this->pageTitle = 'Triggers - '.$coin->symbol;
+$this->pageTitle = 'Triggers - ' . $coin->symbol;
 
 $remote = new WalletRPC($coin);
 
-echo getAdminSideBarLinks().'<br/><br/>';
+echo getAdminSideBarLinks() . '<br/><br/>';
 
 $info = $remote->getinfo();
-if (!$info) {
-	echo $remote->error;
-	return;
+if (!$info)
+{
+    echo $remote->error;
+    return;
 }
 
-echo getAdminWalletLinks($coin, $info, 'console').'<br/><br/>';
+echo getAdminWalletLinks($coin, $info, 'console') . '<br/><br/>';
 
 //////////////////////////////////////////////////////////////////////////////////////
-
 echo <<<end
 <style type="text/css">
 td.red { color: darkred; }
@@ -30,6 +29,7 @@ div.help { float: left; color: #555; background-color: #ffffe0; padding: 6px; bo
 span.cmd { color: gray; }
 </style>
 end;
+
 
 showTableSorter('maintable', "{
 	tableClass: 'dataGrid',
@@ -56,37 +56,39 @@ echo <<<end
 </thead><tbody>
 end;
 
+
 $notifications = getdbolist('db_notifications', "idcoin={$coin->id}");
-foreach($notifications as $rule)
+foreach ($notifications as $rule)
 {
-	if ($rule->enabled)
-		$operations = '<a title="Disable this rule" href="/site/triggerEnable?id='.$rule->id.'&en=0">disable</a>';
-	else
-		$operations = '<a title="Enable this rule" href="/site/triggerEnable?id='.$rule->id.'&en=1">enable</a>';
-	$operations .= '&nbsp;<a class="red" title="Remove this market" href="/site/triggerDel?id='.$rule->id.'">delete</a>';
+    if ($rule->enabled) $operations = '<a title="Disable this rule" href="/site/triggerEnable?id=' . $rule->id . '&en=0">disable</a>';
+    else $operations = '<a title="Enable this rule" href="/site/triggerEnable?id=' . $rule->id . '&en=1">enable</a>';
+    $operations .= '&nbsp;<a class="red" title="Remove this market" href="/site/triggerDel?id=' . $rule->id . '">delete</a>';
 
-	if ($rule->lasttriggered && $rule->lasttriggered == $rule->lastchecked) {
-		$status = '<span class="green">Triggered</span>';
-		$operations = '<a title="Reset trigger" href="/site/triggerReset?id='.$rule->id.'">reset</a>'.'&nbsp'.$operations;
-	} else {
-		$status = '<span class="green"></span>';
-	}
+    if ($rule->lasttriggered && $rule->lasttriggered == $rule->lastchecked)
+    {
+        $status = '<span class="green">Triggered</span>';
+        $operations = '<a title="Reset trigger" href="/site/triggerReset?id=' . $rule->id . '">reset</a>' . '&nbsp' . $operations;
+    }
+    else
+    {
+        $status = '<span class="green"></span>';
+    }
 
-	$description = $rule->description;
-	if (!empty($description) && !empty($rule->notifycmd)) $description .= '<br/>';
-	$description .= '<span class="cmd">'.$rule->notifycmd.'</span>';
+    $description = $rule->description;
+    if (!empty($description) && !empty($rule->notifycmd)) $description .= '<br/>';
+    $description .= '<span class="cmd">' . $rule->notifycmd . '</span>';
 
-	echo '<tr class="ssrow">';
+    echo '<tr class="ssrow">';
 
-	echo '<td><b>'.$rule->notifytype.'</b></td>';
-	echo '<td>'.$rule->conditiontype.'</td>';
-	echo '<td>'.$rule->conditionvalue.'</td>';
-	echo '<td>'.$description.'</td>';
-	echo '<td>'.$status.'</td>';
-	echo '<td data="'.$rule->lastchecked.'">'.datetoa2($rule->lastchecked).'</td>';
-	echo '<td align="right">'.$operations.'</td>';
+    echo '<td><b>' . $rule->notifytype . '</b></td>';
+    echo '<td>' . $rule->conditiontype . '</td>';
+    echo '<td>' . $rule->conditionvalue . '</td>';
+    echo '<td>' . $description . '</td>';
+    echo '<td>' . $status . '</td>';
+    echo '<td data="' . $rule->lastchecked . '">' . datetoa2($rule->lastchecked) . '</td>';
+    echo '<td align="right">' . $operations . '</td>';
 
-	echo "</tr>";
+    echo "</tr>";
 }
 
 echo '</tbody></table><br/>';
@@ -126,5 +128,7 @@ echo <<<end
 <div style="clear: both; margin-bottom: 24px; "/>
 
 end;
+
+
 
 ?>

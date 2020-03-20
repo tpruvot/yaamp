@@ -7,7 +7,7 @@
 <p style="width: 700px;">cryptopool.builders now allow users to share their ccminer (1.7.6+) device hashrate, more supported miners will come later.</p>
 
 <pre class="main-left-box" style='padding: 3px; font-size: .9em; background-color: #ffffee; font-family: monospace;'>
--o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:&lt;PORT&gt; -a &lt;algo&gt; -u &lt;wallet_adress&gt; -p stats
+-o stratum+tcp://<?=YAAMP_STRATUM_URL ?>:&lt;PORT&gt; -a &lt;algo&gt; -u &lt;wallet_adress&gt; -p stats
 </pre>
 
 <p style="width: 700px;">

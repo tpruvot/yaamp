@@ -1,14 +1,13 @@
 <?php
-
 if (!$coin) $this->goback();
 
 JavascriptFile("/extensions/jqplot/jquery.jqplot.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.dateAxisRenderer.js");
 JavascriptFile("/extensions/jqplot/plugins/jqplot.highlighter.js");
 
-$this->pageTitle = $coin->name." block explorer";
+$this->pageTitle = $coin->name . " block explorer";
 
-$start = (int) getiparam('start');
+$start = (int)getiparam('start');
 
 echo <<<END
 <script type="text/javascript">
@@ -25,13 +24,14 @@ span.monospace { font-family: monospace; }
 </style>
 END;
 
+
 // version is used for multi algo coins
 // but each coin use different values...
 $multiAlgos = $coin->multialgos || versionToAlgo($coin, 0) !== false;
 
 echo '<br/>';
 echo '<div class="main-left-box">';
-echo '<div class="main-left-title">'.$coin->name.' Explorer</div>';
+echo '<div class="main-left-title">' . $coin->name . ' Explorer</div>';
 echo '<div class="main-left-inner" style="padding-left: 8px; padding-right: 8px;">';
 
 echo '<table class="dataGrid2">';
@@ -50,59 +50,63 @@ echo "</tr>";
 echo "</thead>";
 
 $remote = new WalletRPC($coin);
-if (!$start || $start > $coin->block_height)
-	$start = $coin->block_height;
-for($i = $start; $i > max(1, $start-21); $i--)
+if (!$start || $start > $coin->block_height) $start = $coin->block_height;
+for ($i = $start;$i > max(1, $start - 21);$i--)
 {
-	$hash = $remote->getblockhash($i);
-	if(!$hash) continue;
+    $hash = $remote->getblockhash($i);
+    if (!$hash) continue;
 
-	$block = $remote->getblock($hash);
-	if(!$block) continue;
+    $block = $remote->getblock($hash);
+    if (!$block) continue;
 
-	$d = datetoa2($block['time']);
-	$confirms = isset($block['confirmations'])? $block['confirmations']: '';
-	$tx = count($block['tx']);
-	$diff = $block['difficulty'];
-	$algo = versionToAlgo($coin, $block['version']);
-	$type = '';
-	if (arraySafeval($block,'nonce',0) > 0) $type = 'PoW';
-	else if (isset($block['auxpow'])) $type = 'Aux';
-	else if (isset($block['mint']) || strstr(arraySafeVal($block,'flags',''), 'proof-of-stake')) $type = 'PoS';
+    $d = datetoa2($block['time']);
+    $confirms = isset($block['confirmations']) ? $block['confirmations'] : '';
+    $tx = count($block['tx']);
+    $diff = $block['difficulty'];
+    $algo = versionToAlgo($coin, $block['version']);
+    $type = '';
+    if (arraySafeval($block, 'nonce', 0) > 0) $type = 'PoW';
+    else if (isset($block['auxpow'])) $type = 'Aux';
+    else if (isset($block['mint']) || strstr(arraySafeVal($block, 'flags', '') , 'proof-of-stake')) $type = 'PoS';
 
-	// nonce 256bits
-	if ($type == '' && $coin->symbol=='ZEC') $type = 'PoW';
+    // nonce 256bits
+    if ($type == '' && $coin->symbol == 'ZEC') $type = 'PoW';
 
-//	debuglog($block);
-	echo '<tr class="ssrow">';
-	echo '<td>'.$d.'</td>';
+    //	debuglog($block);
+    echo '<tr class="ssrow">';
+    echo '<td>' . $d . '</td>';
 
-	echo '<td>'.$coin->createExplorerLink($i, array('height'=>$i)).'</td>';
+    echo '<td>' . $coin->createExplorerLink($i, array(
+        'height' => $i
+    )) . '</td>';
 
-	echo '<td>'.$diff.'</td>';
-	echo '<td>'.$type.'</td>';
-	if ($multiAlgos) echo "<td>$algo</td>";
-	echo '<td>'.$tx.'</td>';
-	echo '<td>'.$confirms.'</td>';
+    echo '<td>' . $diff . '</td>';
+    echo '<td>' . $type . '</td>';
+    if ($multiAlgos) echo "<td>$algo</td>";
+    echo '<td>' . $tx . '</td>';
+    echo '<td>' . $confirms . '</td>';
 
-	echo '<td style="overflow-x: hidden; max-width:800px;"><span class="monospace">';
-	echo $coin->createExplorerLink($hash, array('hash'=>$hash));
-	echo '</span></td>';
+    echo '<td style="overflow-x: hidden; max-width:800px;"><span class="monospace">';
+    echo $coin->createExplorerLink($hash, array(
+        'hash' => $hash
+    ));
+    echo '</span></td>';
 
-	echo "</tr>";
+    echo "</tr>";
 }
 
 echo "</table>";
 
 $pager = '';
-if ($start <= $coin->block_height - 20)
-	$pager  = $coin->createExplorerLink('<< Prev', array('start'=>min($coin->block_height,$start+20)));
-if ($start != $coin->block_height)
-	$pager .= '&nbsp; '.$coin->createExplorerLink('Now');
-if ($start > 20)
-	$pager .= '&nbsp; '.$coin->createExplorerLink('Next >>', array('start'=>max(1,$start-20)));
+if ($start <= $coin->block_height - 20) $pager = $coin->createExplorerLink('<< Prev', array(
+    'start' => min($coin->block_height, $start + 20)
+));
+if ($start != $coin->block_height) $pager .= '&nbsp; ' . $coin->createExplorerLink('Now');
+if ($start > 20) $pager .= '&nbsp; ' . $coin->createExplorerLink('Next >>', array(
+    'start' => max(1, $start - 20)
+));
 
-$actionUrl = $coin->visible ? '/explorer/'.$coin->symbol : '/explorer/search?id='.$coin->id;
+$actionUrl = $coin->visible ? '/explorer/' . $coin->symbol : '/explorer/search?id=' . $coin->id;
 
 echo <<<end
 <div id="pager" style="float: right; width: 200px; text-align: right; margin-right: 16px; margin-top: 8px;">$pager</div>
@@ -115,8 +119,8 @@ echo <<<end
 </div>
 end;
 
-if ($start != $coin->block_height)
-	return;
+
+if ($start != $coin->block_height) return;
 
 echo <<<end
 <div id="diff_graph" style="margin-right: 8px; margin-top: -16px;">
@@ -210,6 +214,9 @@ function diff_graph_data(data)
 </script>
 end;
 
-app()->clientScript->registerScript('graph',"
+
+app()
+    ->clientScript
+    ->registerScript('graph', "
 	graph_refresh();
 ", CClientScript::POS_READY);
