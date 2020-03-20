@@ -298,7 +298,7 @@ echo CUFHtml::closeCtrlHolder();}
 echo CUFHtml::openActiveCtrlHolder($coin, 'rpchost');
 echo CUFHtml::activeLabelEx($coin, 'rpchost');
 echo CUFHtml::activeTextField($coin, 'rpchost', array('maxlength'=>128,'style'=>'width: 180px;'));
-echo '<p class="formHint2">I.e. 127.0.0.1 WireGuard use 10.0.0.x or Internal IP from host</p>';
+echo '<p class="formHint2">I.e. 127.0.0.1</p>';
 echo CUFHtml::closeCtrlHolder();
 
 if(empty($coin->rpcport))
@@ -417,7 +417,7 @@ echo "{$coin->specifications}\n";
 echo "\n";
 }
 echo "alertnotify=echo %s | mail -s \"{$coin->name} alert!\" ".YAAMP_ADMIN_EMAIL."\n";
-echo "blocknotify=blocknotify 127.0.0.1:$port {$coin->id} %s\n";
+echo "blocknotify=blocknotify.sh $port {$coin->id} %s\n";
 echo " \n";
 echo "' | sudo -E tee {$coin->conf_folder}/$program.conf >/dev/null 2>&1\n";
 echo CHtml::closetag("pre");
