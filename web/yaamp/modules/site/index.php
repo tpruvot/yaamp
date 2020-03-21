@@ -80,49 +80,36 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600) . " hours";
 
 	<td>
 			<select id="drop-coin" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
-<?php
-$list = getdbolist('db_coins', "enable and visible and auto_ready order by algo asc");
-$algoheading = "";
-$count = 0;
-foreach ($list as $coin)
-{
-    $name = substr($coin->name, 0, 18);
-    $symbol = $coin->getOfficialSymbol();
-    $id = $coin->id;
-    $algo = $coin->algo;
+        <?php
+        $list = getdbolist('db_coins', "enable and visible and auto_ready order by algo asc");
 
-    $port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(
+        $algoheading="";
+        $count=0;
+        foreach($list as $coin)
+        			{
+        			$name = substr($coin->name, 0, 18);
+        			$symbol = $coin->getOfficialSymbol();
+                  $id = $coin->id;
+                  $algo = $coin->algo;
+
+        $port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(
         ':algo' => $algo,
         ':symbol' => $symbol
-    ));
+        ));
 
-    $port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(
+        $port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(
         ':algo' => $algo,
         ':symbol' => $symbol
-    ));
+        ));
 
-    if ($port_count >= 1)
-    {
-        $port = $port_db->port;
-    }
-    else
-    {
-        $port = $port;
-    }
-    if ($count == 0)
-    {
-        echo "<option disabled=''>$algo";
-    }
-    elseif ($algo != $algoheading)
-    {
-        echo "<option disabled=''>$algo</option>";
-    }
-    echo "<option data-port='$port' data-algo='-a $algo' data-symbol='$symbol'>$name ($symbol)</option>";
+        if ($port_count >= 1){$port = $port_db->port;}else{$port = '0.0.0.0';}
+        if($count == 0){ echo "<option disabled=''>$algo";}elseif($algo != $algoheading){echo "<option disabled=''>$algo</option>";}
+        echo "<option data-port='$port' data-algo='-a $algo' data-symbol='$symbol'>$name ($symbol)</option>";
 
-    $count = $count + 1;
-    $algoheading = $algo;
-}
-?>
+        $count=$count+1;
+        $algoheading=$algo;
+        }
+        ?>
 			</select>
 		</td>
 
