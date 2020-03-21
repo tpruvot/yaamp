@@ -174,7 +174,28 @@ foreach ($algos as $item)
             echo "<td align='center' style='font-size: .8em;'>$pool_hash_sfx</td>";
             $pool_hash_sfx = $pool_hash ? Itoa2($pool_hash) . 'h/s' : '';
             $min_ttf = $coin->network_ttf > 0 ? min($coin->actual_ttf, $coin->network_ttf) : $coin->actual_ttf;
-            $network_hash = $coin->difficulty * 0x100000000 / ($min_ttf ? $min_ttf : 60);
+            $network_hash = controller()
+                ->memcache
+                ->get("yiimp-nethashrate-{$coin->symbol}");
+            if (!$network_hash)
+            {
+                $remote = new WalletRPC($coin);
+                if ($remote) $info = $remote->getmininginfo();
+                if (isset($info['networkhashps']))
+                {
+                    $network_hash = $info['networkhashps'];
+                    controller()
+                        ->memcache
+                        ->set("yiimp-nethashrate-{$coin->symbol}", $info['networkhashps'], 60);
+                }
+                else if (isset($info['netmhashps']))
+                {
+                    $network_hash = floatval($info['netmhashps']) * 1e6;
+                    controller()
+                        ->memcache
+                        ->set("yiimp-nethashrate-{$coin->symbol}", $network_hash, 60);
+                }
+            }
             $network_hash = $network_hash ? Itoa2($network_hash) . 'h/s' : '';
             echo "<td align='center' style='font-size: .8em;' data='$pool_hash'>$network_hash</td>";
             echo "<td align='center' style='font-size: .8em;'>{$fees}%</td>";
