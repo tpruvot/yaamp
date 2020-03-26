@@ -44,7 +44,7 @@ end;
 $algo_unit   = 'Mh';
 $algo_factor = yaamp_algo_mBTC_factor($algo);
 if ($algo_factor == 0.001) $algo_unit = 'Kh';
-if ($algo_factor == 1000) $algo_unit = 'Gh';	if ($algo_factor == 1000) $algo_unit = 'Gh';
+if ($algo_factor == 1000) $algo_unit = 'Gh';
 if ($algo_factor == 1000000) $algo_unit = 'Th';
 if ($algo_factor == 1000000000) $algo_unit = 'Ph';
 
