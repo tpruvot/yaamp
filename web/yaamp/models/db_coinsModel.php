@@ -17,7 +17,7 @@ class db_coins extends CActiveRecord
 		return array(
 			array('name', 'required'),
 			array('symbol', 'required'),
-			array('symbol', 'unique'),
+			//array('symbol', 'unique'),
 		);
 	}
 
