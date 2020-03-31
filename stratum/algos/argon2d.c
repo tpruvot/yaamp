@@ -12,7 +12,7 @@ static const size_t INPUT_BYTES = 80;  // Lenth of a block header in bytes. Inpu
 static const size_t OUTPUT_BYTES = 32; // Length of output needed for a 256-bit hash
 static const unsigned int DEFAULT_ARGON2_FLAG = 2; //Same as ARGON2_DEFAULT_FLAGS
 
-void argon2d_crds_call(const void *input, void *output)
+void argon2d_call(const void *input, void *output)
 {
     argon2_context context;
     context.out = (uint8_t *)output;
@@ -88,7 +88,7 @@ void argon2d_uis_call(const void *input, void *output)
 
 void argon2d_crds_hash(const unsigned char* input, unsigned char* output, unsigned int len)
 {
-	argon2d_crds_call(input, output);
+	argon2d_call(input, output);
 }
 
 void argon2d_dyn_hash(const unsigned char* input, unsigned char* output, unsigned int len)

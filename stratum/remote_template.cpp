@@ -15,8 +15,8 @@ void remote_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VALUES *submi
 	uint64_t hash_int = get_hash_difficulty(submitvalues->hash_bin);
 	uint64_t remote_target = diff_to_target(remote->difficulty_actual);
 
-	debuglog("%016llx actual\n", hash_int);
-	debuglog("%016llx target diff multiplier=%u\n", remote_target, g_current_algo->diff_multiplier);
+//	debuglog("%016llx actual\n", hash_int);
+//	debuglog("%016llx target diff multiplier=%u\n", remote_target, g_current_algo->diff_multiplier);
 
 	if(hash_int > remote_target) return;
 	remote->speed_avg += remote->difficulty_actual / g_current_algo->diff_multiplier * 42;

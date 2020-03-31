@@ -84,7 +84,7 @@ static void scrypt_hash(const char* input, char* output, uint32_t len)
 
 static void scryptn_hash(const char* input, char* output, uint32_t len)
 {
-	scrypt_N_R_1_256(input, output, 2048, 1, len);
+scrypt_N_R_1_256(input, output, 2048, 1, len);
 }
 
 static void neoscrypt_hash(const char* input, char* output, uint32_t len)
@@ -105,7 +105,6 @@ YAAMP_ALGO g_algos[] =
 	{"balloon", balloon_hash, 1, 0, 0},
 	{"bastion", bastion_hash, 1, 0 },
 	{"bcd", bcd_hash, 1, 0, 0},
-	{"binarium-v1", Binarium_hash_v1_hash, 1, 0, 0},
 	{"bitcore", timetravel10_hash, 0x100, 0, 0},
 	{"blake", blake_hash, 1, 0 },
 	{"blake2b", blake2b_hash, 1, 0 },
@@ -123,10 +122,8 @@ YAAMP_ALGO g_algos[] =
 	{"geek", geek_hash, 1, 0, 0},
 	{"groestl", groestl_hash, 0x100, 0, sha256_hash_hex }, /* groestlcoin */
 	{"hex", hex_hash, 0x100, 0, sha256_hash_hex },
-	{"hive", hive_hash, 0x10000, 0, 0},
 	{"hmq1725", hmq17_hash, 0x10000, 0, 0},
 	{"hsr", hsr_hash, 1, 0, 0},
-	{"honeycomb", beenode_hash, 0x10000, 0, 0},
 	{"jeonghash", jeonghash_hash, 0x100, 0, 0},
 	{"jha", jha_hash, 0x10000, 0},
 	{"keccak", keccak256_hash, 0x80, 0, sha256_hash_hex },
@@ -138,9 +135,11 @@ YAAMP_ALGO g_algos[] =
 	{"lyra2v2", lyra2v2_hash, 0x100, 0, 0},
 	{"lyra2v3", lyra2v3_hash, 0x100, 0, 0},
 	{"lyra2vc0ban", lyra2vc0ban_hash, 0x100, 0, 0},
+	{"lyra2z330", lyra2z330_hash, 0x100, 0, 0},
 	{"lyra2z", lyra2z_hash, 0x100, 0, 0},
 	{"lyra2zz", lyra2zz_hash, 0x100, 0, 0},
 	{"m7m", m7m_hash, 0x10000, 0, 0},
+	{"minotaur", minotaur_hash, 1, 0, 0},
 	{"myr-gr", groestlmyriad_hash, 1, 0, 0}, /* groestl + sha 64 */
 	{"neoscrypt", neoscrypt_hash, 0x10000, 0, 0},
 	{"nist5", nist5_hash, 1, 0, 0},
@@ -154,7 +153,6 @@ YAAMP_ALGO g_algos[] =
 	{"quark", quark_hash, 1, 0, 0},
 	{"qubit", qubit_hash, 1, 0, 0},
 	{"rainforest", rainforest_hash, 1, 0, 0},
-	{"rfv2", rfv2_hash_yiimp, 0x10000, 0, 0},
 	{"scrypt", scrypt_hash, 0x10000, 0, 0},
 	{"scryptn", scryptn_hash, 0x10000, 0, 0},
 	{"sha256", sha256_double_hash, 1, 0, 0},
@@ -181,22 +179,19 @@ YAAMP_ALGO g_algos[] =
 	{"x14", x14_hash, 1, 0, 0},
 	{"x15", x15_hash, 1, 0, 0},
 	{"x16r", x16r_hash, 0x100, 0, 0},
-    {"x16rv2", x16rv2_hash, 0x100, 0, 0},
+  {"x16rv2", x16rv2_hash, 0x100, 0, 0},
 	{"x16rt", x16rt_hash, 0x100, 0, 0},
 	{"x16s", x16s_hash, 0x100, 0, 0},
 	{"x17", x17_hash, 1, 0, 0},
+	{"x17r", x17r_hash, 1, 0, 0},	//ufo-project
 	{"x18", x18_hash, 1, 0, 0},
 	{"x20r", x20r_hash, 0x100, 0, 0},
 	{"x21s", x21s_hash, 0x100, 0, 0},
 	{"x22i", x22i_hash, 1, 0, 0},
-    {"x25x", x25x_hash, 1, 0, 0},
+  {"x25x", x25x_hash, 1, 0, 0},
 	{"xevan", xevan_hash, 0x100, 0, 0},
-	{"yescrypt", yescrypt_hash, 0x10000, 0, 0},
-	{"yescryptR8", yescryptR8_hash, 0x10000, 0, 0},
-	{"yescryptR16", yescryptR16_hash, 0x10000, 0, 0 },
-	{"yescryptR32", yescryptR32_hash, 0x10000, 0, 0 },
-	{"yespower", yespower_hash, 0x10000, 0, 0 },
-	{"yespowerR16", yespowerR16_hash, 0x10000, 0, 0 },
+	{"yespower", yespower_hash, 0x10000, 0, 0},
+	{"yespowerurx", yespowerurx_hash, 0x10000, 0, 0},
 	{"zr5", zr5_hash, 1, 0, 0},
 	{"", NULL, 0, 0},
 };
@@ -391,30 +386,30 @@ int main(int argc, char **argv)
 
 void *monitor_thread(void *p)
 {
+	int cacheHeight = 0;
+
 	while(!g_exiting)
 	{
-		sleep(120);
+		sleep(0.2);
 
-		if(g_last_broadcasted + YAAMP_MAXJOBDELAY < time(NULL))
+		g_list_coind.Enter();
+		for(CLI li = g_list_coind.first; li; li = li->next)
 		{
-			g_exiting = true;
-			stratumlogdate("%s dead lock, exiting...\n", g_stratum_algo);
-			exit(1);
-		}
+			YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
+			json_value *json = rpc_call(&coind->rpc, "getblockcount");
+			if (!json) continue;
+			json_int_t amount = json_get_int(json, "result");
 
-		if(g_max_shares && g_shares_counter) {
-
-			if((g_shares_counter - g_shares_log) > 10000) {
-				stratumlogdate("%s %luK shares...\n", g_stratum_algo, (g_shares_counter/1000u));
-				g_shares_log = g_shares_counter;
-			}
-
-			if(g_shares_counter > g_max_shares) {
-				g_exiting = true;
-				stratumlogdate("%s need a restart (%lu shares), exiting...\n", g_stratum_algo, (unsigned long) g_max_shares);
-				exit(1);
+			if (coind->height != amount) {
+                                if (coind->height != cacheHeight) {
+				      debuglog("coind->height differs from rpc response, forcing new template (%d vs %d)..\n", coind->height, amount);
+                                      cacheHeight = coind->height;
+                                }
+				coind_create_job(coind, true);
+				job_update();
 			}
 		}
+		g_list_coind.Leave();
 	}
 }
 
