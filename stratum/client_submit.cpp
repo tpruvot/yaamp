@@ -278,10 +278,6 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 
 			merkle_hash((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
 
-      // isnt perfect, but it works
-      if(strcmp(coind->symbol, "SIN") == 0)
-        x22i_hash_hex((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
-
 			char hash1[1024];
 			memset(hash1, 0, 1024);
 
@@ -504,9 +500,11 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
         uint64_t user_target = share_to_target(client->difficulty_actual) * g_current_algo->diff_multiplier;
         uint64_t coin_target = decode_compact(templ->nbits) / 0x10000;
 
+if (g_debuglog_hash) {
         debuglog("hash %016lx \n", hash_int);
         debuglog("shar %016lx \n", user_target);
         debuglog("coin %016lx \n", coin_target);
+}
 
 	if(hash_int > user_target)
 	{
