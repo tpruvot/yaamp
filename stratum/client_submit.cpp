@@ -504,9 +504,11 @@ bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
         uint64_t user_target = share_to_target(client->difficulty_actual) * g_current_algo->diff_multiplier;
         uint64_t coin_target = decode_compact(templ->nbits) / 0x10000;
 
+if (g_debuglog_hash) {
         debuglog("hash %016lx \n", hash_int);
         debuglog("shar %016lx \n", user_target);
         debuglog("coin %016lx \n", coin_target);
+			}
 
 	if(hash_int > user_target)
 	{
