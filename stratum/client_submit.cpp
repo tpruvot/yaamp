@@ -508,7 +508,7 @@ if (g_debuglog_hash) {
         debuglog("hash %016lx \n", hash_int);
         debuglog("shar %016lx \n", user_target);
         debuglog("coin %016lx \n", coin_target);
-			}
+}
 
 	if(hash_int > user_target)
 	{

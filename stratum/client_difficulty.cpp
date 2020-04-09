@@ -58,7 +58,7 @@ void client_adjust_difficulty(YAAMP_CLIENT *client)
 	else if(client->difficulty_fixed)
 		return;
 
-	else if(client->shares_per_minute > 25)
+	else if(client->shares_per_minute > 50)
 		client_change_difficulty(client, client->difficulty_actual*2);
 
 	else if(client->shares_per_minute > 20)
