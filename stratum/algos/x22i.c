@@ -144,3 +144,18 @@ void x22i_hash(const char* input, char* output, uint32_t len)
 
 	memcpy(output, hash, 32);
 }
+
+void hexlify(char *hex, const unsigned char *bin, int len)
+{
+        hex[0] = 0;
+        for(int i=0; i < len; i++)
+                sprintf(hex+strlen(hex), "%02x", bin[i]);
+}
+
+void x22i_hash_hex(const char *input, char *output, unsigned int len)
+{
+        char output1[32];
+
+        x22i_hash(input, output1, len);
+        hexlify(output, (unsigned char *)output1, 32);
+}

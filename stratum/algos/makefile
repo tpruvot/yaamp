@@ -10,7 +10,7 @@ LDFLAGS=-O2 -lgmp
 
 SOURCES=lyra2re.c lyra2v2.c lyra2v3.c Lyra2.c lyra2z.c Lyra2-z.c lyra2zz.c Lyra2-zz.c Sponge.c allium.c \
 	c11.c x11.c x12.c x13.c hsr14.c sm3.c x14.c x15.c x17.c \
-	x22i.c SWIFFTX/SWIFFTX.c \
+	x22i.c SWIFFTX/SWIFFTX.c x25x.c \
 	blake.c blakecoin.c blake2b.c blake2s.c jha.c keccak.c lbry.c tribus.c exosis.c \
 	deep.c fresh.c groestl.c neoscrypt.c nist5.c quark.c qubit.c skein.c skein2.c \
 	bitcore.c timetravel.c x11evo.c x16r.c x16rv2.c x16s.c xevan.c bastion.c hmq17.c sonoa.c \

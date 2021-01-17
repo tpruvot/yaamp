@@ -8,6 +8,7 @@ extern "C" {
 #include <stdint.h>
 
 void x22i_hash(const char* input, char* output, uint32_t len);
+void x22i_hash_hex(const char *input, char *output, unsigned int len);
 
 #ifdef __cplusplus
 }
