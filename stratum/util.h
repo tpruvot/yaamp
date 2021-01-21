@@ -80,6 +80,7 @@ void base64_encode(char *base64, const char *normal);
 void base64_decode(char *normal, const char *base64);
 
 void ser_number(int n, char *s);
+void ser_compactsize(uint64_t nSize, char *a);
 
 void ser_string_be(const char *input, char *output, int len);
 void ser_string_be2(const char *input, char *output, int len);

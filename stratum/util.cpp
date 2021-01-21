@@ -479,6 +479,26 @@ void ser_number(int n, char *a)
 //	printf("ser_number %d, %s\n", n, a);
 }
 
+void ser_compactsize(uint64_t nSize, char *a)
+{
+	if (nSize < 253)
+	{
+		sprintf(a, "%02lx", nSize);
+	}
+	else if (nSize <= (unsigned short)-1)
+	{
+		sprintf(a, "%02x%04lx", 253, nSize);
+	}
+	else if (nSize <= (unsigned int)-1)
+	{
+		sprintf(a, "%02x%08lx", 254, nSize);
+	}
+	else
+	{
+		sprintf(a, "%02x%016lx", 255, nSize);
+	}
+}
+
 void ser_string_be(const char *input, char *output, int len)
 {
 	for(int i=0; i<len; i++)
