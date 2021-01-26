@@ -302,6 +302,14 @@ else if ($ETH) $account = $coin->master_wallet;
 
 $txs = $remote->listtransactions($account, $maxrows);
 
+// Coins with disabled accounting will not show any tx. $account should be "*"
+
+if (empty($txs)) {
+        $account = '*';
+        $txs = $remote->listtransactions($account, $maxrows);
+}
+
+
 if (empty($txs)) {
 	if (!empty($remote->error)) {
 		echo "<b>RPC Error: {$remote->error}</b><p/>";
