@@ -13,6 +13,7 @@ function strip_data($data)
 	return $out;
 }
 
+require_once("bitfinex.php");
 require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("bitz.php");
@@ -82,6 +83,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://alcurex.com/#{$symbol}-{$base}";
 	else if($market == 'binance')
 		$url = "https://www.binance.com/trade.html?symbol={$symbol}_{$base}";
+	else if($market == 'bitfinex')
+		$url = "https://www.bitfinex.com/t/{$symbol}:{$base}";
 	else if($market == 'bittrex')
 		$url = "https://bittrex.com/Market/Index?MarketName={$base}-{$symbol}";
 	else if($market == 'bitz')

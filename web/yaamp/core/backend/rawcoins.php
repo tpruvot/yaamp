@@ -37,6 +37,18 @@ function updateRawcoins()
 		}
 	}
 
+	if (!exchange_get('bitfinex', 'disabled')) {
+		$list = bitfinex_api_query('symbols');
+		if(is_array($list) && !empty($list)) {
+			dborun("UPDATE markets SET deleted=true WHERE name='bitfinex'");
+			foreach ($list as $pair) {
+				if (strpos($pair, 'usd') || !strpos($pair, 'btc')) continue;
+				$symbol = strtoupper(str_replace('btc', '', $pair));
+				updateRawCoin('bitfinex', $symbol);
+			}
+		}
+	}
+
 	if (!exchange_get('bitz', 'disabled')) {
 		$list = bitz_api_query('tickerall');
 		if (!empty($list)) {
@@ -452,7 +464,7 @@ function updateRawCoin($marketname, $symbol, $name='unknown')
 			}
 		}
 
-		if (in_array($marketname, array('nova','askcoin','binance','bitz','coinexchange','coinsmarkets','cryptobridge','hitbtc'))) {
+		if (in_array($marketname, array('nova','askcoin','binance','bitfinex','bitz','coinexchange','coinsmarkets','cryptobridge','hitbtc'))) {
 			// don't polute too much the db with new coins, its better from exchanges with labels
 			return;
 		}

@@ -9,6 +9,7 @@ function BackendPricesUpdate()
 
 	settings_prefetch_all();
 
+	updateBitfinexMarkets();
 	updateBittrexMarkets();
 	updateBitzMarkets();
 	updatePoloniexMarkets();
@@ -287,6 +288,61 @@ function updateBleutradeMarkets()
 //		debuglog("$exchange: update $coin->symbol: $market->price $market->price2");
 	}
 
+}
+
+ /////////////////////////////////////////////////////////////////////////////////////////////
+
+function updateBitfinexMarkets()
+{
+	$exchange = 'bitfinex';
+	if (exchange_get($exchange, 'disabled')) return;
+ 	$list = getdbolist('db_markets', "name LIKE '$exchange%'");
+	if (empty($list)) return;
+
+	$count=0;
+ 	foreach($list as $market)
+	{
+		$coin = getdbo('db_coins', $market->coinid);
+		if(!$coin) continue;
+		if (!($coin->installed || $coin->watch)) continue;
+ 		$symbol = $coin->getOfficialSymbol();
+		$pair = strtolower($symbol).'btc';
+
+		$ticker = bitfinex_api_query('pubticker', $pair);
+
+		$count++;
+		if ($count > 10) {sleep(10);$count=0;} // Rate limiting https://docs.bitfinex.com/docs/rest-general
+
+ 		$sqlFilter = '';
+		if (!empty($market->base_coin)) {
+			$pair = strtolower($symbol.$market->base_coin);
+			$sqlFilter = "AND base_coin='{$market->base_coin}'";
+		}
+ 		if (market_get($exchange, $symbol, "disabled")) {
+			$market->disabled = 1;
+			$market->message = 'disabled from settings';
+			$market->save();
+			continue;
+		}
+
+//		if ($market->disabled < 9) {
+//			$nbm = (int) dboscalar("SELECT COUNT(id) FROM markets WHERE coinid={$coin->id} $sqlFilter");
+//			$market->disabled = ($ticker->bid < $ticker->ask/2) && ($nbm > 1);
+//		}
+
+		$price2 = ($ticker->bid+$ticker->ask)/2;
+		$market->price2 = AverageIncrement($market->price2, $price2);
+		$market->price = AverageIncrement($market->price, $ticker->bid);
+		$market->pricetime = time(); // $ticker->timestamp "2018-08-31T12:48:56Z"
+		$market->save();
+
+		if (empty($coin->price) && $ticker->ask) {
+			$coin->price = $market->price;
+			$coin->price2 = $price2;
+			$coin->save();
+		}
+		//debuglog("$exchange: $pair price updated to {$market->price}");
+	}
 }
 
  /////////////////////////////////////////////////////////////////////////////////////////////
