@@ -16,6 +16,7 @@ function strip_data($data)
 require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("bitz.php");
+require_once("bitzv2.php");
 require_once("bleutrade.php");
 require_once("ccexapi.php");
 require_once("cexio.php");

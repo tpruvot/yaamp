@@ -8,6 +8,8 @@ define('YIIMP_MYSQLDUMP_PATH', '/root/backup');
 /* Keys required to create/cancel orders and access your balances/deposit addresses */
 define('EXCH_BITTREX_SECRET', '<my_bittrex_api_secret_key>');
 define('EXCH_BITSTAMP_SECRET','');
+define('EXCH_BITZ_SECRET','');
+define('EXCH_BITZ_TRADEPWD','');
 define('EXCH_BINANCE_SECRET', '');
 define('EXCH_BLEUTRADE_SECRET', '');
 define('EXCH_BTER_SECRET', '');
