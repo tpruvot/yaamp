@@ -32,6 +32,14 @@ function BackendUserCancelFailedPayment($userid)
 	return 0.0;
 }
 
+function is_ln_invoice($bill)
+{
+if (!empty($bill) && preg_match('/[^A-Za-z0-9]/', $bill))
+	return false;
+else
+	return true; // TODO: Enhance the check of the bolt11 invoice (length, first characters, ...)
+}
+
 function BackendCoinPayments($coin)
 {
 //	debuglog("BackendCoinPayments $coin->symbol");
@@ -106,6 +114,34 @@ function BackendCoinPayments($coin)
 	{
 		$total_to_pay += round($user->balance, 8);
 		$addresses[$user->username] = round($user->balance, 8);
+		if ($coin->symbol==LN_COIN && LN_ENABLED == true && YAAMP_LN_WORKERS == true)	{
+			$ln_works = getdbolist('db_workers', "work > 0 AND worker <> '' AND userid=".$user->id);
+			foreach($ln_works as $ln_work)	{
+				if (is_ln_invoice($ln_work->worker))	{
+                                        $output = shell_exec('sudo lightning-cli -J decodepay '.$ln_work->worker);
+                                        $bill = json_decode($output);
+                                        // TODO: Enhance and add pool fee
+					if ($ln_work->work * YAAMP_LN_FACTOR > $bill->msatoshi / 1000 && $user->balance > $bill->msatoshi / 1000)	{
+						$db_bill = getdbosql('db_invoices', "bolt11=:bolt11", array(':bolt11'=>$ln_work->worker));
+						if (!$db_bill)  {
+							dborun("INSERT IGNORE INTO invoices(bolt11, status) VALUES (:key,:val)", array(
+								':key'=>$bill,':val'=>"New"
+								));
+						}
+						if ($db_bill && $db_bill->status == "complete")	 {
+							// Invoice is already paid, no need to change total_to_pay and addresses
+						}
+						else	{
+							// Invoice is not paid yet: some value should be kept to pay it
+							// TODO: Add pool fee
+							$total_to_pay -= round($bill->msatoshi / 1000, 8);
+							$addresses[$user->username] -= round($bill->msatoshi / 1000, 8);
+						}
+					}
+				}
+			}
+		}
+		
 		// transaction xxx has too many sigops: 1035 > 1000
 		if ($coin->symbol == 'DCR' && count($addresses) > 990) {
 			debuglog("payment: more than 990 {$coin->symbol} users to pay, limit to top balances...");

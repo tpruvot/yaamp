@@ -1192,4 +1192,9 @@ class SiteController extends CommonController
 		setcookie('mainbtc', '1', time()+60*60*24, '/');
 	}
 
+	public function actionLn()
+        {
+		if(LN_ENABLED == false || (YAAMP_LN_NET == 'MAINET' && !$this->admin)) return;
+                $this->render('/site/ln');
+        }
 }

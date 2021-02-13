@@ -61,6 +61,12 @@ function BackendBlockNew($coin, $db_block)
 		$user->save();
 	}
 
+	$target = yaamp_hashrate_constant($coin->algo);
+	$interval = yaamp_hashrate_step();
+	$delay = time()-$interval;
+	
+	dborun("UPDATE workers w SET work = w.work + (SELECT (sum(difficulty) * $target / $interval / 1000) FROM shares WHERE valid AND time>".time()-$interval." AND workerid=w.id)");
+	
 	$delay = time() - 5*60;
 	$sqlCond = "time < $delay";
 	if(!YAAMP_ALLOW_EXCHANGE) // only one coin mined

@@ -75,3 +75,25 @@ if (!defined('NICEHASH_DEPOSIT_AMOUNT')) define('NICEHASH_DEPOSIT_AMOUNT','0.01'
 // cli stuff
 if (!defined('YIIMP_CLI_ALLOW_TXS')) define('YIIMP_CLI_ALLOW_TXS', false);
 
+// Lightning Network
+if (!defined('LN_ENABLED')) define('LN_ENABLED', false);
+if (!defined('LN_MY_BTC_ADDRESS')) define('LN_MY_BTC_ADDRESS', '');
+if (!defined('LN_MY_LN_ADDRESS')) define('LN_MY_LN_ADDRESS', '');
+if (!defined('LN_COIN')) define('LN_COIN', 'BTC');
+if (!defined('LN_MY_IP')) define('LN_MY_IP', '');
+if (!defined('LN_MY_PORT')) define('LN_MY_PORT', '9735');
+if (!defined('LN_FRACTION')) define('LN_FRACTION', 7); // Fraction of main BTC wallet to fund channels
+if (!defined('LN_MIN_PAY')) define('LN_MIN_PAY', 1000); // min payout in satoshis
+if (!defined('LN_MAIN_NODE')) define('LN_MAIN_NODE', '');
+if (!define('YAAMP_LN_NET')) define('YAAMP_LN_NET', 'TESTNET'); // TESTNET or MAINET
+if (!define('YAAMP_LN_WORKERS')) define('YAAMP_LN_WORKERS', false);
+if (!define('YAAMP_LN_FACTOR')) define('YAAMP_LN_FACTOR', 0.8);
+
+if (!isset($configLNGamePlayers)) $configLNGamePlayers = array (
+        /*
+        // testnet:
+        'testnet.millionbitcoinhomepage.net' => array('023bcc1daeb7c85208991e993a2eacf86f7d9584a6dc33291bbe5e19c986a31568', '51.15.250.152', '9735'),
+        'yalls.org' => array('02212d3ec887188b284dbb7b2e6eb40629a6e14fb049673f22d2a0aa05f902090e', '54.236.55.50', '9735'),
+        'testnet.satoshis.place' => array('02dd4cef0192611bc34cd1c3a0a7eb0f381e7229aa3309ae961a7fc0076b4d2bb6', '35.198.136.5', '9735')
+        */
+        );

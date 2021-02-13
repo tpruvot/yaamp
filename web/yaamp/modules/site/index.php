@@ -67,6 +67,18 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600)." hours";
 <?php endif; ?>
 <li>As optional password, you can use <b>-p c=&lt;SYMBOL&gt;</b> if yiimp does not set the currency correctly on the Wallet page.</li>
 <li>See the "Pool Status" area on the right for PORT numbers. Algorithms without associated coins are disabled.</li>
+<?php if (LN_ENABLED): ?>
+Lightning Network payments are enabled on this pool on <b><?php echo YAAMP_LN_NET; ?></b>. You can send Lightning Network invoices using <?php
+if (YAAMP_LN_NET == 'TESTNET') echo '<a href="/site/ln">LN page</a>';
+if (YAAMP_LN_NET == 'TESTNET' && YAAMP_LN_WORKERS == true) echo ' or ';
+if (YAAMP_LN_WORKERS == true)	{
+	?>the workername to send the invoice. Example:
+	<p class="main-left-box" style='padding: 3px; font-size: .8em; background-color: #ffffee; font-family: monospace;'>
+	-o stratum+tcp://<?= YAAMP_STRATUM_URL ?>:&lt;PORT&gt; -u &lt;WALLET_ADDRESS&gt;.&lt;invoice&gt; [-p &lt;OPTIONS&gt;]</p>
+	Lightning Network invoices can be generated from a LN wallet or directly on a merchant's website (<a href="http://lightningnetworkstores.com/">List of merchants (mainet)</a>, <a href="http://lightningnetworkstores.com/testnet">List of merchants (testnet)</a>).
+	<?php
+	}
+endif; ?>
 
 <br>
 
