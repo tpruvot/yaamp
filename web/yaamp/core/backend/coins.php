@@ -166,6 +166,24 @@ function BackendCoinsUpdate()
 					$target = decode_compact($template['bits']);
 					$coin->difficulty = target_to_diff($target);
 				}
+                                if($coin->symbol == 'XDNA')
+                                {
+                                        $xdnareward = array_column($template['superblock'],'amount',0);
+                                        foreach ($xdnareward as $xdnavalue)
+                                        { $coin->reward -= $xdnavalue / 100000000; }
+
+                                }
+
+                                if(isset($template['founderreward'])) // Set this for coins with founderrewards
+                                {
+                                        $coin->reward -= arraySafeVal($template['founderreward'],'amount',0)/100000000;
+                                }
+
+				if(isset($template['founder'])) // Set this for coins with founderrewards
+                                {
+                                        $coin->reward -= arraySafeVal($template['founder'],'amount',0)/100000000;
+                                }
+				
 			}
 
 			else if ($coin->rpcencoding == 'GETH' || $coin->rpcencoding == 'NIRO')
