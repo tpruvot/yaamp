@@ -65,6 +65,7 @@ foreach($algos as $item)
 	$available = $available>0? Itoa2($available).'h/s': '';
 	$hashrate = $hashrate>0? Itoa2($hashrate).'h/s': '';
 	$total = $total>0? Itoa2($total).'h/s': '';
+	if (!$total) continue;
 
 	$renting = controller()->memcache->get_database_scalar("current_renting-$algo",
 		"select rent from hashrate where algo=:algo order by time desc limit 1", array(':algo'=>$algo));
