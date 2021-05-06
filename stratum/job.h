@@ -61,6 +61,13 @@ struct YAAMP_JOB_TEMPLATE
 
 	int auxs_size;
 	YAAMP_COIND_AUX *auxs[MAX_AUXS];
+
+        // Start of Gulden specific data for phase 3 witnessing
+        bool has_pow2_witness_data;
+        int pow2_subsidy;
+        char pow2_aux_1[2048];
+        char pow2_aux_2[2048];
+        // End of Gulden spcific data for phase 3 witnessing
 };
 
 #define YAAMP_JOB_MAXSUBIDS		200

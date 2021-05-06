@@ -682,7 +682,20 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 			strcat(templ->coinb2, "01");
 		}
 	}
-
+        // When Gulden is in phase 3 it is required that the miner deducts the witness subsidy from the reward, it instead gets paid to the witness.
+        else if(strcmp(coind->symbol, "NLG") == 0)
+        {
+            if (templ->has_pow2_witness_data)
+            {
+                  strcat(templ->coinb2, "03");
+                  //Below line is (probably) not necessary - uncomment this if your pool is earning the wrong subsidy in phase 3.
+                  //available -= templ->pow2_subsidy;
+            }
+            else
+            {
+                strcat(templ->coinb2, "01");
+            }
+        }
 	else if (templ->has_segwit_txs) {
 		strcat(templ->coinb2, "02");
 		strcat(templ->coinb2, commitment);
@@ -691,6 +704,13 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	}
 
 	job_pack_tx(coind, templ->coinb2, available, NULL);
+
+        // Append witness data after normal coinbase outputs - witness data is already hex encoded and already contains amounts.
+        if(strcmp(coind->symbol, "NLG") == 0 && templ->has_pow2_witness_data)
+        {
+            strcat(templ->coinb2, templ->pow2_aux_1);
+            strcat(templ->coinb2, templ->pow2_aux_2);
+        }
 
 	//if(coind->txmessage)
 	//	strcat(templ->coinb2, "00");
