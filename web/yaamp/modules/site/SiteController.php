@@ -1005,7 +1005,7 @@ class SiteController extends CommonController
 	// called from the wallet
 	public function actionCheckblocks()
 	{
-		if(!$this->admin) return;
+		//if(!$this->admin) return;
 		$coin = getdbo('db_coins', getiparam('id'));
 		if($coin) {
 			BackendBlockFind1($coin->id);
